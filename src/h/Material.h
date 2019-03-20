@@ -43,7 +43,7 @@ class CBarMaterial : public CMaterial
 public:
 
 	double Area;	//!< Sectional area of a bar element
-
+	double rho;     //! Density of the material
 public:
 	
 //!	Read material data from stream Input

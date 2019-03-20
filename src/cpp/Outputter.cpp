@@ -180,9 +180,9 @@ void COutputter::PrintBarElementData(unsigned int EleGrp)
 		  << endl
 		  << endl;
 
-	*this << "  SET       YOUNG'S     CROSS-SECTIONAL" << endl
+	*this << "  SET       YOUNG'S     CROSS-SECTIONAL     DENSITY" << endl
 		  << " NUMBER     MODULUS          AREA" << endl
-		  << "               E              A" << endl;
+		  << "               E              A               RHO" << endl;
 
 	*this << setiosflags(ios::scientific) << setprecision(5);
 
