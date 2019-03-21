@@ -255,7 +255,32 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
 		unsigned int NUME = ElementGrp.GetNUME();
 		for (unsigned int Ele = 0; Ele < NUME ; Ele++)
 		{
-			CElement& Elemment = ElementGrp[Ele];
+			CElement& Element = ElementGrp[Ele];
+			double mg = Element.GravityofElement();
+			CNode** Ele_node = Element.GetNodes();
+			switch (ElementGrp.GetElementType())
+			{
+			case ElementTypes::Bar:
+				unsigned int first_dof, second_dof;
+				first_dof = Ele_node[0]->bcode[2];
+				second_dof = Ele_node[1]->bcode[2];
+
+				//!Note there is a problem to fix that the reaction force of gravity apply on the restricted node is ignored
+
+				if (first_dof)
+				{
+					Force[first_dof - 1] += (mg / 2);
+				}
+				if (second_dof)
+				{
+					Force[second_dof - 1] += (mg / 2);
+				}
+				break;
+
+			default: // Invalid Element type
+				cerr << "*** Error *** Elment type " << ElementGrp.GetElementType()
+					 << " has not been implemented.\n\n";
+			}
 		}
 	}
 	return true;
