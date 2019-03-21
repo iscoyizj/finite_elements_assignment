@@ -193,8 +193,8 @@ void COutputter::PrintBarElementData(unsigned int EleGrp)
 	*this << endl
 		  << endl
 		  << " E L E M E N T   I N F O R M A T I O N" << endl;
-	*this << " ELEMENT     NODE     NODE       MATERIAL" << endl
-		  << " NUMBER-N      I        J       SET NUMBER" << endl;
+	*this << " ELEMENT     NODE     NODE       MATERIAL        ElEMENT" << endl
+		  << " NUMBER-N      I        J       SET NUMBER       GRAVIYY" << endl;
 
 	unsigned int NUME = ElementGroup.GetNUME();
 

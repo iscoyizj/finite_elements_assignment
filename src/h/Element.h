@@ -84,5 +84,8 @@ public:
     inline unsigned int GetND() { return ND_; }
 
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
-	virtual unsigned int SizeOfStiffnessMatrix() = 0;     
+	virtual unsigned int SizeOfStiffnessMatrix() = 0;   
+
+//! Return the element mass
+	virtual double GravityofElement() = 0;
 };

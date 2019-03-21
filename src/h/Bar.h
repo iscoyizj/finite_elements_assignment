@@ -43,4 +43,7 @@ public:
 
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix();
+
+//! Return the mass of the element
+	virtual double GravityofElement();
 };

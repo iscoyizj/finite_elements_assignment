@@ -64,7 +64,7 @@ bool CBar::Read(ifstream& Input, unsigned int Ele, CMaterial* MaterialSets, CNod
 void CBar::Write(COutputter& output, unsigned int Ele)
 {
 	output << setw(5) << Ele+1 << setw(11) << nodes_[0]->NodeNumber
-		   << setw(9) << nodes_[1]->NodeNumber << setw(12) << ElementMaterial_->nset << endl;
+		   << setw(9) << nodes_[1]->NodeNumber << setw(12) << ElementMaterial_->nset << setw(21) << this->GravityofElement() << endl;
 }
 
 //  Generate location matrix: the global equation number that corresponding to each DOF of the element
@@ -160,4 +160,20 @@ void CBar::ElementStress(double* stress, double* Displacement)
 		if (LocationMatrix_[i])
 			*stress += S[i] * Displacement[LocationMatrix_[i]-1];
 	}
+}
+
+//  Calculate element mass
+double CBar::GravityofElement() 
+{
+	double mass;
+	CBarMaterial* material_ = dynamic_cast<CBarMaterial*>(ElementMaterial_);
+	double L2 = 0;
+
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		L2 = L2 + pow((nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i]), 2);
+	}
+	L2 = sqrt(L2);
+	mass = material_->Area * material_->rho * L2;
+	return mass*9.8;
 }

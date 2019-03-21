@@ -248,7 +248,16 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
         if(dof) // The DOF is activated
             Force[dof - 1] += LoadData->load[lnum];
 	}
-
+//  Loop over for all elements to consider the gravity
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
+	{
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		unsigned int NUME = ElementGrp.GetNUME();
+		for (unsigned int Ele = 0; Ele < NUME ; Ele++)
+		{
+			CElement& Elemment = ElementGrp[Ele];
+		}
+	}
 	return true;
 }
 
