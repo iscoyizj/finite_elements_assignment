@@ -30,7 +30,7 @@ bool CBarMaterial::Read(ifstream& Input, unsigned int mset)
 		return false;
 	}
 
-	Input >> E >> Area;	// Young's modulus and section area
+	Input >> E >> Area>> rho;	// Young's modulus and section area and density
 
 	return true;
 }
@@ -38,5 +38,5 @@ bool CBarMaterial::Read(ifstream& Input, unsigned int mset)
 //	Write material data to Stream
 void CBarMaterial::Write(COutputter& output, unsigned int mset)
 {
-	output << setw(5) << mset+1 << setw(16) << E << setw(16) << Area << endl;
+	output << setw(5) << mset+1 << setw(16) << E << setw(16) << Area << rho<< endl;
 }

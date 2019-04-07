@@ -112,6 +112,8 @@ public:
 //!	Assemble the banded gloabl stiffness matrix
 	void AssembleStiffnessMatrix();
 
+	void Gravity();
+
 //!	Assemble the global nodal force vector for load case LoadCase
 	bool AssembleForce(unsigned int LoadCase); 
 

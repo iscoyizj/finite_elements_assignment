@@ -82,6 +82,25 @@ void CBar::GenerateLocationMatrix()
 //	has 21 elements
 unsigned int CBar::SizeOfStiffnessMatrix() { return 21; }
 
+//Caculate Gravity of Elements
+void CBar::GravityCalculation()
+{
+	double g = 9.8;
+	double DX[3];
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		DX[i] = nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i];
+	}
+	double leng = 0;
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		leng += DX[i] * DX[i];
+	}
+	leng = sqrt(leng);
+	CBarMaterial* material_ = dynamic_cast<CBarMaterial*>(ElementMaterial_);	// Pointer to material of the element
+	weight = g * leng * material_->Area * material_->rho;
+}
+
 //	Calculate element stiffness matrix 
 //	Upper triangular matrix, stored as an array column by colum starting from the diagonal element
 void CBar::ElementStiffness(double* Matrix)

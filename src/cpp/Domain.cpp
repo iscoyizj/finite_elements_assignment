@@ -248,8 +248,37 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
         if(dof) // The DOF is activated
             Force[dof - 1] += LoadData->load[lnum];
 	}
-
 	return true;
+}
+
+void CDomain::Gravity()
+{
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)		//	Loop over for all element groups
+	{
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		ElementTypes ElementType_;
+		ElementType_ = ElementGrp.GetElementType();
+		if (ElementType_ == 1)
+		{
+			unsigned int NUME = ElementGrp.GetNUME();
+
+			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+			{
+				CElement& Element = ElementGrp[Ele];
+				Element.GravityCalculation();
+				CNode** node_ = Element.CElement::GetNodes();
+				unsigned int node_left = node_[0]->NodeNumber;
+				unsigned int node_right = node_[1]->NodeNumber;
+				unsigned int dof_left = NodeList[node_left - 1].bcode[1];
+				unsigned int dof_right = NodeList[node_right - 1].bcode[1];
+				if (dof_left)
+					Force[dof_left - 1] += -Element.GetGravity() / 2;
+				if (dof_right)
+					Force[dof_right - 1] += -Element.GetGravity() / 2;
+			}
+		}
+		
+	}
 }
 
 //	Allocate storage for matrices Force, ColumnHeights, DiagonalAddress and StiffnessMatrix

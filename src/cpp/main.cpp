@@ -62,6 +62,9 @@ int main(int argc, char *argv[])
     
 //  Assemble the banded gloabl stiffness matrix
 	FEMData->AssembleStiffnessMatrix();
+
+// Gravity
+	FEMData->Gravity();
     
     double time_assemble = timer.ElapsedTime();
 

@@ -35,6 +35,9 @@ public:
 //	Caution:  Equation number is numbered from 1 !
     virtual void GenerateLocationMatrix();
 
+// Caculate Gravity of Elements
+	virtual void GravityCalculation();
+
 //!	Calculate element stiffness matrix
 	virtual void ElementStiffness(double* Matrix);
 
