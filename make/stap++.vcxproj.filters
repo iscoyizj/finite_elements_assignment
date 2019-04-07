@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\Bar.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\Clock.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\Domain.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\ElementGroup.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\LoadCaseData.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\Material.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\Node.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\Outputter.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\Solver.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\cpp\main.cpp">
+      <Filter>SOURCE FILES</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Bar.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Clock.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Domain.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Element.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\ElementGroup.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\LoadCaseData.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Material.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Node.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Outputter.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\SkylineMatrix.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\h\Solver.h">
+      <Filter>HEADER FILES</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="HEADER FILES">
+      <UniqueIdentifier>{32D9C1E1-8B1A-3FD1-B612-EFB9573199E5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SOURCE FILES">
+      <UniqueIdentifier>{4DB7D0B2-2A0C-309B-BD50-6BB3A49EA66E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

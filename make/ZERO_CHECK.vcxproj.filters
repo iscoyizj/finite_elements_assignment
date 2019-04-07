@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\资料\课程文件\大三下学期\有限元分析\C++\finite_elements_assignment-master\make\CMakeFiles\1e401b06a07649d44e268d69098dcdf5\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{BFA51C87-7D98-3E71-89AA-00FF5CB6ACD1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
