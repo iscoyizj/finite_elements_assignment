@@ -22,6 +22,14 @@ CNode::CNode(double X, double Y, double Z)
     bcode[0] = 0;	// Boundary codes
     bcode[1] = 0;
     bcode[2] = 0;
+
+	stress_node[0] = 0.0;
+	stress_node[1] = 0.0;
+	stress_node[2] = 0.0;
+	stress_node[3] = 0.0;
+	stress_node[4] = 0.0;
+	stress_node[5] = 0.0;
+
 };
 
 //	Read element data from stream Input

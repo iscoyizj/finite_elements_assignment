@@ -42,6 +42,12 @@ public:
 	virtual void ElementStiffness(double* Matrix);
 
 //!	Calculate element stress
+	virtual void ElementStressplot1(double* newx, double* Displacement);
+
+//!	Calculate element stiffness matrix 
+	virtual void ElementMass(double* Mass);
+
+//!	Calculate element stress
 	virtual void ElementStress(double* stress, double* Displacement);
 
 //!	Return the size of the element stiffness matrix (stored as an array column by column)

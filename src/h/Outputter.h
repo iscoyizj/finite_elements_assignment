@@ -57,6 +57,9 @@ public:
 //!	Output bar element data
 	void PrintBarElementData(unsigned int EleGrp);
 
+//!	Output 4Q element data
+	void Print4QElementData(unsigned int EleGrp);
+
 //!	Output load data 
 	void OutputLoadInfo(); 
 
