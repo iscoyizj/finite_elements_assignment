@@ -161,3 +161,19 @@ void CBar::ElementStress(double* stress, double* Displacement)
 			*stress += S[i] * Displacement[LocationMatrix_[i]-1];
 	}
 }
+
+
+double CBar::ElementGravity ()
+{
+	//	Calculate bar length
+	double DX[3];		//	dx = x2-x1, dy = y2-y1, dz = z2-z1
+	for (unsigned int i = 0; i < 3; i++)
+		DX[i] = nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i];
+
+
+	double L2 = DX[0] * DX[0] + DX[1] * DX[1] + DX[2] * DX[2];
+	double L = sqrt(L2);
+    
+	CBarMaterial* material_ = dynamic_cast<CBarMaterial*>(ElementMaterial_);	// Pointer to material of the element
+	return 9.8*L*material_->Rou*material_->Area;
+}

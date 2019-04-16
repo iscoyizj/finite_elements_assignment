@@ -62,7 +62,9 @@ int main(int argc, char *argv[])
     
 //  Assemble the banded gloabl stiffness matrix
 	FEMData->AssembleStiffnessMatrix();
-    
+
+	FEMData->AssembleGravity ();
+
     double time_assemble = timer.ElapsedTime();
 
 //  Solve the linear equilibrium equations for displacements

@@ -15,15 +15,15 @@
 using namespace std;
 
 //! Bar element class
-class CBar : public CElement
+class CQ4 : public CElement
 {
 public:
 
 //!	Constructor
-	CBar();
+	CQ4();
 
 //!	Desconstructor
-	~CBar();
+	~CQ4();
 
 //!	Read element data from stream Input
 	virtual bool Read(ifstream& Input, unsigned int Ele, CMaterial* MaterialSets, CNode* NodeList);
@@ -44,7 +44,10 @@ public:
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix();
 
-	virtual double ElementGravity ();
+	virtual double ElementGravity () {return 0;};
 	
-	virtual void ElementCoord (double* coord) { ;};
+	void CalculateBe (double* Be, double eta, double psi);
+	
+	virtual void ElementCoord (double* coord);
+	
 };

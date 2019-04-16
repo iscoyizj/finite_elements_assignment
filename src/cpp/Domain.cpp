@@ -93,10 +93,6 @@ bool CDomain::ReadData(string FileName, string OutFile)
     else
         return false;
 
-//	Update equation number
-	CalculateEquationNumber();
-	Output->OutputEquationNumber();
-
 //	Read load data
 	if (ReadLoadCases())
         Output->OutputLoadInfo();
@@ -108,6 +104,11 @@ bool CDomain::ReadData(string FileName, string OutFile)
         Output->OutputElementInfo();
     else
         return false;
+	
+//	Update equation number
+	CalculateEquationNumber();
+	Output->OutputEquationNumber();
+
 
 	return true;
 }
@@ -220,6 +221,7 @@ void CDomain::AssembleStiffnessMatrix()
             Element.ElementStiffness(Matrix);
             StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
         }
+		
 
 		delete[] Matrix;
 		Matrix = nullptr;
@@ -275,3 +277,26 @@ void CDomain::AllocateMatrices()
 	COutputter* Output = COutputter::Instance();
 	Output->OutputTotalSystemData();
 }
+
+void CDomain::AssembleGravity ()
+{
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
+	{
+        CElementGroup& ElementGrp = EleGrpList[EleGrp];
+        unsigned int NUME = ElementGrp.GetNUME();
+		for (unsigned int Ele = 0; Ele < NUME; Ele++)
+        {
+            CElement& Element = ElementGrp[Ele];
+			unsigned int nen=Element.GetNEN();
+			double hfgr=Element.ElementGravity()/2;
+			for (unsigned int nn = 0; nn < nen; nn++) 
+			{
+				unsigned int dof = Element.GetNodes()[nn] -> bcode[CNode::NDF-1];
+				if (dof)
+					Force[dof - 1] -= hfgr; 
+			}
+		}
+	}
+}
+
+

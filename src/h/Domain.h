@@ -154,4 +154,6 @@ public:
 //!	Return pointer to the banded stiffness matrix
 	inline CSkylineMatrix<double>* GetStiffnessMatrix() { return StiffnessMatrix; }
 
+	void AssembleGravity ();
+
 };

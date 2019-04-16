@@ -44,6 +44,26 @@ public:
 
 	double Area;	//!< Sectional area of a bar element
 
+	double Rou;
+
+public:
+	
+//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+
+class CQ4Material : public CMaterial
+{
+public:
+
+	double Nu;	//!< Sectional area of a bar element
+
+//	double Thick;
+
 public:
 	
 //!	Read material data from stream Input

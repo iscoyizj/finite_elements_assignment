@@ -68,6 +68,8 @@ public:
 
 //!	Print total system data
 	void OutputTotalSystemData();
+	
+	void PrintQ4ElementData(unsigned int EleGrp);
 
 //! Overload the operator <<
 	template <typename T>

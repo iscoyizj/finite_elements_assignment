@@ -162,6 +162,10 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Bar: // Bar element
 				PrintBarElementData(EleGrp);
 				break;
+			
+			case ElementTypes::Q4: // 4Q element
+				PrintQ4ElementData(EleGrp);
+				break;
 		}
 	}
 }
@@ -195,6 +199,46 @@ void COutputter::PrintBarElementData(unsigned int EleGrp)
 		  << " E L E M E N T   I N F O R M A T I O N" << endl;
 	*this << " ELEMENT     NODE     NODE       MATERIAL" << endl
 		  << " NUMBER-N      I        J       SET NUMBER" << endl;
+
+	unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
+
+//	Output 4Q element data
+void COutputter::PrintQ4ElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		  << endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		  << endl
+		  << endl;
+
+	*this << "  SET       YOUNG'S        POISSON " << endl
+		  << " NUMBER     MODULUS         RATIO" << endl
+		  << "               E              Nu " << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		  << endl
+		  << " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		  << " NUMBER-N      I       II      III       IV       SET NUMBER" << endl;
 
 	unsigned int NUME = ElementGroup.GetNUME();
 
@@ -288,6 +332,29 @@ void COutputter::OutputElementStress()
 					CBarMaterial& material = *dynamic_cast<CBarMaterial*>(Element.GetElementMaterial());
 					*this << setw(5) << Ele + 1 << setw(22) << stress * material.Area << setw(18)
 						<< stress << endl;
+				}
+
+				*this << endl;
+
+				break;
+				
+			case ElementTypes::Q4:
+				*this << "  ELEMENT         X_coord         Y_coord         STRESS_XX         STRESS_YY         STRESS_XY" << endl
+					<< "  NUMBER" << endl;
+
+				double Q4Stress[12];
+				double coord[8];
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CQ4& Element = dynamic_cast<CQ4&>(EleGrp[Ele]);
+					Element.ElementStress(Q4Stress, Displacement);
+					Element.ElementCoord(coord);
+					for (unsigned int cd = 0; cd < 4; cd++)
+					{
+						*this << setw(5) << Ele + 1 << setw(18) << coord[2*cd] << setw(18) << coord[2*cd+1] << setw(18) << Q4Stress[3*cd] << setw(18)
+							<< Q4Stress[3*cd+1] << setw(18) << Q4Stress[3*cd+2] << endl;
+					}
 				}
 
 				*this << endl;
