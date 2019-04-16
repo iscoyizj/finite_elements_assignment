@@ -11,11 +11,10 @@
 #define singular_tolerance 0.001
 
 #include "4Q.h"
-
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include "..\..\make\4Q.H"
+
 
 using namespace std;
 
@@ -264,6 +263,8 @@ void C4Q::ElementStress(double* stress, double* Displacement)
 void C4Q::Gauss_node_coordinate(double eta,double psi, double* coordinte )
 {
 	double *Nmat;
+	Nmat = new double[4];
+	clear(Nmat, 4);
 	Nmat4Q(eta, psi, Nmat);
 	coordinte[0] = Nmat[0] * nodes_[0]->XYZ[0] + Nmat[1] * nodes_[1]->XYZ[0] + Nmat[2] * nodes_[2]->XYZ[0] + Nmat[3] * nodes_[0]->XYZ[0];
 	coordinte[1] = Nmat[0] * nodes_[0]->XYZ[0] + Nmat[1] * nodes_[1]->XYZ[1] + Nmat[2] * nodes_[2]->XYZ[1] + Nmat[3] * nodes_[3]->XYZ[1];

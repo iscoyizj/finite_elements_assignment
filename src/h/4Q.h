@@ -1,3 +1,4 @@
+#pragma once
 /*****************************************************************************/
 /*  STAP++ : A C++ FEM code sharing the same input data file with STAP90     */
 /*     Computational Dynamics Laboratory                                     */
@@ -43,6 +44,8 @@ public:
 
 	//!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix();
+	
+	virtual double GravityofElement();
 
 	//£¡ Return the N matrix for 4Q element
 	void Nmat4Q(double eta, double psi, double * Nmat);
@@ -53,5 +56,10 @@ public:
 	//!  Gauss Integral at gauss node,consists of element stiffness matrix
 	void Integral_gauss_node(const double & eta, const double & psi, const double & weight, double * k_e);
 
-};
+	void ElementStress_gauss_node(double eta, double psi, double * stress, double * Displacement);
 
+	void Gauss_node_coordinate(double eta, double psi, double * coordinte);
+
+	void Stress_coordinate(double * coordinate);
+    
+};
