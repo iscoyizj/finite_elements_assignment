@@ -596,6 +596,11 @@ void C4Q::ElementStress(double* stress, double* Displacement)
 	}
 }
 
+void C4Q::RecoverElementStress(double* Displacement, double* A)
+{
+
+}
+
 //	Calculate element stress for plot
 void C4Q::ElementStressplot1(double* newlocation, double* Displacement)
 {

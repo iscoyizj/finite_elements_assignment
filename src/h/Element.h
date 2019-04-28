@@ -81,7 +81,8 @@ public:
 //!	Calculate element stress 
 	virtual void ElementStress(double* stress, double* Displacement) = 0;
 
-
+//! Recover element stress
+	virtual void RecoverElementStress(double* Displacement, double* A)=0;
 
 //!	Calculate element stress for plot
 	virtual void ElementStressplot1(double* newlocation, double* Displacement) = 0;

@@ -236,6 +236,57 @@ void CBar::ElementStress(double* stress, double* Displacement)
 	}
 }
 
+void CBar::RecoverElementStress(double* Displacement, double* A)
+{
+
+	CBarMaterial* material_ = dynamic_cast<CBarMaterial*>(ElementMaterial_);	// Pointer to material of the element
+
+	double DX[3];	//	dx = x2-x1, dy = y2-y1, dz = z2-z1
+	double L2 = 0;	//	Square of bar length (L^2)
+
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		DX[i] = nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i];
+		L2 = L2 + DX[i] * DX[i];
+	}
+	int N1;
+	int N2;
+
+
+	N1 = nodes_[0]->NodeNumber - 1;
+	N2 = nodes_[1]->NodeNumber - 1;
+
+	A[73 * N1 + 72] += 1;
+	A[73 * N2 + 72] += 2;
+
+	for (unsigned int l = 0; l < 3; l++)
+	{
+		A[73 * N1 + l] = 0;
+		A[73 * N2 + l] = 0;
+
+	}
+
+	double S[6];
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		S[i] = -DX[i] * material_->E / L2;
+		S[i + 3] = -S[i];
+	}
+
+	A[72 + 73 * N1] += 1;
+	A[72 + 73 * N2] += 1;
+
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		if (LocationMatrix_[i])
+			A[73 * N1 + 3] += S[i] * Displacement[LocationMatrix_[i] - 1];
+		A[73 * N2 + 3] += S[i] * Displacement[LocationMatrix_[i] - 1];
+	}
+
+	nodes_[0]->stress_node[0] = A[73 * N1 + 3];
+	nodes_[1]->stress_node[0] = A[73 * N2 + 3];
+
+}
 //	Calculate element stress for plot
 void CBar::ElementStressplot1(double* newlocation, double* Displacement)
 {

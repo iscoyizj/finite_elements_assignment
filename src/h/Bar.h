@@ -44,6 +44,9 @@ public:
 //!	Calculate element stress
 	virtual void ElementStressplot1(double* newx, double* Displacement);
 
+//! Recover element stress
+	virtual void RecoverElementStress(double* Displacement, double* A);
+
 //!	Calculate element stiffness matrix 
 	virtual void ElementMass(double* Mass);
 

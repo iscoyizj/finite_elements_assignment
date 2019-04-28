@@ -74,3 +74,20 @@ public:
 	//!	Write material data to Stream
 	virtual void Write(COutputter& output, unsigned int mset);
 };
+
+class CPlateMaterial : public CMaterial
+{
+public:
+
+	double poisson;	//!Poisson ratio of a 4Q element
+	double thick; // the thickness of element
+
+public:
+
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
