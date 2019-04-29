@@ -82,6 +82,25 @@ void CBar::GenerateLocationMatrix()
 //	has 21 elements
 unsigned int CBar::SizeOfStiffnessMatrix() { return 21; }
 
+//Caculate Gravity of Elements
+void CBar::GravityCalculation()
+{
+	double g = 9.8;
+	double DX[3];
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		DX[i] = nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i];
+	}
+	double leng = 0;
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		leng += DX[i] * DX[i];
+	}
+	leng = sqrt(leng);
+	CBarMaterial* material_ = dynamic_cast<CBarMaterial*>(ElementMaterial_);	// Pointer to material of the element
+	weight = g * leng * material_->Area * material_->density;
+}
+
 //	Calculate element stiffness matrix 
 //	Upper triangular matrix, stored as an array column by colum starting from the diagonal element
 void CBar::ElementStiffness(double* Matrix)
@@ -133,6 +152,61 @@ void CBar::ElementStiffness(double* Matrix)
 	Matrix[20] = -k*DX2[5];
 }
 
+
+void CBar::ElementMass(double* Mass)
+{
+	clear(Mass, SizeOfStiffnessMatrix());
+	//	Calculate bar length
+	double DX[3];		//	dx = x2-x1, dy = y2-y1, dz = z2-z1
+	for (unsigned int i = 0; i < 3; i++)
+		DX[i] = nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i];
+
+	double DX2[6];	//  Quadratic polynomial (dx^2, dy^2, dz^2, dx*dy, dy*dz, dx*dz)
+	DX2[0] = DX[0] * DX[0];
+	DX2[1] = DX[1] * DX[1];
+	DX2[2] = DX[2] * DX[2];
+	DX2[3] = DX[0] * DX[1];
+	DX2[4] = DX[1] * DX[2];
+	DX2[5] = DX[0] * DX[2];
+
+	double L2 = DX2[0] + DX2[1] + DX2[2];
+	double L = sqrt(L2);
+
+	DX2[0] = DX2[0] / L2;
+	DX2[1] = DX2[1] / L2;
+	DX2[2] = DX2[2] / L2;
+	DX2[3] = DX2[3] / L2;
+	DX2[4] = DX2[4] / L2;
+	DX2[5] = DX2[5] / L2;
+
+	CBarMaterial* material_ = dynamic_cast<CBarMaterial*>(ElementMaterial_);	// Pointer to material of the element
+	double area = material_->Area;
+	double density = material_->density;
+	double m = density * area*L;
+
+	Mass[0] = (1 - 2 * DX2[0] / 3)*m;
+	Mass[1] = -2 * DX2[1] / 3 * m;
+	Mass[2] = -2 * DX2[3] / 3 * m;
+	Mass[3] = (1 - 2 * DX2[2] / 3)*m;
+	Mass[4] = -2 * DX2[4] / 3 * m;
+	Mass[5] = -2 * DX2[5] / 3 * m;
+	Mass[6] = (1 - 2 * DX2[0] / 3)*m;
+	Mass[7] = -5 * DX2[5] / 6 * m;
+	Mass[8] = -5 * DX2[3] / 6 * m;
+	Mass[9] = (1 - 5 * DX2[0] / 6)*m;
+	Mass[10] = -2 * DX2[1] / 3 * m;
+	Mass[11] = -2 * DX2[3] / 3 * m;
+	Mass[12] = -5 * DX2[4] / 6 * m;
+	Mass[13] = (1 - 5 * DX2[1] / 6)*m;
+	Mass[14] = -5 * DX2[3] / 6 * m;
+	Mass[15] = -2 * DX2[4] / 3 * m;
+	Mass[16] = -2 * DX2[5] / 3 * m;
+	Mass[17] = (1 - 2 * DX2[0] / 3)*m;
+	Mass[18] = -5 * DX2[4] / 6 * m;
+	Mass[19] = (1 - 5 * DX2[2] / 6)*m;
+	Mass[20] = -5 * DX2[5] / 6 * m;
+}
+
 //	Calculate element stress 
 void CBar::ElementStress(double* stress, double* Displacement)
 {
@@ -159,5 +233,27 @@ void CBar::ElementStress(double* stress, double* Displacement)
 	{
 		if (LocationMatrix_[i])
 			*stress += S[i] * Displacement[LocationMatrix_[i]-1];
+	}
+}
+
+//	Calculate element stress for plot
+void CBar::ElementStressplot1(double* newlocation, double* Displacement)
+{
+	CBarMaterial* material_ = dynamic_cast<CBarMaterial*>(ElementMaterial_);	// Pointer to material of the element
+	for (unsigned int j = 0; j < NEN_; j++)
+	{
+		for (unsigned int i = 0; i < 3; i++)
+		{
+			if (LocationMatrix_[i + 3 * j])
+				newlocation[i + 9 * j] = nodes_[j]->XYZ[i] + Displacement[LocationMatrix_[i + 3 * j] - 1];
+			else
+				newlocation[i + 9 * j] = nodes_[j]->XYZ[i];
+
+		}
+
+		for (unsigned int i = 3; i < 9; i++)
+		{
+			newlocation[i + 9 * j] = nodes_[j]->stress_node[i - 3];
+		}
 	}
 }

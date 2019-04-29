@@ -12,97 +12,55 @@
 
 #include <fstream>
 #include <iostream>
-
+#include <string>
 using namespace std;
 
 //! Outputer class is used to output results
-class COutputter
+class COutputterplot1
 {
 private:
 
 //!	File stream for output
-	ofstream OutputFile;
+	ofstream OutputFileplot1;
 
 protected:
 
 //!	Constructor
-	COutputter(string FileName);
+	COutputterplot1(string FileName);
 
 //!	Designed as a single instance class
-	static COutputter* _instance;
+	static COutputterplot1* _instanceplot1;
 
 public:
 
 //!	Return pointer to the output file stream
-	inline ofstream* GetOutputFile() { return &OutputFile; }
+	inline ofstream* GetOutputFileplot1() { return &OutputFileplot1; }
 
 //!	Return the single instance of the class
-	static COutputter* Instance(string FileName = " ");
-
-//!	Output current time and date
-	void PrintTime(const struct tm * ptm, COutputter& output);
+	static COutputterplot1* Instanceplot1(string FileName = " ");
 
 //!	Output logo and heading 
 	void OutputHeading();
 
-//!	Output nodal point data
-	void OutputNodeInfo();
-
-//!	Output equation numbers
-	void OutputEquationNumber();
-
-//!	Output element data
-	void OutputElementInfo();
-
-//!	Output bar element data
-	void PrintBarElementData(unsigned int EleGrp);
-
-//!	Output 4Q element data
-	void Print4QElementData(unsigned int EleGrp);
-
-//!	Output load data 
-	void OutputLoadInfo(); 
-
-//!	Output displacement data
-	void OutputNodalDisplacement(unsigned int lcase);
-
 //!	Output element stresses 
 	void OutputElementStress();
 
-//!	Print total system data
-	void OutputTotalSystemData();
-
 //! Overload the operator <<
 	template <typename T>
-	COutputter& operator<<(const T& item) 
+	COutputterplot1& operator<<(const T& item) 
 	{
 		std::cout << item;
-		OutputFile << item;
+		OutputFileplot1 << item;
 		return *this;
 	}
 
 	typedef std::basic_ostream<char, std::char_traits<char> > CharOstream;
-	COutputter& operator<<(CharOstream& (*op)(CharOstream&)) 
+	COutputterplot1& operator<<(CharOstream& (*op)(CharOstream&)) 
 	{
 		op(std::cout);
-		op(OutputFile);
+		op(OutputFileplot1);
 		return *this;
 	}
 
-#ifdef _DEBUG_
-
-//!	Print banded and full stiffness matrix for debuging
-	void PrintStiffnessMatrix();
-
-//!	Print address of diagonal elements for debuging
-	void PrintDiagonalAddress();
-
-//!	Print column heights for debuging
-	void PrintColumnHeights();
-
-//!	Print displacement vector for debuging
-	void PrintDisplacement(unsigned int loadcase);
-
-#endif
 
 };

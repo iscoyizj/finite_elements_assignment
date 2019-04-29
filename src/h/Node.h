@@ -28,6 +28,9 @@ public:
 
 //!	x, y and z coordinates of the node
 	double XYZ[NDF];
+//! the stress of node 
+
+	double stress_node[NDF + 1];
 
 //!	Boundary code of each degree of freedom of the node
 /*!		0: The corresponding degree of freedom is active (defined in the global system) */

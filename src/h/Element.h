@@ -29,6 +29,9 @@ protected:
 //!	Nodes of the element
 	CNode** nodes_;
 
+//! Gravity of element
+	double weight;
+
 //!	Material of the element
 	CMaterial* ElementMaterial_;	//!< Pointer to an element of MaterialSetList[][]
     
@@ -65,14 +68,29 @@ public:
 //	Caution:  Equation number is numbered from 1 !
     virtual void GenerateLocationMatrix() = 0;
 
+// Caculate Gravity of Elements
+	virtual void GravityCalculation()=0;
+
+
 //!	Calculate element stiffness matrix (Upper triangular matrix, stored as an array column by colum)
 	virtual void ElementStiffness(double* stiffness) = 0; 
+
+//!	Calculate element Mass 
+	virtual void ElementMass(double* Mass) = 0;
 
 //!	Calculate element stress 
 	virtual void ElementStress(double* stress, double* Displacement) = 0;
 
+
+
+//!	Calculate element stress for plot
+	virtual void ElementStressplot1(double* newlocation, double* Displacement) = 0;
+
 //!	Return nodes of the element
 	inline CNode** GetNodes() { return nodes_; }
+
+//! Return Gravity of the element
+	inline double GetGravity() { return weight; }
 
 //!	Return material of the element
 	inline CMaterial* GetElementMaterial() { return ElementMaterial_; }

@@ -248,8 +248,70 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
         if(dof) // The DOF is activated
             Force[dof - 1] += LoadData->load[lnum];
 	}
-
 	return true;
+}
+
+void CDomain::Gravity()
+{
+
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)		//	Loop over for all element groups
+	{
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		ElementTypes ElementType_;
+		ElementType_ = ElementGrp.GetElementType();
+		switch (ElementType_ )
+		{
+		 case Bar://Bar element
+		     {
+			    unsigned int NUME = ElementGrp.GetNUME();
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+				{
+					CElement& Element = ElementGrp[Ele];
+					Element.GravityCalculation();
+					CNode** node_ = Element.CElement::GetNodes();
+					unsigned int node_left = node_[0]->NodeNumber;
+					unsigned int node_right = node_[1]->NodeNumber;
+					unsigned int dof_left = NodeList[node_left - 1].bcode[1];
+					unsigned int dof_right = NodeList[node_right - 1].bcode[1];
+					if (dof_left)
+						Force[dof_left - 1] += -Element.GetGravity() / 2;
+					if (dof_right)
+						Force[dof_right - 1] += -Element.GetGravity() / 2;
+				}
+		     }
+			 break;
+		 case Q4://4Q element
+		 {
+			 unsigned int NUME = ElementGrp.GetNUME();
+
+			 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+			 {
+				 CElement& Element = ElementGrp[Ele];
+				 Element.GravityCalculation();
+				 CNode** node_ = Element.CElement::GetNodes();
+				 unsigned int node_one = node_[0]->NodeNumber;
+				 unsigned int node_two = node_[1]->NodeNumber;
+				 unsigned int node_three = node_[2]->NodeNumber;
+				 unsigned int node_four = node_[3]->NodeNumber;
+				 unsigned int dof_one = NodeList[node_one - 1].bcode[2];
+				 unsigned int dof_two = NodeList[node_two - 1].bcode[2];
+				 unsigned int dof_three = NodeList[node_three - 1].bcode[2];
+				 unsigned int dof_four = NodeList[node_four - 1].bcode[2];
+				 if (dof_one)
+					 Force[dof_one - 1] += -Element.GetGravity() / 4;
+				 if (dof_two)
+					 Force[dof_two - 1] += -Element.GetGravity() / 4;
+				 if (dof_three)
+					 Force[dof_three - 1] += -Element.GetGravity() / 4;
+				 if (dof_four)
+					 Force[dof_four - 1] += -Element.GetGravity() / 4;
+			 }
+		 }
+		 break;
+		}
+		
+	}
 }
 
 //	Allocate storage for matrices Force, ColumnHeights, DiagonalAddress and StiffnessMatrix
