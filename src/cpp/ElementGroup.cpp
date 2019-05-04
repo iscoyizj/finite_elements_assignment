@@ -70,6 +70,9 @@ void CElementGroup::CalculateMemberSize()
 			ElementSize_ = sizeof(C4Q);
 			MaterialSize_ = sizeof(C4QMaterial);
 			break;
+		case ElementTypes::Beam:
+			ElementSize_ = sizeof(CBeam);
+			MaterialSize_ = sizeof(CBeamMaterial);
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::CalculateMemberSize." << std::endl;
             exit(5);
@@ -90,6 +93,8 @@ void CElementGroup::AllocateElements(std::size_t size)
 		case ElementTypes::Q4:
 			ElementList_ = new C4Q[size];
 			break;
+		case ElementTypes::Beam:
+			ElementList_ = new CBeam[size];
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateElement." << std::endl;
             exit(5);
@@ -107,6 +112,10 @@ void CElementGroup::AllocateMaterials(std::size_t size)
 		case ElementTypes::Q4:
 			MaterialList_ = new C4QMaterial[size];
 			break;
+		case ElementTypes::Beam:
+			MaterialList_ = new CBeamMaterial[size];
+			break;
+
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateMaterial." << std::endl;
             exit(5);

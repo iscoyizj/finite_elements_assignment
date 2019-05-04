@@ -60,6 +60,9 @@ public:
 //!	Output 4Q element data
 	void Print4QElementData(unsigned int EleGrp);
 
+//£¡ Output Beam element data
+	void PrintBeamElementData(unsigned int EleGrp);
+
 //!	Output load data 
 	void OutputLoadInfo(); 
 

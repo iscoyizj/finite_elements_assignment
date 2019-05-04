@@ -44,6 +44,8 @@ public:
 	//!	Calculate the values required in the POSTPROCESS 
 	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions);
 
+	//! Calculate element gravity
+	virtual void GravityCalculation(double* ptr_force);
 	//!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix();
 	//!	Calculate element mass matrix (Upper triangular matrix, stored as an array column by colum)

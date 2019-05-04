@@ -464,3 +464,22 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 		beamstress[i * 24 + 23] = -tau_xz;
 	}
 }
+
+void CBeam::GravityCalculation(double* ptr_force)
+{
+	double g = 9.8;
+	CBeamMaterial* material_ = dynamic_cast<CBeamMaterial*>(ElementMaterial_);	// Pointer to material of the element
+	double density = material_->density;
+	double DX[3]; //	dx = x2-x1, dy = y2-y1, dz = z2-z1
+	for (unsigned int i = 0; i < 3; i++)
+		DX[i] = nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i];
+	double L = sqrt(DX[0] * DX[0] + DX[1] * DX[1] + DX[2] * DX[2]);
+	double A = material_->width*material_->height - (material_->width - 2 * material_->t_side)*(material_->height - 2 * material_->t_uplow);
+	weight = density * L*A*g;
+	ptr_force[0] = -weight / 2;
+	ptr_force[3] = ptr_force[0];
+	ptr_force[1] = L * g*density*A*DX[0];
+	ptr_force[2] = -L * g*density*A*DX[1];
+	ptr_force[4] = -L * g*density*A*DX[0];
+	ptr_force[5] = L * g*density*A*DX[1];
+}

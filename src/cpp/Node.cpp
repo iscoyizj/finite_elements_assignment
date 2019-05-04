@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include<string>
 
 #include "Node.h"
 
@@ -18,10 +19,17 @@ CNode::CNode(double X, double Y, double Z)
     XYZ[0] = X;		// Coordinates of the node
     XYZ[1] = Y;
     XYZ[2] = Z;
+	XYZ[3] = 0;
+	XYZ[4] = 0;
+	XYZ[5] = 0;
+	NodeNumber = 0;
     
     bcode[0] = 0;	// Boundary codes
     bcode[1] = 0;
     bcode[2] = 0;
+	bcode[3] = 1;
+	bcode[4] = 1;
+	bcode[5] = 1;
 
 	stress_node[0] = 0.0;
 	stress_node[1] = 0.0;
@@ -30,7 +38,31 @@ CNode::CNode(double X, double Y, double Z)
 	stress_node[4] = 0.0;
 	stress_node[5] = 0.0;
 
+	Rotation_Flag = 0;
 };
+
+// return total count of non-blank args in string
+int Count_for_theta(std::string getstr)
+{
+	int count = 0;
+	bool on_num = false;
+	for (unsigned i = 0; i < getstr.length(); ++i)
+	{
+		if (getstr[i] != ' ' && getstr[i] != '\t')
+		{
+			if (!on_num)
+			{
+				on_num = true;
+				count++;
+			}
+		}
+		else
+		{
+			on_num = false;
+		}
+	}
+	return count;
+}
 
 //	Read element data from stream Input
 bool CNode::Read(ifstream& Input, unsigned int np)
@@ -48,9 +80,40 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 	}
 
 	NodeNumber = N;
+	// Read the dataline
+	string NodeInfo, ModiNodeInfo;
+	getline(Input, NodeInfo);
 
-	Input >> bcode[0] >> bcode[1] >> bcode[2]
-		  >> XYZ[0] >> XYZ[1] >> XYZ[2];
+	int input_count = Count_for_theta(NodeInfo);
+
+	// Determine the input format:
+	//     if allow rotation for plate and beam , input_count is 9;
+	//     for elements with no rotation at nodes, input_count is 6.
+	
+
+	
+	if (input_count == 9)
+	{
+		Rotation_Flag = 1;
+		sscanf(NodeInfo.c_str(), "%d%d%d%d%d%d%lf%lf%lf",
+			bcode, bcode + 1, bcode + 2,
+			bcode + 3, bcode + 4, bcode + 5,
+			XYZ, XYZ + 1, XYZ + 2);
+	}
+	else if (input_count == 6)
+	{
+		Rotation_Flag = 0;
+		sscanf(NodeInfo.c_str(), "%d%d%d%lf%lf%lf",
+			bcode, bcode + 1, bcode + 2,
+			XYZ, XYZ + 1, XYZ + 2);
+	}
+	else
+	{
+		cerr << "*** Error *** NodeInfos must be inputted in the correct format! " << endl
+			<< "  Present Number of Nodeinfos: " << input_count << endl
+			<< "  Correct Number of Nodeinfos: 6 or 9 !" << endl;
+		return false;
+	}
 
 	return true;
 }

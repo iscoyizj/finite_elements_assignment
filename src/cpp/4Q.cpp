@@ -597,7 +597,7 @@ void C4Q::ElementStress(double* stress, double* Displacement)
 }
 
 //	Calculate element stress for plot
-void C4Q::ElementStressplot1(double* newlocation, double* Displacement)
+void C4Q::ElementPostInfo(double* stress_4Q, double* Displacement, double* Pre_pos, double* Post_pos)
 {
 	C4QMaterial* material_ = dynamic_cast<C4QMaterial*>(ElementMaterial_);	// Pointer to material of the element
 	double eta;
@@ -607,13 +607,14 @@ void C4Q::ElementStressplot1(double* newlocation, double* Displacement)
 	{
 		for (unsigned int i = 0; i < 2; i++)
 		{
+			Pre_pos[i + 3 * j] = nodes_[j]->XYZ[i];
 			if (LocationMatrix_[i + 2 * j])
-				newlocation[i + 9 * j] = nodes_[j]->XYZ[i] + Displacement[LocationMatrix_[i + 2 * j] - 1];
+				Post_pos[i + 3 * j] = nodes_[j]->XYZ[i] + Displacement[LocationMatrix_[i + 2 * j] - 1];
 			else
-				newlocation[i + 9 * j] = nodes_[j]->XYZ[i];
+				Post_pos[i + 3 * j] = nodes_[j]->XYZ[i];
 
 		}
-		newlocation[2 + 9 * j] = nodes_[j]->XYZ[2];
+		Post_pos[2 + 3 * j] = nodes_[j]->XYZ[2];
 		//get the Gauss nodes
 		if (j == 0)
 		{
@@ -688,15 +689,15 @@ void C4Q::ElementStressplot1(double* newlocation, double* Displacement)
 		nodes_[j]->stress_node[0] += D1 * (s[0] + material_->poisson*s[1]);
 		nodes_[j]->stress_node[1] += D1 * (s[0] * material_->poisson + s[1]);
 		nodes_[j]->stress_node[3] += D1 * (1 - material_->poisson) / 2 * s[2];
-		for (unsigned int i = 3; i < 9; i++)
+		for (unsigned int i = 0; i < 6; i++)
 		{
-			newlocation[i + 9 * j] = nodes_[j]->stress_node[i - 3];
+			stress_4Q[i + 6 * j] = nodes_[j]->stress_node[i];
 		}
 	}
 }
 
 //!	Calculate element stiffness matrix 
-void C4Q::GravityCalculation()
+void C4Q::GravityCalculation(double* ptr_force)
 {
 	double g = 9.8;
 	C4QMaterial* material_ = dynamic_cast<C4QMaterial*>(ElementMaterial_);	// Pointer to material of the element
