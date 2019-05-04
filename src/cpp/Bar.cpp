@@ -83,7 +83,7 @@ void CBar::GenerateLocationMatrix()
 unsigned int CBar::SizeOfStiffnessMatrix() { return 21; }
 
 //Caculate Gravity of Elements
-void CBar::GravityCalculation()
+void CBar::GravityCalculation(double* ptr_force)
 {
 	double g = 9.8;
 	double DX[3];

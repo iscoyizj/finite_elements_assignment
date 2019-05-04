@@ -91,5 +91,5 @@ bool CBeamMaterial::Read(ifstream& Input, unsigned int mset)
 //	Write material data to Stream
 void CBeamMaterial::Write(COutputter& output, unsigned int mset)
 {
-	output << setw(5) << mset + 1 << setw(16) << E << setw(16) << mu << setw(16) << width << setw(16) << height << setw(16) << t_side << setw(16) << t_uplow << setw(16) << t_left << setw(16) << t_lowwer << endl;
+	output << setw(5) << mset + 1 << setw(16) << E << setw(16) << mu << setw(16) << width << setw(16) << height << setw(16) << t_side << setw(16) << t_uplow << endl;
 }

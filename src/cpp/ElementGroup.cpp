@@ -62,6 +62,7 @@ void CElementGroup::CalculateMemberSize()
         case ElementTypes::UNDEFINED:
             std::cerr << "Setting element type to UNDEFINED." << std::endl;
             exit(5);
+			break;
         case ElementTypes::Bar:
             ElementSize_ = sizeof(CBar);
             MaterialSize_ = sizeof(CBarMaterial);
@@ -73,6 +74,7 @@ void CElementGroup::CalculateMemberSize()
 		case ElementTypes::Beam:
 			ElementSize_ = sizeof(CBeam);
 			MaterialSize_ = sizeof(CBeamMaterial);
+			break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::CalculateMemberSize." << std::endl;
             exit(5);
@@ -95,9 +97,11 @@ void CElementGroup::AllocateElements(std::size_t size)
 			break;
 		case ElementTypes::Beam:
 			ElementList_ = new CBeam[size];
+			break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateElement." << std::endl;
             exit(5);
+			break;
     }
 }
 
@@ -119,6 +123,7 @@ void CElementGroup::AllocateMaterials(std::size_t size)
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateMaterial." << std::endl;
             exit(5);
+			break;
     }
 }
 
