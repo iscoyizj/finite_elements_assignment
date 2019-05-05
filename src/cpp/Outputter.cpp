@@ -162,6 +162,9 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Bar: // Bar element
 				PrintBarElementData(EleGrp);
 				break;
+			case ElementTypes::Q4:	// Q4 element
+				PrintQ4ElementData(EleGrp);
+				break;
 		}
 	}
 }
@@ -195,6 +198,39 @@ void COutputter::PrintBarElementData(unsigned int EleGrp)
 		  << " E L E M E N T   I N F O R M A T I O N" << endl;
 	*this << " ELEMENT     NODE     NODE       MATERIAL" << endl
 		  << " NUMBER-N      I        J       SET NUMBER" << endl;
+
+	unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
+
+void COutputter::PrintQ4ElementData(unsigned int EleGrp){
+	CDomain* FEMData = CDomain::Instance();
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		  << endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		  << endl
+		  << endl;
+	*this << "  SET       YOUNG'S      POISSON" << endl
+		  << " NUMBER     MODULUS       RATIO" << endl
+		  << "               E            nu" << endl;
+	*this << setiosflags(ios::scientific) << setprecision(5);
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		  << endl
+		  << " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		  << " NUMBER-N      1        2       3        4       SET NUMBER" << endl;
 
 	unsigned int NUME = ElementGroup.GetNUME();
 
@@ -293,6 +329,23 @@ void COutputter::OutputElementStress()
 				*this << endl;
 
 				break;
+			case ElementTypes::Q4:	//Q4 element
+				*this << "  ELEMENT             X_COORD            Y_COORD      STRESS_XX      STRESS_YY      STRESS_XY" << endl
+					  << "  NUMBER" << endl;
+
+				double stress_Q4[12];
+				double coord[8];
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++){
+					CElement& Element = EleGrp[Ele];
+					Element.ElementStress(stress_Q4, Displacement);
+					Element.ElementCoord (coord);
+					*this << setw(5) << Ele + 1 << setw(22) << coord[0]<<setw(22)<< coord[1]<<setw(22)<< stress_Q4[0] <<setw(22)<< stress_Q4[1] <<setw(22)<< stress_Q4[2] << endl;
+					*this << setw(5) << Ele + 1 << setw(22) << coord[2]<<setw(22)<< coord[3]<<setw(22)<< stress_Q4[3] <<setw(22)<< stress_Q4[4] <<setw(22)<< stress_Q4[5] << endl;
+					*this << setw(5) << Ele + 1 << setw(22) << coord[4]<<setw(22)<< coord[5]<<setw(22)<< stress_Q4[6] <<setw(22)<< stress_Q4[7] <<setw(22)<< stress_Q4[8] << endl;
+					*this << setw(5) << Ele + 1 << setw(22) << coord[6]<<setw(22)<< coord[7]<<setw(22)<< stress_Q4[9] <<setw(22)<< stress_Q4[10] <<setw(22)<< stress_Q4[11] << endl;
+				}
+				*this<<endl;
 
 			default: // Invalid element type
 				cerr << "*** Error *** Elment type " << ElementType
