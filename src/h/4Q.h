@@ -48,10 +48,10 @@ public:
 	virtual void RecoverElementStress(double* Displacement, double* A);
 
 	// Caculate Gravity of Elements
-	virtual void GravityCalculation();
+	virtual void GravityCalculation(double* ptr_force);
 
-	//!	Calculate element stress for plot
-	virtual void ElementStressplot1(double* newx, double* Displacement);
+	//!	Calculate the values required in the POSTPROCESS 
+	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions);
 
 	//!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix();

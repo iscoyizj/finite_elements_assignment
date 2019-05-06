@@ -21,7 +21,7 @@ public:
 
 //!	Maximum number of degrees of freedom per node
 /*!	For 3D bar and solid elements, NDF = 3. For 3D beam or shell elements, NDF = 5 or 6 */
-	const static unsigned int NDF = 3;
+	const static unsigned int NDF = 6;
 
 //!	Node numer
 	unsigned int NodeNumber;
@@ -38,6 +38,11 @@ public:
 /*!	After call Domain::CalculateEquationNumber(), bcode stores the global equation number */
 /*!	corresponding to each degree of freedom of the node */
 	unsigned int bcode[NDF];
+
+//! Bool variable indicating whether the node has rotation DOFs
+/*  1 yes 
+    0 no */
+	bool Rotation_Flag;
 
 //!	Constructor
 	CNode(double X = 0, double Y = 0, double Z = 0);

@@ -16,6 +16,8 @@
 #include <iomanip>
 #include <ctime>
 
+
+
 using namespace std;
 
 //	Output current time and date
@@ -168,6 +170,9 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Plate: // Plate element
 				PrintPlateElementData(EleGrp);
 				break;
+			case ElementTypes::Beam:
+				PrintBeamElementData(EleGrp);
+				break;
 		}
 	}
 }
@@ -211,7 +216,6 @@ void COutputter::PrintBarElementData(unsigned int EleGrp)
 	*this << endl;
 }
 
-
 //Output 4Q element data
 void COutputter::Print4QElementData(unsigned int EleGrp)
 {
@@ -251,15 +255,14 @@ void COutputter::Print4QElementData(unsigned int EleGrp)
 	*this << endl;
 }
 
-void COutputter::PrintPlateElementData(unsigned int EleGrp)
+
+void COutputter::PrintBeamElementData(unsigned int EleGrp)
 {
 	CDomain* FEMData = CDomain::Instance();
 
 	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
 	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
-
-	*this << " M A T E R I A L   D E F I N I T I O N" << endl
-		<< endl;
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl << endl;
 	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
 	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
 		<< endl
@@ -281,6 +284,48 @@ void COutputter::PrintPlateElementData(unsigned int EleGrp)
 	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
 		<< " NUMBER-N      I        J        K        L       SET NUMBER" << endl;
 
+	
+
+	const unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
+
+
+void COutputter::PrintPlateElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		<< endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		<< endl
+		<< endl;
+
+	*this << "  SET       YOUNG'S   ELASTIC CONSTANTS      PLANE" << endl
+		<< " NUMBER     MODULUS         POISSON          THICKNESS" << endl
+		<< "               E            poisson            thick   " << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		<< endl
+		<< " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		<< " NUMBER-N      I        J        K        L       SET NUMBER" << endl;
+
 	unsigned int NUME = ElementGroup.GetNUME();
 
 	//	Loop over for all elements in group EleGrp
@@ -289,6 +334,7 @@ void COutputter::PrintPlateElementData(unsigned int EleGrp)
 
 	*this << endl;
 }
+
 
 //	Print load data
 void COutputter::OutputLoadInfo()
@@ -387,8 +433,7 @@ void COutputter::OutputElementStress()
 				for (unsigned int Ele = 0; Ele < NUME; Ele++)
 				{
 					CElement& Element = EleGrp[Ele];
-					C4QMaterial* material =
-						dynamic_cast<C4QMaterial *>(Element.GetElementMaterial());
+					C4QMaterial* material = dynamic_cast<C4QMaterial *>(Element.GetElementMaterial());
 					double *stress_4Q = new double[24];
 					for (unsigned int m = 0; m < 24; m++)
 						stress_4Q[m] = 0;
@@ -412,9 +457,7 @@ void COutputter::OutputElementStress()
 				*this << endl;
 				break;
 					
-			case ElementTypes::Plate: // 4Q element
-				*this << "  ELEMENT  GAUSS    X-COORD        Y-COORD        Z-COORD         SXX            SYY            TXY" << endl
-					<< "  NUMBER   POINT" << endl;
+			case ElementTypes::Plate: // Plate element
 				for (unsigned int Ele = 0; Ele < NUME; Ele++)
 				{
 					CElement& Element = EleGrp[Ele];
@@ -436,10 +479,28 @@ void COutputter::OutputElementStress()
 					*this << setw(5) << 4 << setw(18) << stress_plate[18] << setw(18) << stress_plate[19] << setw(18) << stress_plate[9]
 						<< setw(18) << stress_plate[10] << setw(18) << stress_plate[11] << endl;
 
-					delete[] stress6;
+					delete[] stress_plate;
 				}
 				break;
 
+			case ElementTypes::Beam:
+				*this << "  ELEMENT          SXX                 SYY                   SZZ" << endl
+					<< "  NUMBER" << endl;
+
+				double beamstress[3];
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = EleGrp[Ele];
+					Element.ElementStress(beamstress, Displacement);
+
+					CBeamMaterial* material = dynamic_cast<CBeamMaterial*>(Element.GetElementMaterial());
+					*this << setw(5) << Ele + 1 << setw(22) << beamstress[0] << setw(22)
+						<< beamstress[1] << setw(22) << beamstress[2] << endl;
+				}
+
+				*this << endl;
+				break;
 			default: // Invalid element type
 				cerr << "*** Error *** Elment type " << ElementType
 					<< " has not been implemented.\n\n";

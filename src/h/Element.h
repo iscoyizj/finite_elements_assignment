@@ -69,8 +69,7 @@ public:
     virtual void GenerateLocationMatrix() = 0;
 
 // Caculate Gravity of Elements
-	virtual void GravityCalculation()=0;
-
+	virtual void GravityCalculation(double* ptr_force) = 0;
 
 //!	Calculate element stiffness matrix (Upper triangular matrix, stored as an array column by colum)
 	virtual void ElementStiffness(double* stiffness) = 0; 
@@ -81,11 +80,10 @@ public:
 //!	Calculate element stress 
 	virtual void ElementStress(double* stress, double* Displacement) = 0;
 
-//! Recover element stress
-	virtual void RecoverElementStress(double* Displacement, double* A)=0;
 
-//!	Calculate element stress for plot
-	virtual void ElementStressplot1(double* newlocation, double* Displacement) = 0;
+//!	Calculate the values required in the POSTPROCESS 
+	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions) {};
+
 
 //!	Return nodes of the element
 	inline CNode** GetNodes() { return nodes_; }

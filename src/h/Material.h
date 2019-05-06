@@ -75,6 +75,31 @@ public:
 	virtual void Write(COutputter& output, unsigned int mset);
 };
 
+
+class CBeamMaterial : public CMaterial
+{
+public:
+
+	double mu;        // Poisson ratio
+	double width;     // width of rectangle
+	double height;    // height of rectangle
+	double t_side;    // flank thickness
+	double t_uplow;   // upper and lowwer surface thickness
+	double n_x;       // x component of y' axis
+	double n_y;       // y component of y' axis
+	double n_z;       // z component of y' axis
+
+
+public:
+
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+
 class CPlateMaterial : public CMaterial
 {
 public:

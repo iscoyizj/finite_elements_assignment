@@ -1,3 +1,0 @@
-D:/资料/课程文件/大三下学期/有限元分析/C++/finite_elements_assignment-master/make/CMakeFiles/stap++.dir
-D:/资料/课程文件/大三下学期/有限元分析/C++/finite_elements_assignment-master/make/CMakeFiles/ALL_BUILD.dir
-D:/资料/课程文件/大三下学期/有限元分析/C++/finite_elements_assignment-master/make/CMakeFiles/ZERO_CHECK.dir

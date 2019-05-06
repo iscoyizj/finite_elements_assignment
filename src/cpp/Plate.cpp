@@ -1,3 +1,13 @@
+/*****************************************************************************/
+/*  STAP++ : A C++ FEM code sharing the same input data file with STAP90     */
+/*     Computational Dynamics Laboratory                                     */
+/*     School of Aerospace Engineering, Tsinghua University                  */
+/*                                                                           */
+/*     Release 1.11, November 22, 2017                                       */
+/*                                                                           */
+/*     http://www.comdyn.cn/                                                 */
+/*****************************************************************************/
+
 #include "Plate.h"
 
 #include <iostream>
@@ -9,11 +19,11 @@ using namespace std;
 //	Constructor
 CPlate::CPlate()
 {
-	NEN_ = 4;	// Each element has 2 nodes
+	NEN_ = 4;	// Each element has 4 nodes
 	nodes_ = new CNode*[NEN_];
-    
-    ND_ = 12;
-    LocationMatrix_ = new unsigned int[ND_];
+
+	ND_ = 12;
+	LocationMatrix_ = new unsigned int[ND_];
 
 	ElementMaterial_ = NULL;
 }
@@ -32,15 +42,15 @@ bool CPlate::Read(ifstream& Input, unsigned int Ele, CMaterial* MaterialSets, CN
 
 	if (N != Ele + 1)
 	{
-		cerr << "*** Error *** Elements must be inputted in order !" << endl 
-			 << "    Expected element : " << Ele + 1 << endl
-			 << "    Provided element : " << N << endl;
+		cerr << "*** Error *** Elements must be inputted in order !" << endl
+			<< "    Expected element : " << Ele + 1 << endl
+			<< "    Provided element : " << N << endl;
 
 		return false;
 	}
 
 	unsigned int MSet;	// Material property set number
-	unsigned int N1, N2,N3,N4;	// Left node number and right node number
+	unsigned int N1, N2, N3, N4;	// Left node number and right node number
 
 	Input >> N1 >> N2 >> N3 >> N4 >> MSet;
 	ElementMaterial_ = &(dynamic_cast<CPlateMaterial*>(MaterialSets))[MSet - 1];
@@ -55,24 +65,22 @@ bool CPlate::Read(ifstream& Input, unsigned int Ele, CMaterial* MaterialSets, CN
 //	Write element data to stream
 void CPlate::Write(COutputter& output, unsigned int Ele)
 {
-	output << setw(5) << Ele+1 << setw(11) << nodes_[0]->NodeNumber 
-		   << setw(9) << nodes_[1]->NodeNumber << setw(9) 
-		   << nodes_[2]->NodeNumber << setw(9) << nodes_[3]->NodeNumber 
-		   << setw(12) 
-		   << ElementMaterial_->nset << endl;
+	output << setw(5) << Ele + 1 << setw(11) << nodes_[0]->NodeNumber
+		<< setw(9) << nodes_[1]->NodeNumber << setw(9)
+		<< nodes_[2]->NodeNumber << setw(9) << nodes_[3]->NodeNumber
+		<< setw(12)
+		<< ElementMaterial_->nset << endl;
 }
 
 //  Generate location matrix: the global equation number that corresponding to each DOF of the element
 //	Caution:  Equation number is numbered from 1 !
 void CPlate::GenerateLocationMatrix()
 {
-    unsigned int i = 0;
-    for (unsigned int N = 0; N < NEN_; N++)
-	{
-        LocationMatrix_[i++] = nodes_[N]->bcode[2];
-		LocationMatrix_[i++] = nodes_[N]->bcode[3];
-		LocationMatrix_[i++] = nodes_[N]->bcode[4];
-	}
+	unsigned int i = 0;
+	for (unsigned int N = 0; N < NEN_; N++)
+		for (unsigned int D = 0; D < 3; D++)
+			LocationMatrix_[i++] = nodes_[N]->bcode[D];
+
 }
 
 
@@ -89,118 +97,118 @@ void CPlate::ElementStiffness(double* Matrix)
 
 	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
 
-	double E  = material->E;
+	double E = material->E;
 	double poisson = material->poisson;
-	double t  = material->thick;
+	double t = material->thick;
 
-	double a = abs(nodes_[1]->XYZ[0]-nodes_[0]->XYZ[0])/2;
-	double b = abs(nodes_[3]->XYZ[1]-nodes_[0]->XYZ[1])/2;
-	double D0 = E*t*t*t/12/(1-poisson*poisson);
+	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
+	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
+	double D0 = E * t*t*t / 12 / (1 - poisson * poisson);
 
-	double k1 = 21-6*poisson+30*b*b/a/a+30*a*a/b/b;
-	double k2 = 8*b*b-8*poisson*b*b+40*a*a;
-	double k3 = 8*a*a-8*poisson*a*a+40*b*b;
-	double k4 = 3*b+12*poisson*b+30*a*a/b;
-	double k5 = 3*a+12*poisson*a+30*b*b/a;
-	double k6 = 30*poisson*a*b;
-	double k7 = -21+6*poisson-30*b*b/a/a+15*a*a/b/b;
-	double k8 = -8*b*b+8*poisson*b*b+20*a*a;
-	double k9 = -2*a*a+2*poisson*a*a+20*b*b;
-	double k10 = -3*b-12*poisson*b+15*a*a/b;
-	double k11 = 3*a-3*poisson*a+30*b*b/a;
-	double k12 = 21-6*poisson-15*b*b/a/a-15*a*a/b/b;
-	double k13 = 2*b*b-2*poisson*b*b+10*a*a;
-	double k14 = 2*a*a-2*poisson*a*a+10*b*b;
-	double k15 = -3*b+3*poisson*b+15*a*a/b;
-	double k16 = -3*a+3*poisson*a+15*b*b/a;
-	double k17 = -21+6*poisson+15*b*b/a/a-30*a*a/b/b;
-	double k18 = -2*b*b+2*poisson*b*b+20*a*a;
-	double k19 = -8*a*a+8*poisson*a*a+20*b*b;
-	double k20 = 3*b-3*poisson*b+30*a*a/b;
-	double k21 = -3*a-12*poisson*a+15*b*b/a;
+	double k1 = 21 - 6 * poisson + 30 * b*b / a / a + 30 * a*a / b / b;
+	double k2 = 8 * b*b - 8 * poisson*b*b + 40 * a*a;
+	double k3 = 8 * a*a - 8 * poisson*a*a + 40 * b*b;
+	double k4 = 3 * b + 12 * poisson*b + 30 * a*a / b;
+	double k5 = 3 * a + 12 * poisson*a + 30 * b*b / a;
+	double k6 = 30 * poisson*a*b;
+	double k7 = -21 + 6 * poisson - 30 * b*b / a / a + 15 * a*a / b / b;
+	double k8 = -8 * b*b + 8 * poisson*b*b + 20 * a*a;
+	double k9 = -2 * a*a + 2 * poisson*a*a + 20 * b*b;
+	double k10 = -3 * b - 12 * poisson*b + 15 * a*a / b;
+	double k11 = 3 * a - 3 * poisson*a + 30 * b*b / a;
+	double k12 = 21 - 6 * poisson - 15 * b*b / a / a - 15 * a*a / b / b;
+	double k13 = 2 * b*b - 2 * poisson*b*b + 10 * a*a;
+	double k14 = 2 * a*a - 2 * poisson*a*a + 10 * b*b;
+	double k15 = -3 * b + 3 * poisson*b + 15 * a*a / b;
+	double k16 = -3 * a + 3 * poisson*a + 15 * b*b / a;
+	double k17 = -21 + 6 * poisson + 15 * b*b / a / a - 30 * a*a / b / b;
+	double k18 = -2 * b*b + 2 * poisson*b*b + 20 * a*a;
+	double k19 = -8 * a*a + 8 * poisson*a*a + 20 * b*b;
+	double k20 = 3 * b - 3 * poisson*b + 30 * a*a / b;
+	double k21 = -3 * a - 12 * poisson*a + 15 * b*b / a;
 
-	Matrix[0] =k1;
-	Matrix[1] =k2;
-	Matrix[2] =k4;
-	Matrix[3] =k3;
-	Matrix[4] =-k6;
-	Matrix[5] =-k5;
-	Matrix[6] =k1;
-	Matrix[7] =k11;
-	Matrix[8] =k10;
-	Matrix[9] =k7;
-	Matrix[10] =k2;
-	Matrix[11] =k4;
-	Matrix[12] =0;
-	Matrix[13] =k8;
-	Matrix[14] =k10;
-	Matrix[15] =k3;
-	Matrix[16] =k6;
-	Matrix[17] =k5;
-	Matrix[18] =k9;
-	Matrix[19] =0;
-	Matrix[20] =-k11;
-	Matrix[21] =k1;
-	Matrix[22] =k21;
-	Matrix[23] =-k20;
-	Matrix[24] =k17;
-	Matrix[25] =k16;
-	Matrix[26] =-k15;
-	Matrix[27] =k12;
-	Matrix[28] =k2;
-	Matrix[29] =-k4;
-	Matrix[30] =0;
-	Matrix[31] =k18;
-	Matrix[32] =k20;
-	Matrix[33] =0;
-	Matrix[34] =k13;
-	Matrix[35] =k15;
-	Matrix[36] =k3;
-	Matrix[37] =-k6;
-	Matrix[38] =k5;
-	Matrix[39] =k19;
-	Matrix[40] =0;
-	Matrix[41] =k21;
-	Matrix[42] =k14;
-	Matrix[43] =0;
-	Matrix[44] =-k16;
-	Matrix[45] =k1;
-	Matrix[46] =-k11;
-	Matrix[47] =-k10;
-	Matrix[48] =k7;
-	Matrix[49] =-k16;
-	Matrix[50] =-k15;
-	Matrix[51] =k12;
-	Matrix[52] =-k21;
-	Matrix[53] =-k20;
-	Matrix[54] =k17;
-	Matrix[55] =k2;
-	Matrix[56] =-k4;
-	Matrix[57] =0;
-	Matrix[58] =k8;
-	Matrix[59] =-k10;
-	Matrix[60] =0;
-	Matrix[61] =k13;
-	Matrix[62] =k15;
-	Matrix[63] =0;
-	Matrix[64] =k18;
-	Matrix[65] =k20;
-	Matrix[66] =k3;
-	Matrix[67] =k6;
-	Matrix[68] =-k5;
-	Matrix[69] =k9;
-	Matrix[70] =0;
-	Matrix[71] =k11;
-	Matrix[72] =k14;
-	Matrix[73] =0;
-	Matrix[74] =k16;
-	Matrix[75] =k19;
-	Matrix[76] =0;
-	Matrix[77] =-k21;
+	Matrix[0] = k1;
+	Matrix[1] = k2;
+	Matrix[2] = k4;
+	Matrix[3] = k3;
+	Matrix[4] = -k6;
+	Matrix[5] = -k5;
+	Matrix[6] = k1;
+	Matrix[7] = k11;
+	Matrix[8] = k10;
+	Matrix[9] = k7;
+	Matrix[10] = k2;
+	Matrix[11] = k4;
+	Matrix[12] = 0;
+	Matrix[13] = k8;
+	Matrix[14] = k10;
+	Matrix[15] = k3;
+	Matrix[16] = k6;
+	Matrix[17] = k5;
+	Matrix[18] = k9;
+	Matrix[19] = 0;
+	Matrix[20] = -k11;
+	Matrix[21] = k1;
+	Matrix[22] = k21;
+	Matrix[23] = -k20;
+	Matrix[24] = k17;
+	Matrix[25] = k16;
+	Matrix[26] = -k15;
+	Matrix[27] = k12;
+	Matrix[28] = k2;
+	Matrix[29] = -k4;
+	Matrix[30] = 0;
+	Matrix[31] = k18;
+	Matrix[32] = k20;
+	Matrix[33] = 0;
+	Matrix[34] = k13;
+	Matrix[35] = k15;
+	Matrix[36] = k3;
+	Matrix[37] = -k6;
+	Matrix[38] = k5;
+	Matrix[39] = k19;
+	Matrix[40] = 0;
+	Matrix[41] = k21;
+	Matrix[42] = k14;
+	Matrix[43] = 0;
+	Matrix[44] = -k16;
+	Matrix[45] = k1;
+	Matrix[46] = -k11;
+	Matrix[47] = -k10;
+	Matrix[48] = k7;
+	Matrix[49] = -k16;
+	Matrix[50] = -k15;
+	Matrix[51] = k12;
+	Matrix[52] = -k21;
+	Matrix[53] = -k20;
+	Matrix[54] = k17;
+	Matrix[55] = k2;
+	Matrix[56] = -k4;
+	Matrix[57] = 0;
+	Matrix[58] = k8;
+	Matrix[59] = -k10;
+	Matrix[60] = 0;
+	Matrix[61] = k13;
+	Matrix[62] = k15;
+	Matrix[63] = 0;
+	Matrix[64] = k18;
+	Matrix[65] = k20;
+	Matrix[66] = k3;
+	Matrix[67] = k6;
+	Matrix[68] = -k5;
+	Matrix[69] = k9;
+	Matrix[70] = 0;
+	Matrix[71] = k11;
+	Matrix[72] = k14;
+	Matrix[73] = 0;
+	Matrix[74] = k16;
+	Matrix[75] = k19;
+	Matrix[76] = 0;
+	Matrix[77] = -k21;
 
-	for(unsigned i = 0; i<78 ; i++)
+	for (unsigned i = 0; i < 78; i++)
 	{
-		Matrix[i] = Matrix[i]*D0/30/a/b;
+		Matrix[i] = Matrix[i] * D0 / 30 / a / b;
 	}
 
 }
@@ -212,22 +220,22 @@ void CPlate::ElementMass(double* Mass)
 
 	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
 
-	double density  = material->density;
-	double t  = material->thick;
-	double a = abs(nodes_[1]->XYZ[0]-nodes_[0]->XYZ[0])/2;
-	double b = abs(nodes_[3]->XYZ[1]-nodes_[0]->XYZ[1])/2;
+	double density = material->density;
+	double t = material->thick;
+	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
+	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
 
-	double m = density*t*a*b;
-	Mass[0]  = 0.548253968244966*m;
-	Mass[1]  = 0.050793650794596*b*b*m;
-	Mass[2]  = 0.146349206350509*b*m;
-	Mass[3]  = 0.050793650794596*a*a*m;
-	Mass[4]  = -0.040000000001326*a*b*m;
-	Mass[5]  = -0.146349206350509*a*m;
-	Mass[6]  = 0.548253968244966*m;
-	Mass[7]  = -0.086984126985246*a*m;
-	Mass[8]  = 0.063174603177151*b*m;
-	Mass[9]  = 0.194603174606175*m;
+	double m = density * t*a*b;
+	Mass[0] = 0.548253968244966*m;
+	Mass[1] = 0.050793650794596*b*b*m;
+	Mass[2] = 0.146349206350509*b*m;
+	Mass[3] = 0.050793650794596*a*a*m;
+	Mass[4] = -0.040000000001326*a*b*m;
+	Mass[5] = -0.146349206350509*a*m;
+	Mass[6] = 0.548253968244966*m;
+	Mass[7] = -0.086984126985246*a*m;
+	Mass[8] = 0.063174603177151*b*m;
+	Mass[9] = 0.194603174606175*m;
 	Mass[10] = 0.050793650794596*b*b*m;
 	Mass[11] = 0.146349206350509*b*m;
 	Mass[12] = -0.026666666667762*a*b*m;
@@ -301,58 +309,58 @@ void CPlate::ElementMass(double* Mass)
 //	Calculate element stress 
 void CPlate::ElementStress(double* stress, double* Displacement)
 {
-	clear(stress,20);
+	clear(stress, 20);
 
 	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
 
-	double E  = material->E;
+	double E = material->E;
 	double poisson = material->poisson;
-	double t  = material->thick;
+	double t = material->thick;
 
-	double a  = abs(nodes_[1]->XYZ[0]-nodes_[0]->XYZ[0])/2;
-	double b  = abs(nodes_[3]->XYZ[1]-nodes_[0]->XYZ[1])/2;
-	double x0 = (nodes_[1]->XYZ[0]+nodes_[0]->XYZ[0])/2;
-	double y0 = (nodes_[3]->XYZ[1]+nodes_[0]->XYZ[1])/2;
+	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
+	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
+	double x0 = (nodes_[1]->XYZ[0] + nodes_[0]->XYZ[0]) / 2;
+	double y0 = (nodes_[3]->XYZ[1] + nodes_[0]->XYZ[1]) / 2;
 	//double G  = E*t*t*t/96/(1-poisson*poisson)/a/b;
-	double G  = E*t/16/(1-poisson*poisson)/a/b;
+	double G = E * t / 16 / (1 - poisson * poisson) / a / b;
 
-	double gp[2] = {-0.5773502692,0.5773502692};      // gauss point
+	double gp[2] = { -0.5773502692,0.5773502692 };      // gauss point
 
-	double psit[4] = {-1,1,1,-1};
-	double etat[4] = {-1,-1,1,1};
+	double psit[4] = { -1,1,1,-1 };
+	double etat[4] = { -1,-1,1,1 };
 
-	for(unsigned int i = 0; i<2; i++)
+	for (unsigned int i = 0; i < 2; i++)
 	{
-		for(unsigned int j = 0; j<2; j++)
+		for (unsigned int j = 0; j < 2; j++)
 		{
 			double psi = gp[i];
 			double eta = gp[j];
-			stress[4*i+2*j+12] = x0+a*psi;
-			stress[4*i+2*j+13] = y0+b*eta;
+			stress[4 * i + 2 * j + 12] = x0 + a * psi;
+			stress[4 * i + 2 * j + 13] = y0 + b * eta;
 			double S[36];
-			for(unsigned int k = 0; k<4; k++)
+			for (unsigned int k = 0; k < 4; k++)
 			{
 				double psii = psit[k];
 				double etai = etat[k];
-				double psi0 = psii*psi;
-				double eta0 = etai*eta;
-				S[9*k]   = G*(6*b/a*psi0*(1+eta0)+6*poisson*a/b*eta0*(1+psi0));
-				S[9*k+1] = G*(6*poisson*b/a*psi0*(1+eta0)+6*a/b*eta0*(1+psi0));
-				S[9*k+2] = G*((1-poisson)*psii*etai*(3*psi*psi+3*eta*eta-4));
-				S[9*k+3] = G*(-2*poisson*a*etai*(1+psi0)*(1+3*eta0));
-				S[9*k+4] = G*(-2*a*etai*(1+psi0)*(1+3*eta0));
-				S[9*k+5] = G*(-(1-poisson)*b*psii*(3*eta*eta+2*eta0-1));
-				S[9*k+6] = G*2*b*psii*(1+3*psi0)*(1+eta0);
-				S[9*k+7] = G*2*poisson*b*psii*(1+3*psi0)*(1+eta0);
-				S[9*k+8] = G*(1-poisson)*a*etai*(3*psi*psi+2*psi0-1);
+				double psi0 = psii * psi;
+				double eta0 = etai * eta;
+				S[9 * k] = G * (6 * b / a * psi0*(1 + eta0) + 6 * poisson*a / b * eta0*(1 + psi0));
+				S[9 * k + 1] = G * (6 * poisson*b / a * psi0*(1 + eta0) + 6 * a / b * eta0*(1 + psi0));
+				S[9 * k + 2] = G * ((1 - poisson)*psii*etai*(3 * psi*psi + 3 * eta*eta - 4));
+				S[9 * k + 3] = G * (-2 * poisson*a*etai*(1 + psi0)*(1 + 3 * eta0));
+				S[9 * k + 4] = G * (-2 * a*etai*(1 + psi0)*(1 + 3 * eta0));
+				S[9 * k + 5] = G * (-(1 - poisson)*b*psii*(3 * eta*eta + 2 * eta0 - 1));
+				S[9 * k + 6] = G * 2 * b*psii*(1 + 3 * psi0)*(1 + eta0);
+				S[9 * k + 7] = G * 2 * poisson*b*psii*(1 + 3 * psi0)*(1 + eta0);
+				S[9 * k + 8] = G * (1 - poisson)*a*etai*(3 * psi*psi + 2 * psi0 - 1);
 			}
-			for(unsigned int k = 0; k<12; k++)
+			for (unsigned int k = 0; k < 12; k++)
 			{
 				if (LocationMatrix_[k])
 				{
-					stress[6*i+3*j]   += S[3*k] * Displacement[LocationMatrix_[k]-1];
-					stress[6*i+3*j+1] += S[3*k+1] * Displacement[LocationMatrix_[k]-1];
-					stress[6*i+3*j+2] += S[3*k+2] * Displacement[LocationMatrix_[k]-1];
+					stress[6 * i + 3 * j] += S[3 * k] * Displacement[LocationMatrix_[k] - 1];
+					stress[6 * i + 3 * j + 1] += S[3 * k + 1] * Displacement[LocationMatrix_[k] - 1];
+					stress[6 * i + 3 * j + 2] += S[3 * k + 2] * Displacement[LocationMatrix_[k] - 1];
 				}
 			}
 		}
@@ -360,32 +368,31 @@ void CPlate::ElementStress(double* stress, double* Displacement)
 }
 
 //	Calculate element stress for plot
-void CPlate::ElementStressplot1(double* newx, double* Displacement)
+void CPlate::ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* newlocation)
 {
-	CPlateMaterial* material_ = dynamic_cast<CPlateMaterial*>(ElementMaterial_);	// Pointer to material of the element
-	for(unsigned int j=0;j<NEN_;j++)
+	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
+	for (unsigned int j = 0; j < NEN_; j++)
 	{
-		newx[10*j]=nodes_[j]->XYZ[0];
-		newx[1+10*j]=nodes_[j]->XYZ[1];
-		if (LocationMatrix_[2+3*j])
-		newx[2+10*j]=nodes_[j]->XYZ[2]+107.651*Displacement[LocationMatrix_[3*j]-1];
+		PrePositions[3 * j] = nodes_[j]->XYZ[0];
+		PrePositions[1+3 * j] = nodes_[j]->XYZ[1];
+		PrePositions[2+3 * j] = nodes_[j]->XYZ[2];
+		newlocation[3 * j] = nodes_[j]->XYZ[0];
+		newlocation[1 + 3 * j] = nodes_[j]->XYZ[1];
+		if (LocationMatrix_[3 * j])
+			newlocation[2 + 3 * j] = nodes_[j]->XYZ[2] + Displacement[LocationMatrix_[3 * j] - 1];
 		else
-		newx[2+10*j]=nodes_[j]->XYZ[2];
+			newlocation[2 + 3 * j] = nodes_[j]->XYZ[2];
 
-	for (unsigned int i = 3; i < 10; i++)
-	{
-		newx[i+10*j]=nodes_[j]->stress_node[i-3];
-	}
 	}
 }
 
 //! Calulate element gravity
-void CPlate::GravityCalculation()
+void CPlate::GravityCalculation(double* ptr_force)
 {
-		CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
-		double a  = abs(nodes_[1]->XYZ[0]-nodes_[0]->XYZ[0])/2;
-		double b  = abs(nodes_[3]->XYZ[1]-nodes_[0]->XYZ[1])/2;
-		weight=a*b*material->density*material->thick*9.8;
+	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
+	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
+	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
+	weight = a * b*material->density*material->thick*9.8;
 }
 
 //	Recover element stress 
@@ -394,66 +401,66 @@ void CPlate::RecoverElementStress(double* Displacement, double* A)
 
 	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
 
-	double E  = material->E;
+	double E = material->E;
 	double poisson = material->poisson;
-	double t  = material->thick;
+	double t = material->thick;
 
-	double a  = abs(nodes_[1]->XYZ[0]-nodes_[0]->XYZ[0])/2;
-	double b  = abs(nodes_[3]->XYZ[1]-nodes_[0]->XYZ[1])/2;
-	double x0 = (nodes_[1]->XYZ[0]+nodes_[0]->XYZ[0])/2;
-	double y0 = (nodes_[3]->XYZ[1]+nodes_[0]->XYZ[1])/2;
+	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
+	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
+	double x0 = (nodes_[1]->XYZ[0] + nodes_[0]->XYZ[0]) / 2;
+	double y0 = (nodes_[3]->XYZ[1] + nodes_[0]->XYZ[1]) / 2;
 	//double G  = E*t*t*t/96/(1-poisson*poisson)/a/b;
-	double G  = E*t/16/(1-poisson*poisson)/a/b;
+	double G = E * t / 16 / (1 - poisson * poisson) / a / b;
 
-	double gp[2] = {-0.5773502692,0.5773502692};      // gauss point
+	double gp[2] = { -0.5773502692,0.5773502692 };      // gauss point
 
-	double psit[4] = {-1,1,1,-1};
-	double etat[4] = {-1,-1,1,1};
+	double psit[4] = { -1,1,1,-1 };
+	double etat[4] = { -1,-1,1,1 };
 
 	int Node[4];
-		
-	Node[0] = nodes_[0]->NodeNumber-1;
-	Node[1] = nodes_[1]->NodeNumber-1;
-	Node[2] = nodes_[2]->NodeNumber-1;
-	Node[3] = nodes_[3]->NodeNumber-1;
+
+	Node[0] = nodes_[0]->NodeNumber - 1;
+	Node[1] = nodes_[1]->NodeNumber - 1;
+	Node[2] = nodes_[2]->NodeNumber - 1;
+	Node[3] = nodes_[3]->NodeNumber - 1;
 
 
-	for(unsigned int i = 0; i<2; i++)
+	for (unsigned int i = 0; i < 2; i++)
 	{
-		for(unsigned int j = 0; j<2; j++)
+		for (unsigned int j = 0; j < 2; j++)
 		{
 			double psi = gp[i];
 			double eta = gp[j];
 
-			A[9*(i*i+3*j*j-2*i*j)+73*Node[i*i+3*j*j-2*i*j]] = x0+a*psi - nodes_[i*i+3*j*j-2*i*j]->XYZ[0];
-			A[1+9*(i*i+3*j*j-2*i*j)+73*Node[i*i+3*j*j-2*i*j]] = y0+b*eta - nodes_[i*i+3*j*j-2*i*j]->XYZ[1];
-			A[72+73*Node[i*i+3*j*j-2*i*j]] += 1;
-			
-			
+			A[9 * (i*i + 3 * j*j - 2 * i*j) + 73 * Node[i*i + 3 * j*j - 2 * i*j]] = x0 + a * psi - nodes_[i*i + 3 * j*j - 2 * i*j]->XYZ[0];
+			A[1 + 9 * (i*i + 3 * j*j - 2 * i*j) + 73 * Node[i*i + 3 * j*j - 2 * i*j]] = y0 + b * eta - nodes_[i*i + 3 * j*j - 2 * i*j]->XYZ[1];
+			A[72 + 73 * Node[i*i + 3 * j*j - 2 * i*j]] += 1;
+
+
 			double S[36];
-			for(unsigned int k = 0; k<4; k++)
+			for (unsigned int k = 0; k < 4; k++)
 			{
 				double psii = psit[k];
 				double etai = etat[k];
-				double psi0 = psii*psi;
-				double eta0 = etai*eta;
-				S[9*k]   = G*(6*b/a*psi0*(1+eta0)+6*poisson*a/b*eta0*(1+psi0));
-				S[9*k+1] = G*(6*poisson*b/a*psi0*(1+eta0)+6*a/b*eta0*(1+psi0));
-				S[9*k+2] = G*((1-poisson)*psii*etai*(3*psi*psi+3*eta*eta-4));
-				S[9*k+3] = G*(-2*poisson*a*etai*(1+psi0)*(1+3*eta0));
-				S[9*k+4] = G*(-2*a*etai*(1+psi0)*(1+3*eta0));
-				S[9*k+5] = G*(-(1-poisson)*b*psii*(3*eta*eta+2*eta0-1));
-				S[9*k+6] = G*2*b*psii*(1+3*psi0)*(1+eta0);
-				S[9*k+7] = G*2*poisson*b*psii*(1+3*psi0)*(1+eta0);
-				S[9*k+8] = G*(1-poisson)*a*etai*(3*psi*psi+2*psi0-1);
+				double psi0 = psii * psi;
+				double eta0 = etai * eta;
+				S[9 * k] = G * (6 * b / a * psi0*(1 + eta0) + 6 * poisson*a / b * eta0*(1 + psi0));
+				S[9 * k + 1] = G * (6 * poisson*b / a * psi0*(1 + eta0) + 6 * a / b * eta0*(1 + psi0));
+				S[9 * k + 2] = G * ((1 - poisson)*psii*etai*(3 * psi*psi + 3 * eta*eta - 4));
+				S[9 * k + 3] = G * (-2 * poisson*a*etai*(1 + psi0)*(1 + 3 * eta0));
+				S[9 * k + 4] = G * (-2 * a*etai*(1 + psi0)*(1 + 3 * eta0));
+				S[9 * k + 5] = G * (-(1 - poisson)*b*psii*(3 * eta*eta + 2 * eta0 - 1));
+				S[9 * k + 6] = G * 2 * b*psii*(1 + 3 * psi0)*(1 + eta0);
+				S[9 * k + 7] = G * 2 * poisson*b*psii*(1 + 3 * psi0)*(1 + eta0);
+				S[9 * k + 8] = G * (1 - poisson)*a*etai*(3 * psi*psi + 2 * psi0 - 1);
 			}
-			for(unsigned int k = 0; k<12; k++)
+			for (unsigned int k = 0; k < 12; k++)
 			{
 				if (LocationMatrix_[k])
 				{
-					A[9*(i*i+3*j*j-2*i*j)+73*Node[i*i+3*j*j-2*i*j]+3] += S[3*k] * Displacement[LocationMatrix_[k]-1];
-					A[9*(i*i+3*j*j-2*i*j)+73*Node[i*i+3*j*j-2*i*j]+4] += S[3*k+1] * Displacement[LocationMatrix_[k]-1];
-					A[9*(i*i+3*j*j-2*i*j)+73*Node[i*i+3*j*j-2*i*j]+6] += S[3*k+2] * Displacement[LocationMatrix_[k]-1];
+					A[9 * (i*i + 3 * j*j - 2 * i*j) + 73 * Node[i*i + 3 * j*j - 2 * i*j] + 3] += S[3 * k] * Displacement[LocationMatrix_[k] - 1];
+					A[9 * (i*i + 3 * j*j - 2 * i*j) + 73 * Node[i*i + 3 * j*j - 2 * i*j] + 4] += S[3 * k + 1] * Displacement[LocationMatrix_[k] - 1];
+					A[9 * (i*i + 3 * j*j - 2 * i*j) + 73 * Node[i*i + 3 * j*j - 2 * i*j] + 6] += S[3 * k + 2] * Displacement[LocationMatrix_[k] - 1];
 				}
 			}
 		}

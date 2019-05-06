@@ -115,7 +115,6 @@ bool CDomain::ReadData(string FileName, string OutFile)
 //	Read nodal point data
 bool CDomain::ReadNodalPoints()
 {
-
 //	Read nodal point data lines
 	NodeList = new CNode[NUMNP];
 
@@ -259,6 +258,7 @@ void CDomain::Gravity()
 		CElementGroup& ElementGrp = EleGrpList[EleGrp];
 		ElementTypes ElementType_;
 		ElementType_ = ElementGrp.GetElementType();
+		double* ptr_force = nullptr;
 		switch (ElementType_ )
 		{
 		 case Bar://Bar element
@@ -268,7 +268,7 @@ void CDomain::Gravity()
 				for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
 				{
 					CElement& Element = ElementGrp[Ele];
-					Element.GravityCalculation();
+					Element.GravityCalculation(ptr_force);
 					CNode** node_ = Element.CElement::GetNodes();
 					unsigned int node_left = node_[0]->NodeNumber;
 					unsigned int node_right = node_[1]->NodeNumber;
@@ -284,11 +284,11 @@ void CDomain::Gravity()
 		 case Q4://4Q element
 		 {
 			 unsigned int NUME = ElementGrp.GetNUME();
-
+			 double* ptr_force = nullptr;
 			 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
 			 {
 				 CElement& Element = ElementGrp[Ele];
-				 Element.GravityCalculation();
+				 Element.GravityCalculation(ptr_force);
 				 CNode** node_ = Element.CElement::GetNodes();
 				 unsigned int node_one = node_[0]->NodeNumber;
 				 unsigned int node_two = node_[1]->NodeNumber;
@@ -308,7 +308,28 @@ void CDomain::Gravity()
 					 Force[dof_four - 1] += -Element.GetGravity() / 4;
 			 }
 		 }
-		 break;
+		 case Beam:
+			 unsigned int NUME = ElementGrp.GetNUME();
+			 double* ptr_force = new double[6];
+			 clear(ptr_force, 6);
+			 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+			 {
+				 CElement& Element = ElementGrp[Ele];
+				 Element.GravityCalculation(ptr_force);
+				 CNode** node_ = Element.CElement::GetNodes();
+				 double gravity = Element.GetGravity();
+				 for (int i = 0; i < 2; i++)
+				 {
+					 for  (int j = 2; j < 5; j++)
+					 {
+						 if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
+						 {
+							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
+						 }
+					 }
+				 }
+			 }
+			 break;
 		}
 		
 	}

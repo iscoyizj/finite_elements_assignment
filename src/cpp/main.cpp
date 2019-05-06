@@ -28,10 +28,12 @@ int main(int argc, char *argv[])
     size_t found = filename.find_last_of('.');
 
     // If the input file name is provided with an extension
-    if (found != std::string::npos) {
+    if (found != std::string::npos) 
+	{
         if (filename.substr(found) == ".dat")
             filename = filename.substr(0, found);
-        else {
+        else 
+		{
             // The input file name must has an extension of 'dat'
             cout << "*** Error *** Invalid file extension: "
                  << filename.substr(found+1) << endl;
@@ -41,6 +43,7 @@ int main(int argc, char *argv[])
 
     string InFile = filename + ".dat";
 	string OutFile = filename + ".out";
+	string PostFile = filename + "_post.out";
 
 	CDomain* FEMData = CDomain::Instance();
 
@@ -102,7 +105,7 @@ int main(int argc, char *argv[])
 //  Calculate and output stresses of all elements
 	Output->OutputElementStress();
 	
-	COutputterplot1* Outputplot1 = COutputterplot1::Instanceplot1();
+	COutputterplot1* Outputplot1 = COutputterplot1::Instanceplot1(PostFile);
 	Outputplot1->OutputElementStress();
 
     double time_stress = timer.ElapsedTime();
