@@ -59,6 +59,12 @@ public:
 
 //!	Output 4Q element data
 	void Print4QElementData(unsigned int EleGrp);
+	
+//!	Output 3T element data
+	void PrintT3ElementData(unsigned int EleGrp);
+	
+//!	Output 8H element data
+	void PrintH8ElementData(unsigned int EleGrp);
 
 //!	Output Plate element data
 	void PrintPlateElementData(unsigned int EleGrp);

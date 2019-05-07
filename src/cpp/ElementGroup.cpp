@@ -71,6 +71,14 @@ void CElementGroup::CalculateMemberSize()
 			ElementSize_ = sizeof(C4Q);
 			MaterialSize_ = sizeof(C4QMaterial);
 			break;
+		case ElementTypes::T3:
+			ElementSize_ = sizeof(CT3);
+			MaterialSize_ = sizeof(C4QMaterial);
+			break;
+		case ElementTypes::H8:
+			ElementSize_ = sizeof(CH8);
+			MaterialSize_ = sizeof(CH8Material);
+			break;
 		case ElementTypes::Beam:
 			ElementSize_ = sizeof(CBeam);
 			MaterialSize_ = sizeof(CBeamMaterial);
@@ -100,6 +108,12 @@ void CElementGroup::AllocateElements(std::size_t size)
 		case ElementTypes::Q4:
 			ElementList_ = new C4Q[size];
 			break;
+		case ElementTypes::T3:
+			ElementList_ = new CT3[size];
+			break;
+		case ElementTypes::H8:
+			ElementList_ = new CH8[size];
+			break;
 		case ElementTypes::Beam:
 			ElementList_ = new CBeam[size];
 			break;
@@ -123,6 +137,12 @@ void CElementGroup::AllocateMaterials(std::size_t size)
             break;
 		case ElementTypes::Q4:
 			MaterialList_ = new C4QMaterial[size];
+			break;
+		case ElementTypes::T3:
+			MaterialList_ = new C4QMaterial[size];
+			break;
+		case ElementTypes::H8:
+			MaterialList_ = new CH8Material[size];
 			break;
 		case ElementTypes::Plate:
 			MaterialList_ = new CPlateMaterial[size];

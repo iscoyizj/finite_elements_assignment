@@ -102,4 +102,6 @@ public:
 
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix() = 0;     
+
+	inline unsigned int GetNEN() { return NEN_; }
 };

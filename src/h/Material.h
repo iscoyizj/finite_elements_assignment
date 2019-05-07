@@ -76,6 +76,23 @@ public:
 };
 
 
+class CH8Material : public CMaterial
+{
+public:
+
+	double Nu, G, Lam, Rou;
+
+
+public:
+	
+//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+
 class CBeamMaterial : public CMaterial
 {
 public:

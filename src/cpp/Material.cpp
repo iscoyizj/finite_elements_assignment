@@ -68,6 +68,32 @@ void C4QMaterial::Write(COutputter& output, unsigned int mset)
 }
 
 
+bool CH8Material::Read(ifstream& Input, unsigned int mset)
+{
+	Input >> nset;	// Number of property set
+
+	if (nset != mset + 1)
+	{
+		cerr << "*** Error *** Material sets must be inputted in order !" << endl 
+			 << "    Expected set : " << mset + 1 << endl
+			 << "    Provided set : " << nset << endl;
+
+		return false;
+	}
+
+	Input >> E >> Nu >> Rou;	// Young's modulus and section area
+	G = E / 2 / (1 + Nu);
+	Lam = Nu * E / (1+Nu) / (1-2*Nu);
+
+	return true;
+}
+
+void CH8Material::Write(COutputter& output, unsigned int mset)
+{
+	output << setw(5) << mset+1 << setw(16) << E << setw(16) << Nu << setw(16) << G << setw(16) << Lam << setw(16) << Rou << endl;
+}
+
+
 bool CBeamMaterial::Read(ifstream& Input, unsigned int mset)
 {
 	Input >> nset;	// Number of property set
