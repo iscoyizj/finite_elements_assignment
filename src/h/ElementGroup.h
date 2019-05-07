@@ -14,7 +14,11 @@
 
 #include "Element.h"
 #include "Bar.h"
-#include "Q4.h"
+#include "4Q.h"
+#include "T3.h"
+#include "H8.h"
+#include "Plate.h"
+#include "Beam.h"
 #include "Material.h"
 #include "Node.h"
 

@@ -252,15 +252,8 @@ void CSkylineMatrix<T_>::Assembly(double* Matrix, unsigned int* LocationMatrix, 
             (*this)(Li,Lj) += Matrix[DiagjElement + j - i - 1];
         }
     }
-	
-/*
-	printf("WEM\n");
-	for (int ii=0;ii<10;ii++)
-			printf("%lf\n",data_[ii]/1E7);
     
     return;
-*/
-
 }
 
 //    Calculate address of diagonal elements in banded matrix

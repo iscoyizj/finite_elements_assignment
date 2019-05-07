@@ -12,6 +12,7 @@
 #include "Bar.h"
 #include "Outputter.h"
 #include "Clock.h"
+#include "Outputterplot1.h"
 
 using namespace std;
 
@@ -27,10 +28,12 @@ int main(int argc, char *argv[])
     size_t found = filename.find_last_of('.');
 
     // If the input file name is provided with an extension
-    if (found != std::string::npos) {
+    if (found != std::string::npos) 
+	{
         if (filename.substr(found) == ".dat")
             filename = filename.substr(0, found);
-        else {
+        else 
+		{
             // The input file name must has an extension of 'dat'
             cout << "*** Error *** Invalid file extension: "
                  << filename.substr(found+1) << endl;
@@ -40,6 +43,7 @@ int main(int argc, char *argv[])
 
     string InFile = filename + ".dat";
 	string OutFile = filename + ".out";
+	string PostFile = filename + "_post.out";
 
 	CDomain* FEMData = CDomain::Instance();
 
@@ -63,8 +67,9 @@ int main(int argc, char *argv[])
 //  Assemble the banded gloabl stiffness matrix
 	FEMData->AssembleStiffnessMatrix();
 
-	FEMData->AssembleGravity ();
-
+// Gravity
+	FEMData->Gravity();
+    
     double time_assemble = timer.ElapsedTime();
 
 //  Solve the linear equilibrium equations for displacements
@@ -99,7 +104,10 @@ int main(int argc, char *argv[])
 
 //  Calculate and output stresses of all elements
 	Output->OutputElementStress();
-    
+	
+	COutputterplot1* Outputplot1 = COutputterplot1::Instanceplot1(PostFile);
+	Outputplot1->OutputElementStress();
+
     double time_stress = timer.ElapsedTime();
     
     timer.Stop();
@@ -110,5 +118,6 @@ int main(int argc, char *argv[])
             << "     TIME FOR FACTORIZATION AND LOAD CASE SOLUTIONS = " << time_solution - time_assemble << endl << endl
             << "     T O T A L   S O L U T I O N   T I M E = " << time_stress << endl;
 
+	
 	return 0;
 }

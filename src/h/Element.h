@@ -29,6 +29,9 @@ protected:
 //!	Nodes of the element
 	CNode** nodes_;
 
+//! Gravity of element
+	double weight;
+
 //!	Material of the element
 	CMaterial* ElementMaterial_;	//!< Pointer to an element of MaterialSetList[][]
     
@@ -65,14 +68,28 @@ public:
 //	Caution:  Equation number is numbered from 1 !
     virtual void GenerateLocationMatrix() = 0;
 
+// Caculate Gravity of Elements
+	virtual void GravityCalculation(double* ptr_force) = 0;
+
 //!	Calculate element stiffness matrix (Upper triangular matrix, stored as an array column by colum)
 	virtual void ElementStiffness(double* stiffness) = 0; 
+
+//!	Calculate element Mass 
+	virtual void ElementMass(double* Mass) = 0;
 
 //!	Calculate element stress 
 	virtual void ElementStress(double* stress, double* Displacement) = 0;
 
+
+//!	Calculate the values required in the POSTPROCESS 
+	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions) {};
+
+
 //!	Return nodes of the element
 	inline CNode** GetNodes() { return nodes_; }
+
+//! Return Gravity of the element
+	inline double GetGravity() { return weight; }
 
 //!	Return material of the element
 	inline CMaterial* GetElementMaterial() { return ElementMaterial_; }
@@ -83,12 +100,8 @@ public:
     //! Return the dimension of the location matrix
     inline unsigned int GetND() { return ND_; }
 
-	inline unsigned int GetNEN() { return NEN_; }
-
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix() = 0;     
 
-	virtual double ElementGravity () =0;
-	
-	virtual void ElementCoord (double* coord) = 0;
+	inline unsigned int GetNEN() { return NEN_; }
 };

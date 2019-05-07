@@ -93,6 +93,10 @@ bool CDomain::ReadData(string FileName, string OutFile)
     else
         return false;
 
+//	Update equation number
+	CalculateEquationNumber();
+	Output->OutputEquationNumber();
+
 //	Read load data
 	if (ReadLoadCases())
         Output->OutputLoadInfo();
@@ -104,11 +108,6 @@ bool CDomain::ReadData(string FileName, string OutFile)
         Output->OutputElementInfo();
     else
         return false;
-	
-//	Update equation number
-	CalculateEquationNumber();
-	Output->OutputEquationNumber();
-
 
 	return true;
 }
@@ -116,7 +115,6 @@ bool CDomain::ReadData(string FileName, string OutFile)
 //	Read nodal point data
 bool CDomain::ReadNodalPoints()
 {
-
 //	Read nodal point data lines
 	NodeList = new CNode[NUMNP];
 
@@ -221,7 +219,6 @@ void CDomain::AssembleStiffnessMatrix()
             Element.ElementStiffness(Matrix);
             StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
         }
-		
 
 		delete[] Matrix;
 		Matrix = nullptr;
@@ -250,8 +247,118 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
         if(dof) // The DOF is activated
             Force[dof - 1] += LoadData->load[lnum];
 	}
-
 	return true;
+}
+
+void CDomain::Gravity()
+{
+
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)		//	Loop over for all element groups
+	{
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		ElementTypes ElementType_;
+		ElementType_ = ElementGrp.GetElementType();
+		double* ptr_force = nullptr;
+		switch (ElementType_ )
+		{
+		 case Bar: //Bar element
+		     {
+			    unsigned int NUME = ElementGrp.GetNUME();
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+				{
+					CElement& Element = ElementGrp[Ele];
+					Element.GravityCalculation(ptr_force);
+					CNode** node_ = Element.CElement::GetNodes();
+					unsigned int node_left = node_[0]->NodeNumber;
+					unsigned int node_right = node_[1]->NodeNumber;
+					unsigned int dof_left = NodeList[node_left - 1].bcode[1];
+					unsigned int dof_right = NodeList[node_right - 1].bcode[1];
+					if (dof_left)
+						Force[dof_left - 1] += -Element.GetGravity() / 2;
+					if (dof_right)
+						Force[dof_right - 1] += -Element.GetGravity() / 2;
+				}
+		     }
+			 break;
+		 case Q4: //4Q element
+		 {
+			 unsigned int NUME = ElementGrp.GetNUME();
+			 double* ptr_force = nullptr;
+			 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+			 {
+				 CElement& Element = ElementGrp[Ele];
+				 Element.GravityCalculation(ptr_force);
+				 CNode** node_ = Element.CElement::GetNodes();
+				 unsigned int node_one = node_[0]->NodeNumber;
+				 unsigned int node_two = node_[1]->NodeNumber;
+				 unsigned int node_three = node_[2]->NodeNumber;
+				 unsigned int node_four = node_[3]->NodeNumber;
+				 unsigned int dof_one = NodeList[node_one - 1].bcode[2];
+				 unsigned int dof_two = NodeList[node_two - 1].bcode[2];
+				 unsigned int dof_three = NodeList[node_three - 1].bcode[2];
+				 unsigned int dof_four = NodeList[node_four - 1].bcode[2];
+				 if (dof_one)
+					 Force[dof_one - 1] += -Element.GetGravity() / 4;
+				 if (dof_two)
+					 Force[dof_two - 1] += -Element.GetGravity() / 4;
+				 if (dof_three)
+					 Force[dof_three - 1] += -Element.GetGravity() / 4;
+				 if (dof_four)
+					 Force[dof_four - 1] += -Element.GetGravity() / 4;
+			 }
+		 }
+		 case Beam:
+			 {
+				 unsigned int NUME = ElementGrp.GetNUME();
+				 double* ptr_force = new double[6];
+				 clear(ptr_force, 6);
+				 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+				 {
+					 CElement& Element = ElementGrp[Ele];
+					 Element.GravityCalculation(ptr_force);
+					 CNode** node_ = Element.CElement::GetNodes();
+					 double gravity = Element.GetGravity();
+					 for (int i = 0; i < 2; i++)
+					 {
+						 for  (int j = 2; j < 5; j++)
+						 {
+							 if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
+							 {
+								 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
+							 }
+						 }
+					 }
+				 }
+			 }
+			 break;
+		case T3:
+			;
+			break;
+		case H8:
+			{
+				unsigned int NUME = ElementGrp.GetNUME();
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = ElementGrp[Ele];
+					unsigned int nen=Element.GetNEN();
+					double* EG = new double[nen];
+					Element.GravityCalculation(EG);
+					for (unsigned int nn = 0; nn < nen; nn++) 
+					{
+						unsigned int dof = Element.GetNodes()[nn] -> bcode[2];
+						if (dof)
+						{
+							Force[dof - 1] -= EG[nn]; 
+						}
+					}
+					delete [] EG;
+				}
+			}
+			break;
+		}
+		
+	}
 }
 
 //	Allocate storage for matrices Force, ColumnHeights, DiagonalAddress and StiffnessMatrix
@@ -277,26 +384,3 @@ void CDomain::AllocateMatrices()
 	COutputter* Output = COutputter::Instance();
 	Output->OutputTotalSystemData();
 }
-
-void CDomain::AssembleGravity ()
-{
-	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
-	{
-        CElementGroup& ElementGrp = EleGrpList[EleGrp];
-        unsigned int NUME = ElementGrp.GetNUME();
-		for (unsigned int Ele = 0; Ele < NUME; Ele++)
-        {
-            CElement& Element = ElementGrp[Ele];
-			unsigned int nen=Element.GetNEN();
-			double hfgr=Element.ElementGravity()/2;
-			for (unsigned int nn = 0; nn < nen; nn++) 
-			{
-				unsigned int dof = Element.GetNodes()[nn] -> bcode[CNode::NDF-1];
-				if (dof)
-					Force[dof - 1] -= hfgr; 
-			}
-		}
-	}
-}
-
-

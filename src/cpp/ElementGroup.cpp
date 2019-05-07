@@ -62,18 +62,38 @@ void CElementGroup::CalculateMemberSize()
         case ElementTypes::UNDEFINED:
             std::cerr << "Setting element type to UNDEFINED." << std::endl;
             exit(5);
+			break;
         case ElementTypes::Bar:
             ElementSize_ = sizeof(CBar);
             MaterialSize_ = sizeof(CBarMaterial);
             break;
 		case ElementTypes::Q4:
-            ElementSize_ = sizeof(CQ4);
-            MaterialSize_ = sizeof(CQ4Material);
-            break;
+			ElementSize_ = sizeof(C4Q);
+			MaterialSize_ = sizeof(C4QMaterial);
+			break;
+		case ElementTypes::T3:
+			ElementSize_ = sizeof(CT3);
+			MaterialSize_ = sizeof(C4QMaterial);
+			break;
+		case ElementTypes::H8:
+			ElementSize_ = sizeof(CH8);
+			MaterialSize_ = sizeof(CH8Material);
+			break;
+		case ElementTypes::Beam:
+			ElementSize_ = sizeof(CBeam);
+			MaterialSize_ = sizeof(CBeamMaterial);
+			break;
+		case ElementTypes::Plate:
+			ElementSize_ = sizeof(CPlate);
+			MaterialSize_ = sizeof(CPlateMaterial);
+			break;
+		
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::CalculateMemberSize." << std::endl;
             exit(5);
             break;
+			
+
     }
 }
 
@@ -86,11 +106,24 @@ void CElementGroup::AllocateElements(std::size_t size)
             ElementList_ = new CBar[size];
             break;
 		case ElementTypes::Q4:
-            ElementList_ = new CQ4[size];
-            break;
+			ElementList_ = new C4Q[size];
+			break;
+		case ElementTypes::T3:
+			ElementList_ = new CT3[size];
+			break;
+		case ElementTypes::H8:
+			ElementList_ = new CH8[size];
+			break;
+		case ElementTypes::Beam:
+			ElementList_ = new CBeam[size];
+			break;
+		case ElementTypes::Plate:
+			ElementList_ = new CPlate[size];
+			break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateElement." << std::endl;
             exit(5);
+			break;
     }
 }
 
@@ -103,11 +136,24 @@ void CElementGroup::AllocateMaterials(std::size_t size)
             MaterialList_ = new CBarMaterial[size];
             break;
 		case ElementTypes::Q4:
-            MaterialList_ = new CQ4Material[size];
-            break;
+			MaterialList_ = new C4QMaterial[size];
+			break;
+		case ElementTypes::T3:
+			MaterialList_ = new C4QMaterial[size];
+			break;
+		case ElementTypes::H8:
+			MaterialList_ = new CH8Material[size];
+			break;
+		case ElementTypes::Plate:
+			MaterialList_ = new CPlateMaterial[size];
+			break;
+		case ElementTypes::Beam:
+			MaterialList_ = new CBeamMaterial[size];
+			break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateMaterial." << std::endl;
             exit(5);
+			break;
     }
 }
 

@@ -112,6 +112,8 @@ public:
 //!	Assemble the banded gloabl stiffness matrix
 	void AssembleStiffnessMatrix();
 
+	void Gravity();
+
 //!	Assemble the global nodal force vector for load case LoadCase
 	bool AssembleForce(unsigned int LoadCase); 
 
@@ -153,7 +155,5 @@ public:
 
 //!	Return pointer to the banded stiffness matrix
 	inline CSkylineMatrix<double>* GetStiffnessMatrix() { return StiffnessMatrix; }
-
-	void AssembleGravity ();
 
 };

@@ -57,6 +57,19 @@ public:
 //!	Output bar element data
 	void PrintBarElementData(unsigned int EleGrp);
 
+//!	Output 4Q element data
+	void Print4QElementData(unsigned int EleGrp);
+	
+//!	Output 3T element data
+	void PrintT3ElementData(unsigned int EleGrp);
+	
+//!	Output 8H element data
+	void PrintH8ElementData(unsigned int EleGrp);
+
+//!	Output Plate element data
+	void PrintPlateElementData(unsigned int EleGrp);
+//£¡ Output Beam element data
+	void PrintBeamElementData(unsigned int EleGrp);
 //!	Output load data 
 	void OutputLoadInfo(); 
 
@@ -68,8 +81,6 @@ public:
 
 //!	Print total system data
 	void OutputTotalSystemData();
-	
-	void PrintQ4ElementData(unsigned int EleGrp);
 
 //! Overload the operator <<
 	template <typename T>

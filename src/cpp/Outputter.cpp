@@ -16,6 +16,8 @@
 #include <iomanip>
 #include <ctime>
 
+
+
 using namespace std;
 
 //	Output current time and date
@@ -162,9 +164,20 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Bar: // Bar element
 				PrintBarElementData(EleGrp);
 				break;
-			
 			case ElementTypes::Q4: // 4Q element
-				PrintQ4ElementData(EleGrp);
+				Print4QElementData(EleGrp);
+				break;
+			case ElementTypes::T3: // 4Q element
+				PrintT3ElementData(EleGrp);
+				break;
+			case ElementTypes::H8: // 4Q element
+				PrintH8ElementData(EleGrp);
+				break;
+			case ElementTypes::Plate: // Plate element
+				PrintPlateElementData(EleGrp);
+				break;
+			case ElementTypes::Beam:
+				PrintBeamElementData(EleGrp);
 				break;
 		}
 	}
@@ -209,8 +222,47 @@ void COutputter::PrintBarElementData(unsigned int EleGrp)
 	*this << endl;
 }
 
-//	Output 4Q element data
-void COutputter::PrintQ4ElementData(unsigned int EleGrp)
+//Output 4Q element data
+void COutputter::Print4QElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		<< endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND ELASTIC CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		<< endl
+		<< endl;
+
+	*this << "  SET       YOUNG'S    ELASTIC CONSTANTS" << endl
+		<< " NUMBER     MODULUS        POISSON" << endl
+		<< "               E              v" << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		<< endl
+		<< " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE      NODE    MATERIAL" << endl
+		<< " NUMBER-N      I        J        K        L     SET NUMBER" << endl;
+
+	unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+	*this << endl;
+}
+
+//	Output 3T element data
+void COutputter::PrintT3ElementData(unsigned int EleGrp)
 {
 	CDomain* FEMData = CDomain::Instance();
 
@@ -225,8 +277,8 @@ void COutputter::PrintQ4ElementData(unsigned int EleGrp)
 		  << endl;
 
 	*this << "  SET       YOUNG'S        POISSON " << endl
-		  << " NUMBER     MODULUS         RATIO" << endl
-		  << "               E              Nu " << endl;
+		  << " NUMBER     MODULUS         RATIO            Density         Thickness" << endl
+		  << "               E              Nu               Rou               t " << endl;
 
 	*this << setiosflags(ios::scientific) << setprecision(5);
 
@@ -237,8 +289,8 @@ void COutputter::PrintQ4ElementData(unsigned int EleGrp)
 	*this << endl
 		  << endl
 		  << " E L E M E N T   I N F O R M A T I O N" << endl;
-	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
-		  << " NUMBER-N      I       II      III       IV       SET NUMBER" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE       MATERIAL" << endl
+		  << " NUMBER-N      I       II      III       SET NUMBER" << endl;
 
 	unsigned int NUME = ElementGroup.GetNUME();
 
@@ -248,6 +300,126 @@ void COutputter::PrintQ4ElementData(unsigned int EleGrp)
 
 	*this << endl;
 }
+
+//	Output 8H element data
+void COutputter::PrintH8ElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		  << endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		  << endl
+		  << endl;
+
+	*this << "  SET       YOUNG'S        POISSON       RIGIDITY        LAME'S" << endl
+		  << " NUMBER     MODULUS         RATIO         MODULUS      COEFFICIENT      Density" << endl
+		  << "               E              Nu            G             Lam             Rou" << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		  << endl
+		  << " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		  << " NUMBER-N      I       II      III       IV        V       VI       VII      VIII     SET NUMBER" << endl;
+
+	unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
+
+void COutputter::PrintBeamElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl << endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		<< endl
+		<< endl;
+
+	*this << "  SET       YOUNG'S   ELASTIC CONSTANTS      PLANE" << endl
+		<< " NUMBER     MODULUS         POISSON          THICKNESS" << endl
+		<< "               E            poisson               thick   " << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		<< endl
+		<< " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		<< " NUMBER-N      I        J        K        L       SET NUMBER" << endl;
+
+	
+
+	const unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
+
+
+void COutputter::PrintPlateElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		<< endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		<< endl
+		<< endl;
+
+	*this << "  SET       YOUNG'S   ELASTIC CONSTANTS      PLANE" << endl
+		<< " NUMBER     MODULUS         POISSON          THICKNESS" << endl
+		<< "               E            poisson            thick   " << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		<< endl
+		<< " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		<< " NUMBER-N      I        J        K        L       SET NUMBER" << endl;
+
+	unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
+
 
 //	Print load data
 void COutputter::OutputLoadInfo()
@@ -337,30 +509,122 @@ void COutputter::OutputElementStress()
 				*this << endl;
 
 				break;
-				
-			case ElementTypes::Q4:
-				*this << "  ELEMENT         X_coord         Y_coord         STRESS_XX         STRESS_YY         STRESS_XY" << endl
-					<< "  NUMBER" << endl;
 
-				double Q4Stress[12];
-				double coord[8];
+			case ElementTypes::Q4: // 4Q element
+				*this << "  ELEMENT  GAUSS    X-COORD        Y-COORD        Z-COORD         SXX            SYY            TXY" << endl
+					<< "  NUMBER   POINT" << endl;
+
 
 				for (unsigned int Ele = 0; Ele < NUME; Ele++)
 				{
-					CQ4& Element = dynamic_cast<CQ4&>(EleGrp[Ele]);
-					Element.ElementStress(Q4Stress, Displacement);
-					Element.ElementCoord(coord);
-					for (unsigned int cd = 0; cd < 4; cd++)
+					CElement& Element = EleGrp[Ele];
+					C4QMaterial* material = dynamic_cast<C4QMaterial *>(Element.GetElementMaterial());
+					double *stress_4Q = new double[24];
+					for (unsigned int m = 0; m < 24; m++)
+						stress_4Q[m] = 0;
+
+					Element.ElementStress(stress_4Q, Displacement);
+
+					*this << setw(5) << Ele + 1 << setw(9) << "1"
+						<< setw(15) << stress_4Q[0] << setw(15) << stress_4Q[1] << setw(15) << stress_4Q[2]
+						<< setw(15) << stress_4Q[3] << setw(15) << stress_4Q[4] << setw(15) << stress_4Q[5] << endl;
+					*this << setw(5) << Ele + 1 << setw(9) << "2"
+						<< setw(15) << stress_4Q[6] << setw(15) << stress_4Q[7] << setw(15) << stress_4Q[8]
+						<< setw(15) << stress_4Q[9] << setw(15) << stress_4Q[10] << setw(15) << stress_4Q[11] << endl;
+					*this << setw(5) << Ele + 1 << setw(9) << "3"
+						<< setw(15) << stress_4Q[12] << setw(15) << stress_4Q[13] << setw(15) << stress_4Q[14]
+						<< setw(15) << stress_4Q[15] << setw(15) << stress_4Q[16] << setw(15) << stress_4Q[17] << endl;
+					*this << setw(5) << Ele + 1 << setw(9) << "4"
+						<< setw(15) << stress_4Q[18] << setw(15) << stress_4Q[19] << setw(15) << stress_4Q[20]
+						<< setw(15) << stress_4Q[21] << setw(15) << stress_4Q[22] << setw(15) << stress_4Q[23] << endl;
+					delete[] stress_4Q;
+				}
+				*this << endl;
+				break;
+			
+			case ElementTypes::T3:
+				*this << "  ELEMENT         STRESS_XX         STRESS_YY         STRESS_XY" << endl
+					<< "  NUMBER" << endl;
+
+				double T3Stress[3];
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CT3& Element = dynamic_cast<CT3&>(EleGrp[Ele]);
+					Element.ElementStress(T3Stress, Displacement);
+					*this << setw(5) << Ele + 1 << setw(18) << T3Stress[0] << setw(18) << T3Stress[1] << setw(18) << T3Stress[2] << endl;
+				}
+
+				*this << endl;
+
+				break;
+				
+			case ElementTypes::H8:
+				*this << "  ELEMENT         X_coord         Y_coord         Z_coord         STRESS_XX         STRESS_YY         STRESS_ZZ         STRESS_YZ         STRESS_ZX         STRESS_XY" << endl
+					<< "  NUMBER" << endl;
+
+				double H8Stress[48];
+				double H8coord[24];
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CH8& Element = dynamic_cast<CH8&>(EleGrp[Ele]);
+					Element.ElementStress(H8Stress, Displacement);
+					Element.ElementCoord(H8coord);
+					for (unsigned int cd = 0; cd < 8; cd++)
 					{
-						*this << setw(5) << Ele + 1 << setw(18) << coord[2*cd] << setw(18) << coord[2*cd+1] << setw(18) << Q4Stress[3*cd] << setw(18)
-							<< Q4Stress[3*cd+1] << setw(18) << Q4Stress[3*cd+2] << endl;
+						*this << setw(5) << Ele + 1 << setw(18) << H8coord[3*cd] << setw(18) << H8coord[3*cd+1] << setw(18) << H8coord[3*cd+2]  << setw(18) << H8Stress[6*cd] << setw(18) << H8Stress[6*cd+1] << setw(18) << H8Stress[6*cd+2] << setw(18) << H8Stress[6*cd+3] << setw(18) << H8Stress[6*cd+4] << setw(18) << H8Stress[6*cd+5] << endl;
 					}
 				}
 
 				*this << endl;
 
 				break;
+			
+			case ElementTypes::Plate: // Plate element
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = EleGrp[Ele];
+					CPlateMaterial* material =
+						dynamic_cast<CPlateMaterial *>(Element.GetElementMaterial());
 
+					double* stress_plate = new double[20];
+					Element.ElementStress(stress_plate, Displacement);
+
+					*this << " ELEMENT NUMBER :" << setw(5) << Ele + 1 << endl;
+					*this << " GAUSS POINT   DEGREES    OF    FREEDOM     BENDING MOMENT   BENDING MOMENT    BENDING MOMENT" << endl
+						<< "   NUMBER         X                Y                X                Y                 XY " << endl;
+					*this << setw(5) << 1 << setw(18) << stress_plate[12] << setw(18) << stress_plate[13] << setw(18) << stress_plate[0]
+						<< setw(18) << stress_plate[1] << setw(18) << stress_plate[2] << endl;
+					*this << setw(5) << 2 << setw(18) << stress_plate[14] << setw(18) << stress_plate[15] << setw(18) << stress_plate[3]
+						<< setw(18) << stress_plate[4] << setw(18) << stress_plate[5] << endl;
+					*this << setw(5) << 3 << setw(18) << stress_plate[16] << setw(18) << stress_plate[17] << setw(18) << stress_plate[6]
+						<< setw(18) << stress_plate[7] << setw(18) << stress_plate[8] << endl;
+					*this << setw(5) << 4 << setw(18) << stress_plate[18] << setw(18) << stress_plate[19] << setw(18) << stress_plate[9]
+						<< setw(18) << stress_plate[10] << setw(18) << stress_plate[11] << endl;
+
+					delete[] stress_plate;
+				}
+				break;
+
+			case ElementTypes::Beam:
+				*this << "  ELEMENT          SXX                 SYY                   SZZ" << endl
+					<< "  NUMBER" << endl;
+
+				double beamstress[3];
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = EleGrp[Ele];
+					Element.ElementStress(beamstress, Displacement);
+
+					CBeamMaterial* material = dynamic_cast<CBeamMaterial*>(Element.GetElementMaterial());
+					*this << setw(5) << Ele + 1 << setw(22) << beamstress[0] << setw(22)
+						<< beamstress[1] << setw(22) << beamstress[2] << endl;
+				}
+
+				*this << endl;
+				break;
 			default: // Invalid element type
 				cerr << "*** Error *** Elment type " << ElementType
 					<< " has not been implemented.\n\n";
