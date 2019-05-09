@@ -13,7 +13,7 @@
 #include "Outputter.h"
 #include "Clock.h"
 #include "Outputterplot1.h"
-
+//#define _PARDISO_
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
 //  Solve the linear equilibrium equations for displacements
 	CLDLTSolver* Solver = new CLDLTSolver(FEMData->GetStiffnessMatrix());
-    
+	CSRSolver* SRSolver = new CSRSolver(FEMData->GetCSRStiffnessMatrix());
 //  Perform L*D*L(T) factorization of stiffness matrix
     Solver->LDLT();
 
@@ -82,19 +82,36 @@ int main(int argc, char *argv[])
 
 #ifdef _DEBUG_
     Output->PrintStiffnessMatrix();
+	cout << endl << endl;
+	double* F = FEMData->GetForce();
+	for (int i = 0; i < FEMData->GetNEQ(); i++)
+	{
+		cout << F[i]<<"      ";
+	}
+	cout << endl << endl;
 #endif
         
 //  Loop over for all load cases
     for (unsigned int lcase = 0; lcase < FEMData->GetNLCASE(); lcase++)
     {
 //      Assemble righ-hand-side vector (force vector)
-        FEMData->AssembleForce(lcase + 1);
-            
+        
+		FEMData->AssembleForce(lcase + 1);
+		
 //      Reduce right-hand-side force vector and back substitute
-        Solver->BackSubstitution(FEMData->GetForce());
-            
+        
+#ifdef  _PARDISO_
+		
+		SRSolver->solve(FEMData->GetForce(), 1);  
+#else
+		//      Reduce right-hand-side force vector and back substitute
+		Solver->BackSubstitution(FEMData->GetForce());
+#endif //  _PARDISO_
+
+        
 #ifdef _DEBUG_
         Output->PrintDisplacement(lcase);
+		
 #endif
             
         Output->OutputNodalDisplacement(lcase);

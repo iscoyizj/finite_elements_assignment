@@ -10,11 +10,13 @@
 
 #include "Domain.h"
 #include "Material.h"
-
+#include <mkl.h>
+#include "CSRMatrix.h"
 using namespace std;
 
 //	Clear an array
-template <class type> void clear( type* a, unsigned int N )
+template <class type> 
+void clear( type* a, unsigned int N )
 {
 	for (unsigned int i = 0; i < N; i++)
 		a[i] = 0;
@@ -93,9 +95,7 @@ bool CDomain::ReadData(string FileName, string OutFile)
     else
         return false;
 
-//	Update equation number
-	CalculateEquationNumber();
-	Output->OutputEquationNumber();
+
 
 //	Read load data
 	if (ReadLoadCases())
@@ -108,6 +108,10 @@ bool CDomain::ReadData(string FileName, string OutFile)
         Output->OutputElementInfo();
     else
         return false;
+
+//	Update equation number
+	CalculateEquationNumber();
+	Output->OutputEquationNumber();
 
 	return true;
 }
@@ -129,6 +133,30 @@ bool CDomain::ReadNodalPoints()
 //	Calculate global equation numbers corresponding to every degree of freedom of each node
 void CDomain::CalculateEquationNumber()
 {
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
+	{
+		ElementTypes eleType = EleGrpList[EleGrp].GetElementType();
+		const unsigned int NumE = EleGrpList[EleGrp].GetNUME();
+		for (unsigned int NumEle = 0; NumEle < NumE; NumEle++)
+		{
+			const unsigned int NEN = EleGrpList[EleGrp].GetElement(NumEle).GetNEN();
+			CNode** ElementNode = EleGrpList[EleGrp].GetElement(NumEle).GetNodes();
+			for (unsigned int NumNode = 0; NumNode < NEN; NumNode++)
+			{
+				if (!ElementNode[NumNode]->Rotation_Flag)
+				{
+					const unsigned int N = ElementNode[NumNode]->NodeNumber;
+					if (eleType==Beam)
+					{
+						NodeList[N - 1].bcode[3] = 0;
+						NodeList[N - 1].bcode[4] = 0;
+						NodeList[N - 1].bcode[5] = 0;
+					}
+					
+				}
+			}
+		}
+	}
 	NEQ = 0;
 	for (unsigned int np = 0; np < NUMNP; np++)	// Loop over for all node
 	{
@@ -218,6 +246,7 @@ void CDomain::AssembleStiffnessMatrix()
             CElement& Element = ElementGrp[Ele];
             Element.ElementStiffness(Matrix);
             StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+			CSRStiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
         }
 
 		delete[] Matrix;
@@ -248,6 +277,42 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
             Force[dof - 1] += LoadData->load[lnum];
 	}
 	return true;
+}
+
+void CDomain::CalculateCSRColumns()
+{
+	CSRMatrix<double>* matrix = CSRStiffnessMatrix;
+	matrix->beginPostionMark();
+
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
+	{
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		unsigned int NUME = ElementGrp.GetNUME();
+
+		for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		{
+			CElement& Element = ElementGrp[Ele];
+			unsigned LMSize = Element.GetND();
+			unsigned* LM = Element.GetLocationMatrix();
+			for (unsigned i = 0; i < LMSize; ++i)
+			{
+				unsigned index1 = LM[i];
+				if (!index1) continue;
+				for (unsigned j = i; j < LMSize; ++j)
+				{
+					unsigned index2 = LM[j];
+					if (!index2) continue;
+					if (index1 < index2) {
+						matrix->markPosition(index1, index2);
+					}
+					else
+					{
+						matrix->markPosition(index2, index1);
+					}
+				}
+			}
+		}
+	}
 }
 
 void CDomain::Gravity()
@@ -317,7 +382,7 @@ void CDomain::Gravity()
 				 CElement& Element = ElementGrp[Ele];
 				 Element.GravityCalculation(ptr_force);
 				 CNode** node_ = Element.CElement::GetNodes();
-				 double gravity = Element.GetGravity();
+				 cout << "Gravity" << endl << endl;
 				 for (int i = 0; i < 2; i++)
 				 {
 					 for  (int j = 2; j < 5; j++)
@@ -325,10 +390,15 @@ void CDomain::Gravity()
 						 if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
 						 {
 							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
+#ifdef _DEBUG_
+							 cout << ptr_force[i * 3 + j - 2] << "     ";
+#endif // _DEBUG_
+
 						 }
 					 }
 				 }
 			 }
+			 cout << endl << endl;
 			 break;
 		}
 		
@@ -345,16 +415,15 @@ void CDomain::AllocateMatrices()
 
 //  Create the banded stiffness matrix
     StiffnessMatrix = new CSkylineMatrix<double>(NEQ);
-
+	CSRStiffnessMatrix = new CSRMatrix<double>(NEQ);
 //	Calculate column heights
 	CalculateColumnHeights();
-
 //	Calculate address of diagonal elements in banded matrix
 	StiffnessMatrix->CalculateDiagnoalAddress();
-
 //	Allocate for banded global stiffness matrix
     StiffnessMatrix->Allocate();
-
+	CalculateCSRColumns();
+	CSRStiffnessMatrix->Allocate();
 	COutputter* Output = COutputter::Instance();
 	Output->OutputTotalSystemData();
 }

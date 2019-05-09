@@ -16,6 +16,7 @@
 
 CNode::CNode(double X, double Y, double Z)
 {
+	Rotation_Flag = 0;
     XYZ[0] = X;		// Coordinates of the node
     XYZ[1] = Y;
     XYZ[2] = Z;
@@ -38,11 +39,11 @@ CNode::CNode(double X, double Y, double Z)
 	stress_node[4] = 0.0;
 	stress_node[5] = 0.0;
 
-	Rotation_Flag = 0;
+	
 };
 
 // return total count of non-blank args in string
-int Count_for_theta(std::string getstr)
+int Count_for_rotation_arg(std::string getstr)
 {
 	int count = 0;
 	bool on_num = false;
@@ -84,7 +85,7 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 	string NodeInfo, ModiNodeInfo;
 	getline(Input, NodeInfo);
 
-	int input_count = Count_for_theta(NodeInfo);
+	int input_count = Count_for_rotation_arg(NodeInfo);
 
 	// Determine the input format:
 	//     if allow rotation for plate and beam , input_count is 9;
@@ -111,7 +112,7 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 	{
 		cerr << "*** Error *** NodeInfos must be inputted in the correct format! " << endl
 			<< "  Present Number of Nodeinfos: " << input_count << endl
-			<< "  Correct Number of Nodeinfos: 6 or 9 !" << endl;
+			<< "  Please input 6 or 9" << endl;
 		return false;
 	}
 

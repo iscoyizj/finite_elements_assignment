@@ -267,9 +267,9 @@ void COutputter::PrintBeamElementData(unsigned int EleGrp)
 		<< endl
 		<< endl;
 
-	*this << "  SET       YOUNG'S       POISSON'S                               CROSS-SECTIONAL CONSTANTS [ONLY VALID FOR SQUARE]" << endl
+	*this << "  SET       YOUNG'S       POISSON'S     DENSITY                                 CROSS-SECTIONAL CONSTANTS [ONLY VALID FOR SQUARE]" << endl
 		  << " NUMBER     MODULUS         RATIO                 " << endl
-		  << "               E             nu            width            height               t1               t2               t3              t4" << endl;
+		  << "               E             nu           rho         width            height               t1               t2               t3              t4" << endl;
 
 	*this << setiosflags(ios::scientific) << setprecision(5);
 

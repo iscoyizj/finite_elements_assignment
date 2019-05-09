@@ -9,15 +9,13 @@
 /*****************************************************************************/
 
 #include "Solver.h"
-
+#include<mkl.h>
 #include <cmath>
 #include <cfloat>
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
-
-CSolver::CSolver(CSkylineMatrix<double>* K) : K(K) {};
 
 // LDLT facterization
 void CLDLTSolver::LDLT()
@@ -87,3 +85,73 @@ void CLDLTSolver::BackSubstitution(double* Force)
 			Force[i-1] -= (*K)(i,j) * Force[j-1];	// a_i = Vbar_i - sum_j(L_ij Vbar_j)
 	}
 };
+
+void CSRSolver::solve(double* Force, unsigned NLCase)
+{
+	void* pt[64];
+	for (unsigned _ = 0; _ < 64; _++) pt[_] = 0;
+	int num_procs;
+	const int mtype = 2;
+	int iparm[64] = { 0 };
+	pardisoinit(pt, &mtype, iparm);
+	
+	iparm[1] = 2; // The parallel (OpenMP) version of the nested dissection algorithm.
+	// Try 3 later
+	iparm[5] = 1; // write back to Force
+	char    *var;
+	var = getenv("OMP_NUM_THREADS");
+	if (var != NULL)
+		sscanf(var, "%d", &num_procs);
+	else 
+	{
+		cout << "Set environment OMP_NUM_THREADS to 1";
+		num_procs = 1;
+	}
+	iparm[2] = num_procs;
+	
+	const int maxfct(1),mnum(1);
+	const int size = K->size;
+	double* values = K->values;
+	int* columns = K->columns;
+	int* rowIndexs = K->rowIndexs;
+
+	const int nrhs = NLCase;
+	double* rhs = Force;
+
+	// phase 13 is analysis and solve while 23 is solve without analysis
+	int phase = 13;
+	double* res = new double[nrhs*size];
+	for (std::size_t _ = 0; _ < nrhs*size; _++) res[_] = 0;
+
+	int msglvl = 0; // print info
+
+	int* perm = new int[size];
+	int error;
+
+	pardiso(
+		pt, // handle to some shit
+		&maxfct, // maxfct
+		&mnum, // mnum
+		&mtype, // sym pos matrix
+		&phase, // go through all
+		&size,  // size of matrix
+		values,
+		rowIndexs,
+		columns,
+		perm, // idk wtf this is
+		&nrhs,
+		iparm, // sort like settings
+		&msglvl, // print info or not
+		rhs,
+		res,
+		&error // see if any error
+	);
+	if (error)
+	{
+		std::cerr << "ERROR IN PARDISO SOLVER: " << error << std::endl;
+		exit(8);
+	}
+	delete[] perm;
+	delete[] res;
+}
+
