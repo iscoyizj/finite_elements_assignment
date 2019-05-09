@@ -99,8 +99,8 @@ void COutputter::OutputNodeInfo()
 		  << endl;
 
 	*this << " N O D A L   P O I N T   D A T A" << endl << endl;
-	*this << "    NODE       BOUNDARY                         NODAL POINT" << endl
-		  << "   NUMBER  CONDITION  CODES                     COORDINATES" << endl;
+	*this << "    NODE               BOUNDARY                                   NODAL POINT" << endl
+		  << "   NUMBER          CONDITION  CODES                               COORDINATES" << endl;
 
 	for (unsigned int np = 0; np < NUMNP; np++)
 		NodeList[np].Write(*this, np);
@@ -118,8 +118,8 @@ void COutputter::OutputEquationNumber()
 
 	*this << " EQUATION NUMBERS" << endl
 		  << endl;
-	*this << "   NODE NUMBER   DEGREES OF FREEDOM" << endl;
-	*this << "        N           X    Y    Z" << endl;
+	*this << "   NODE NUMBER                DEGREES OF FREEDOM" << endl;
+	*this << "        N           X    Y    Z  sitax  sitay  sitaz" << endl;
 
 	for (unsigned int np = 0; np < NUMNP; np++) // Loop over for all node
 		NodeList[np].WriteEquationNo(*this, np);
@@ -176,8 +176,11 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Plate: // Plate element
 				PrintPlateElementData(EleGrp);
 				break;
-			case ElementTypes::Beam:
+			case ElementTypes::Beam: //Beam element
 				PrintBeamElementData(EleGrp);
+				break;
+			case ElementTypes::Infinite: //Infinite element
+				PrintInfiniteElementData(EleGrp);
 				break;
 		}
 	}
@@ -420,6 +423,44 @@ void COutputter::PrintPlateElementData(unsigned int EleGrp)
 	*this << endl;
 }
 
+void COutputter::PrintInfiniteElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		<< endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		<< endl
+		<< endl;
+
+	*this << "  SET       YOUNG'S   ELASTIC CONSTANTS" << endl
+		<< " NUMBER     MODULUS         POISSON      " << endl
+		<< "               E            poisson      " << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		<< endl
+		<< " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		<< " NUMBER-N      I        J        K        L       SET NUMBER" << endl;
+
+	unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
 
 //	Print load data
 void COutputter::OutputLoadInfo()
@@ -461,7 +502,7 @@ void COutputter::OutputNodalDisplacement(unsigned int lcase)
 
 	*this << " D I S P L A C E M E N T S" << endl
 		  << endl;
-	*this << "  NODE           X-DISPLACEMENT    Y-DISPLACEMENT    Z-DISPLACEMENT" << endl;
+	*this << "  NODE           X-DISPLACEMENT    Y-DISPLACEMENT    Z-DISPLACEMENT     X-ROTATION     Y-ROTATION     Z-ROTATION" << endl;
 
 	for (unsigned int np = 0; np < FEMData->GetNUMNP(); np++)
 		NodeList[np].WriteNodalDisplacement(*this, np, Displacement);
@@ -625,6 +666,39 @@ void COutputter::OutputElementStress()
 
 				*this << endl;
 				break;
+			case ElementTypes::Infinite:
+				*this << "  ELEMENT  GAUSS    X-COORD        Y-COORD        Z-COORD         SXX            SYY            TXY" << endl
+					<< "  NUMBER   POINT" << endl;
+
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = EleGrp[Ele];
+					CInfiMaterial* material =
+						dynamic_cast<CInfiMaterial *>(Element.GetElementMaterial());
+					double *stress_Infi = new double[24];
+					for (unsigned int m = 0; m < 24; m++)
+						stress_Infi[m] = 0;
+
+					Element.ElementStress(stress_Infi, Displacement);
+
+					*this << setw(5) << Ele + 1 << setw(9) << "1"
+						<< setw(15) << stress_Infi[0] << setw(15) << stress_Infi[1] << setw(15) << stress_Infi[2]
+						<< setw(15) << stress_Infi[3] << setw(15) << stress_Infi[4] << setw(15) << stress_Infi[5] << endl;
+					*this << setw(5) << Ele + 1 << setw(9) << "2"
+						<< setw(15) << stress_Infi[6] << setw(15) << stress_Infi[7] << setw(15) << stress_Infi[8]
+						<< setw(15) << stress_Infi[9] << setw(15) << stress_Infi[10] << setw(15) << stress_Infi[11] << endl;
+					*this << setw(5) << Ele + 1 << setw(9) << "3"
+						<< setw(15) << stress_Infi[12] << setw(15) << stress_Infi[13] << setw(15) << stress_Infi[14]
+						<< setw(15) << stress_Infi[15] << setw(15) << stress_Infi[16] << setw(15) << stress_Infi[17] << endl;
+					*this << setw(5) << Ele + 1 << setw(9) << "4"
+						<< setw(15) << stress_Infi[18] << setw(15) << stress_Infi[19] << setw(15) << stress_Infi[20]
+						<< setw(15) << stress_Infi[21] << setw(15) << stress_Infi[22] << setw(15) << stress_Infi[23] << endl;
+					delete[] stress_Infi;
+				}
+				*this << endl;
+				break;
+
 			default: // Invalid element type
 				cerr << "*** Error *** Elment type " << ElementType
 					<< " has not been implemented.\n\n";

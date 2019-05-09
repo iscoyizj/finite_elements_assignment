@@ -87,6 +87,11 @@ void CElementGroup::CalculateMemberSize()
 			ElementSize_ = sizeof(CPlate);
 			MaterialSize_ = sizeof(CPlateMaterial);
 			break;
+		case ElementTypes::Infinite:
+			ElementSize_ = sizeof(CInfi);
+			MaterialSize_ = sizeof(CInfiMaterial);
+			break;
+
 		
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::CalculateMemberSize." << std::endl;
@@ -120,6 +125,9 @@ void CElementGroup::AllocateElements(std::size_t size)
 		case ElementTypes::Plate:
 			ElementList_ = new CPlate[size];
 			break;
+		case ElementTypes::Infinite:
+			ElementList_ = new CInfi[size];
+			break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateElement." << std::endl;
             exit(5);
@@ -149,6 +157,9 @@ void CElementGroup::AllocateMaterials(std::size_t size)
 			break;
 		case ElementTypes::Beam:
 			MaterialList_ = new CBeamMaterial[size];
+			break;
+		case ElementTypes::Infinite:
+			MaterialList_ = new CInfiMaterial[size];
 			break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateMaterial." << std::endl;

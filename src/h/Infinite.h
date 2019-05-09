@@ -14,16 +14,16 @@
 
 using namespace std;
 
-//! Bar element class
-class CQ4 : public CElement
+//! Infinite element class
+class CInfi : public CElement
 {
 public:
 
 //!	Constructor
-	CQ4();
+	CInfi();
 
 //!	Desconstructor
-	~CQ4();
+	~CInfi();
 
 //!	Read element data from stream Input
 	virtual bool Read(ifstream& Input, unsigned int Ele, CMaterial* MaterialSets, CNode* NodeList);
@@ -38,16 +38,21 @@ public:
 //!	Calculate element stiffness matrix
 	virtual void ElementStiffness(double* Matrix);
 
-//!	Calculate element stress
-	virtual void ElementStress(double* stress, double* Displacement);
+//!	Calculate element stiffness matrix 
+	virtual void ElementMass(double* Mass){Mass = 0;};
 
+//!	Calculate element stress
+	virtual void ElementStress( double* stress, double* Displacement);
+
+//!	Calculate the values required in the POSTPROCESS 
+	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions);
+
+//! Recover element stress
+	virtual void RecoverElementStress(double* Displacement, double* A);
+	
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix();
+// Caculate Gravity of Elements
+	virtual void GravityCalculation(double* ptr_force);
 
-	virtual double ElementGravity () {return 0;};
-	
-	void CalculateBe (double* Be, double eta, double psi);
-	
-	virtual void ElementCoord (double* coord);
-	
 };

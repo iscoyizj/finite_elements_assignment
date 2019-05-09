@@ -133,3 +133,19 @@ public:
 	virtual void Write(COutputter& output, unsigned int mset);
 };
 
+
+class CInfiMaterial : public CMaterial
+{
+public:
+
+	double poisson;	//!Poisson ratio of a 4Q element
+	double etype;//!element type of strain and stress
+
+public:
+
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};

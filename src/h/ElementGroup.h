@@ -19,6 +19,7 @@
 #include "H8.h"
 #include "Plate.h"
 #include "Beam.h"
+#include "Infinite.h"
 #include "Material.h"
 #include "Node.h"
 
@@ -34,7 +35,8 @@ enum ElementTypes
     H8,     // 8H element
     Beam,   // Beam element
     Plate,  // Plate element
-    Shell   // Shell elment
+    Shell,   // Shell elment
+	Infinite     //Infinite element
 };
 
 //! Element group class

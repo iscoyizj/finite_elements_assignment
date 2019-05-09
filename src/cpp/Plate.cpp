@@ -78,7 +78,7 @@ void CPlate::GenerateLocationMatrix()
 {
 	unsigned int i = 0;
 	for (unsigned int N = 0; N < NEN_; N++)
-		for (unsigned int D = 0; D < 3; D++)
+		for (unsigned int D = 2; D < 5; D++)
 			LocationMatrix_[i++] = nodes_[N]->bcode[D];
 
 }
@@ -392,7 +392,7 @@ void CPlate::GravityCalculation(double* ptr_force)
 	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
 	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
 	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
-	weight = a * b*material->density*material->thick*9.8;
+	weight = a * b*material->density*material->thick*9.8*4;
 }
 
 //	Recover element stress 
