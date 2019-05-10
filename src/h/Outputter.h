@@ -63,6 +63,9 @@ public:
 //£¡ Output Beam element data
 	void PrintBeamElementData(unsigned int EleGrp);
 
+//! Output Shell element dara
+	void PrintShellElementData(unsigned int EleGrp);
+
 //!	Output load data 
 	void OutputLoadInfo(); 
 

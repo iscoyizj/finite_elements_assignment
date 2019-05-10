@@ -16,6 +16,7 @@
 #include "Bar.h"
 #include "4Q.h"
 #include "Beam.h"
+#include "Shell.h"
 #include "Material.h"
 #include "Node.h"
 
