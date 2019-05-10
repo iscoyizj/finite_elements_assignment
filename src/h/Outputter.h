@@ -74,6 +74,9 @@ public:
 //! Output Infinite element data
 	void PrintInfiniteElementData(unsigned int EleGrp);
 
+//! Output Subparameter element data
+	void PrintSubparaElementData(unsigned int EleGrp);
+
 //!	Output load data 
 	void OutputLoadInfo(); 
 

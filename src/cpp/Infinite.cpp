@@ -477,14 +477,16 @@ void CInfi::ElementPostInfo(double* stress, double* Displacement, double* PrePos
 	CInfiMaterial* material_ = dynamic_cast<CInfiMaterial*>(ElementMaterial_);	// Pointer to material of the element
 	for(unsigned int j=0;j<NEN_;j++)
 	{
-		for (unsigned int i = 0; i < 3; i++)
+		for (unsigned int i = 0; i < 2; i++)
 	    {
 			PrePositions[i + 3 * j] = nodes_[j]->XYZ[i];
-		    if (LocationMatrix_[i+3*j])
-		          PostPositions[i+3*j]=nodes_[j]->XYZ[i]+Displacement[LocationMatrix_[i+3*j]-1];
+		    if (LocationMatrix_[i+2*j])
+		          PostPositions[i+3*j]=nodes_[j]->XYZ[i]+Displacement[LocationMatrix_[i+2*j]-1];
 		    else
 			      PostPositions[i+3*j]=nodes_[j]->XYZ[i];
 	    }
+		    PrePositions[2 + 3 * j] = nodes_[j]->XYZ[2];
+			PostPositions[2 + 3 * j] = nodes_[j]->XYZ[2];
 
 	    for (unsigned int i = 0; i < 6; i++)
 	    {

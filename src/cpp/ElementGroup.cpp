@@ -91,6 +91,9 @@ void CElementGroup::CalculateMemberSize()
 			ElementSize_ = sizeof(CInfi);
 			MaterialSize_ = sizeof(CInfiMaterial);
 			break;
+		case ElementTypes::Subpara:
+			ElementSize_ = sizeof(CSubpara);
+			MaterialSize_ = sizeof(CSubparaMaterial);
 
 		
         default:

@@ -182,6 +182,9 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Infinite: //Infinite element
 				PrintInfiniteElementData(EleGrp);
 				break;
+			case ElementTypes::Subpara: //Infinite element
+				PrintSubparaElementData(EleGrp);
+				break;
 		}
 	}
 }
@@ -462,6 +465,46 @@ void COutputter::PrintInfiniteElementData(unsigned int EleGrp)
 	*this << endl;
 }
 
+void COutputter::PrintSubparaElementData(unsigned int EleGrp)
+{
+	CDomain* FEMData = CDomain::Instance();
+
+	CElementGroup& ElementGroup = FEMData->GetEleGrpList()[EleGrp];
+	unsigned int NUMMAT = ElementGroup.GetNUMMAT();
+
+	*this << " M A T E R I A L   D E F I N I T I O N" << endl
+		<< endl;
+	*this << " NUMBER OF DIFFERENT SETS OF MATERIAL" << endl;
+	*this << " AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . =" << setw(5) << NUMMAT
+		<< endl
+		<< endl;
+
+	*this << "  SET       YOUNG'S        POSSION'S      " << endl
+		<< " NUMBER     MODULUS          RATIO   " << endl
+		<< "               E              nu     " << endl;
+
+	*this << setiosflags(ios::scientific) << setprecision(5);
+
+	//	Loop over for all property sets
+	for (unsigned int mset = 0; mset < NUMMAT; mset++)
+		ElementGroup.GetMaterial(mset).Write(*this, mset);
+
+	*this << endl
+		<< endl
+		<< " E L E M E N T   I N F O R M A T I O N" << endl;
+	*this << " ELEMENT     NODE     NODE     NODE     NODE      NODE     NODE     NODE     NODE     NODE       MATERIAL" << endl
+		<< " NUMBER-N      I        J        K        L        M        N        O        P        Q       SET NUMBER" << endl;
+
+	unsigned int NUME = ElementGroup.GetNUME();
+
+	//	Loop over for all elements in group EleGrp
+	for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		ElementGroup[Ele].Write(*this, Ele);
+
+	*this << endl;
+}
+
+
 //	Print load data
 void COutputter::OutputLoadInfo()
 {
@@ -698,6 +741,27 @@ void COutputter::OutputElementStress()
 				}
 				*this << endl;
 				break;
+
+			case ElementTypes::Subpara: // Subparameter element
+			{
+				*this << "  ELEMENT       X-COORD        Y-COORD         SXX            SYY            TXY" << endl
+					<< "NUMBER" << endl;
+				double* stress_Subpara = new double[45];
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = EleGrp[Ele];
+					Element.ElementStress(stress_Subpara, Displacement);
+					for (unsigned int ii = 0; ii < 9; ii++)
+					{
+						unsigned int temp1 = 27 + 2 * ii;  unsigned int temp2 = 3 * ii;
+						*this << setw(5) << Ele + 1 << setw(22) << stress_Subpara[temp1] << setw(18) << stress_Subpara[temp1 + 1] << setw(18) << stress_Subpara[temp2] << setw(18) << stress_Subpara[temp2 + 1] << setw(18) << stress_Subpara[temp2 + 2] << endl;
+					}
+
+				}
+				delete[] stress_Subpara;
+			}
+			*this << endl;
+			break;
 
 			default: // Invalid element type
 				cerr << "*** Error *** Elment type " << ElementType
