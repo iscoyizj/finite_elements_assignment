@@ -308,7 +308,9 @@ void CDomain::Gravity()
 					 Force[dof_four - 1] += -Element.GetGravity() / 4;
 			 }
 		 }
+		 	break;
 		 case Beam:
+		 {
 			 unsigned int NUME = ElementGrp.GetNUME();
 			 double* ptr_force = new double[6];
 			 clear(ptr_force, 6);
@@ -329,9 +331,27 @@ void CDomain::Gravity()
 					 }
 				 }
 			 }
-			 break;
 		}
-		
+			 break;
+		case Shell:
+		{
+			unsigned int NUME = ElementGrp.GetNUME();
+			double* ptr_force=new double[12];
+			clear(ptr_force,12);
+			for(unsigned int Ele=0;Ele<NUME;Ele++){
+				CElement& Element = ElementGrp[Ele];
+				Element.GravityCalculation(ptr_force);
+				CNode** node_ = Element.CElement::GetNodes();
+				for(unsigned int i=0;i<4;i++){
+					for(unsigned int j=2;j<5;j++)
+						if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
+							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
+				}
+			}
+		}
+			 break;
+			
+		}
 	}
 }
 

@@ -75,6 +75,10 @@ void CElementGroup::CalculateMemberSize()
 			ElementSize_ = sizeof(CBeam);
 			MaterialSize_ = sizeof(CBeamMaterial);
 			break;
+        case ElementTypes::Shell:
+            ElementSize_ = sizeof(CShell);
+            MaterialSize_ = sizeof(CShellMaterial);
+            break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::CalculateMemberSize." << std::endl;
             exit(5);
@@ -98,6 +102,9 @@ void CElementGroup::AllocateElements(std::size_t size)
 		case ElementTypes::Beam:
 			ElementList_ = new CBeam[size];
 			break;
+        case ElementTypes::Shell:
+            ElementList_ = new CShell[size];
+            break;
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateElement." << std::endl;
             exit(5);
@@ -119,6 +126,9 @@ void CElementGroup::AllocateMaterials(std::size_t size)
 		case ElementTypes::Beam:
 			MaterialList_ = new CBeamMaterial[size];
 			break;
+        case ElementTypes::Shell:
+            MaterialList_ = new CShellMaterial[size];
+            break;
 
         default:
             std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateMaterial." << std::endl;
