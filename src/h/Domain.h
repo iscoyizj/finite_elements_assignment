@@ -71,7 +71,7 @@ private:
 /*! A one-dimensional array storing only the elements below the	skyline of the 
     global stiffness matrix. */
     CSkylineMatrix<double>* StiffnessMatrix;
-	CSRMatrix<double>* CSRStiffnessMatrix;
+	CSparseMatrix<double>* CSRStiffnessMatrix;
 //!	Global nodal force/displacement vector
 	double* Force;
 
@@ -158,5 +158,5 @@ public:
 //!	Return pointer to the banded stiffness matrix
 	inline CSkylineMatrix<double>* GetStiffnessMatrix() { return StiffnessMatrix; }
 
-	inline CSRMatrix<double>* GetCSRStiffnessMatrix() { return CSRStiffnessMatrix; }
+	inline CSparseMatrix<double>* GetCSRStiffnessMatrix() { return CSRStiffnessMatrix; }
 };

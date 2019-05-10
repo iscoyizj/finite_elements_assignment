@@ -13,7 +13,7 @@
 #include "Outputter.h"
 #include "Clock.h"
 #include "Outputterplot1.h"
-//#define _PARDISO_
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -73,22 +73,21 @@ int main(int argc, char *argv[])
     double time_assemble = timer.ElapsedTime();
 
 //  Solve the linear equilibrium equations for displacements
-	CLDLTSolver* Solver = new CLDLTSolver(FEMData->GetStiffnessMatrix());
+#ifdef _PARDISO_
 	CSRSolver* SRSolver = new CSRSolver(FEMData->GetCSRStiffnessMatrix());
+#else
+	CLDLTSolver* Solver = new CLDLTSolver(FEMData->GetStiffnessMatrix());
+	Solver->LDLT();
+#endif // _PARDISO_
 //  Perform L*D*L(T) factorization of stiffness matrix
-    Solver->LDLT();
+    
 
     COutputter* Output = COutputter::Instance();
 
 #ifdef _DEBUG_
-    Output->PrintStiffnessMatrix();
-	cout << endl << endl;
-	double* F = FEMData->GetForce();
-	for (int i = 0; i < FEMData->GetNEQ(); i++)
-	{
-		cout << F[i]<<"      ";
-	}
-	cout << endl << endl;
+#ifndef _PARDISO_
+ Output->PrintStiffnessMatrix();
+#endif // !_PARDISO_
 #endif
         
 //  Loop over for all load cases

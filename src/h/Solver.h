@@ -44,7 +44,7 @@ class CSRSolver : public CSolver
 
 public:
 	
-	CSRMatrix<double>* K;
-	CSRSolver(CSRMatrix<double>* _K) : K(_K) {};
+	CSparseMatrix<double>* K;
+	CSRSolver(CSparseMatrix<double>* _K) : K(_K) {};
 	void solve(double* Force, unsigned NLCase);
 };

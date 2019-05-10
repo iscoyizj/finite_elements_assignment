@@ -10,8 +10,11 @@
 
 #include "Domain.h"
 #include "Material.h"
+#ifdef _PARDISO_
 #include <mkl.h>
 #include "CSRMatrix.h"
+#endif // _PARDISO_
+
 using namespace std;
 
 //	Clear an array
@@ -43,7 +46,14 @@ CDomain::CDomain()
 	NEQ = 0;
 
 	Force = nullptr;
+	
+#ifdef _PARDISO_
+	CSRStiffnessMatrix = nullptr;
+#else
 	StiffnessMatrix = nullptr;
+#endif // _PARDISO_
+
+	
 }
 
 //	Desconstructor
@@ -57,7 +67,14 @@ CDomain::~CDomain()
 	delete [] LoadCases;
 
 	delete [] Force;
+	
+#ifdef _PARDISO_
+	delete CSRStiffnessMatrix;
+#else
 	delete StiffnessMatrix;
+#endif // _PARDISO_
+
+	
 }
 
 //	Return pointer to the instance of the Domain class
@@ -245,18 +262,23 @@ void CDomain::AssembleStiffnessMatrix()
         {
             CElement& Element = ElementGrp[Ele];
             Element.ElementStiffness(Matrix);
-            StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+            
+#ifdef _PARDISO_
 			CSRStiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+#else
+			StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+#ifdef _DEBUG_
+			COutputter* Output = COutputter::Instance();
+			Output->PrintStiffnessMatrix();
+#endif
+#endif // _PARDISO_
         }
 
 		delete[] Matrix;
 		Matrix = nullptr;
 	}
 
-#ifdef _DEBUG_
-	COutputter* Output = COutputter::Instance();
-	Output->PrintStiffnessMatrix();
-#endif
+
 
 }
 
@@ -279,10 +301,10 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
 	return true;
 }
 
+#ifdef _PARDISO_
 void CDomain::CalculateCSRColumns()
 {
-	CSRMatrix<double>* matrix = CSRStiffnessMatrix;
-	matrix->beginPostionMark();
+	CSparseMatrix<double>* matrix = CSRStiffnessMatrix;
 
 	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
 	{
@@ -292,6 +314,7 @@ void CDomain::CalculateCSRColumns()
 		for (unsigned int Ele = 0; Ele < NUME; Ele++)
 		{
 			CElement& Element = ElementGrp[Ele];
+			Element.GenerateLocationMatrix();
 			unsigned LMSize = Element.GetND();
 			unsigned* LM = Element.GetLocationMatrix();
 			for (unsigned i = 0; i < LMSize; ++i)
@@ -314,6 +337,7 @@ void CDomain::CalculateCSRColumns()
 		}
 	}
 }
+#endif // _PARDISO_
 
 void CDomain::Gravity()
 {
@@ -414,16 +438,21 @@ void CDomain::AllocateMatrices()
     clear(Force, NEQ);
 
 //  Create the banded stiffness matrix
-    StiffnessMatrix = new CSkylineMatrix<double>(NEQ);
-	CSRStiffnessMatrix = new CSRMatrix<double>(NEQ);
+
+#ifdef _PARDISO_
+	CSRStiffnessMatrix = new CSparseMatrix<double>(NEQ);
+	CalculateCSRColumns();
+	CSRStiffnessMatrix->Allocate();
+#else
+	StiffnessMatrix = new CSkylineMatrix<double>(NEQ);
 //	Calculate column heights
 	CalculateColumnHeights();
 //	Calculate address of diagonal elements in banded matrix
 	StiffnessMatrix->CalculateDiagnoalAddress();
 //	Allocate for banded global stiffness matrix
     StiffnessMatrix->Allocate();
-	CalculateCSRColumns();
-	CSRStiffnessMatrix->Allocate();
 	COutputter* Output = COutputter::Instance();
 	Output->OutputTotalSystemData();
+#endif // _PARDISO_
+	
 }

@@ -3,102 +3,85 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "SparseMatrix.h"
 
 
-template <typename T> class CSRMatrix : public SparseMatrix<T>
+
+template <typename T> class CSparseMatrix
 {
 private:
-	std::vector<int>* _tempColumns;
+	std::vector<int>* col_foralloc;
+	
 public:
 	int size;
-	int elementCount;
+	int num_ele;
 	T* values;
-	int* columns;
-	int* rowIndexs;
+	int* col_index;
+	int* row_index;
 
-	CSRMatrix(int m) : SparseMatrix<T>(m)
+	CSparseMatrix(int n)
 	{
-		size = m;
+		size = n;
 		values = nullptr;
-		columns = nullptr;
-		rowIndexs = new int[size + 1];
-		_tempColumns = nullptr;
-	}
-
-	// call beginPositionMark() will allocate _tempColumns,
-	// so that markPostion() can be called.
-	void beginPostionMark()
-	{
-		_tempColumns = new std::vector<int>[size];
-
+		col_index = nullptr;
+		row_index = new int[size + 1];
+		col_foralloc = new std::vector<int>[size];
 	}
 
 	void markPosition(int row, int column)
 	{
-		// insert column
-		_tempColumns[row - 1].push_back(column);
+		col_foralloc[row - 1].push_back(column);
 	}
 
 	void Allocate()
 	{
-
 		for (int row = 0; row < size; ++row)
 		{
-			std::vector<int>& v = _tempColumns[row];
+			std::vector<int>& v = col_foralloc[row];
 			std::sort(v.begin(), v.end());
 			v.erase(std::unique(v.begin(), v.end()), v.end());
 		}
-
-		// first, calculate row indexs. Notice row index starts from 1
-		rowIndexs[0] = 1;
+		row_index[0] = 1;
 		for (int row = 0; row < size; ++row)
 		{
-			rowIndexs[row + 1] = rowIndexs[row] + int(_tempColumns[row].size());
+			row_index[row + 1] = row_index[row] + int(col_foralloc[row].size());
 		}
-
 		// allocate columns
-		elementCount = rowIndexs[size] - rowIndexs[0];
-		columns = new int[elementCount];
+		num_ele = row_index[size] - row_index[0];
+		col_index = new int[num_ele];
 
 		// write columns
 		int count = 0;
 		for (int row = 0; row < size; ++row)
 		{
-			// column already sorted in _tempColumns
-			for (const auto& column : _tempColumns[row])
+			for (int column : col_foralloc[row])
 			{
-				columns[count] = column;
+				col_index[count] = column;
 				count++;
 			}
 		}
-
-		// free _tempColumns
-		delete[] _tempColumns;
-		_tempColumns = nullptr;
+		delete[] col_foralloc;
+		col_foralloc = nullptr;
 
 		// allocate values last to save memory
-		values = new T[elementCount];
-		for (int i = 0; i < elementCount; ++i)
+		values = new T[num_ele];
+		for (int i = 0; i < num_ele; ++i)
 			values[i] = T(0);
 	}
 
-	// get item at (row, column)
-	T& operator()(unsigned row, unsigned column)
+	T& operator()(int row, int column)
 	{
 		if (row > column)
 		{
 			return this->operator()(column, row);
 		}
-		int offset1 = rowIndexs[row - 1] - 1;
-		int offset2 = rowIndexs[row] - 1;
-		// index lies in [offset1, offset2)
-		// find index by bisection
+		int offset1 = row_index[row - 1] - 1;
+		int offset2 = row_index[row] - 1;
+	
 
 		while (offset2 != (offset1 + 1))
 		{
 			int offset = (offset1 + offset2) / 2;
-			if (columns[offset] > int(column))
+			if (col_index[offset] > column)
 			{
 				offset2 = offset;
 			}
@@ -111,7 +94,7 @@ public:
 		return values[offset1];
 	}
 
-	int dim() const { return size; }
+//	int dim() const { return size; }
 
 	void Assembly(double* Matrix, unsigned int* LocationMatrix, size_t ND)
 	{
@@ -138,33 +121,12 @@ public:
 
 		return;
 	};
-	~CSRMatrix()
+	~CSparseMatrix()
 	{
-		delete[] rowIndexs;
+		delete[] row_index;
 		delete[] values;
-		delete[] columns;
+		delete[] col_index;
 	}
 
 };
 
-template <typename T> std::ostream& operator<<(std::ostream& out, const CSRMatrix<T>& mat)
-{
-	out << "CSR Matrix, size = " << mat.size << std::endl;
-	out << "values = " << std::endl << "(";
-	for (int i = 0; i < mat.elementCount; ++i)
-	{
-		out << std::setw(14) << mat.values[i];
-	}
-	out << ")\ncolumns = \n(";
-	for (std::size_t i = 0; i < mat.elementCount; ++i)
-	{
-		out << std::setw(14) << mat.columns[i];
-	}
-	out << ")\nrowIndexs = \n(";
-	for (std::size_t i = 0; i <= mat.size; ++i)
-	{
-		out << std::setw(14) << mat.rowIndexs[i];
-	}
-	out << ")";
-	return out;
-}

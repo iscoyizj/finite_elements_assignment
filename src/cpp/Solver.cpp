@@ -9,11 +9,14 @@
 /*****************************************************************************/
 
 #include "Solver.h"
-#include<mkl.h>
 #include <cmath>
-#include <cfloat>
 #include <iostream>
+#ifdef _PARDISO_
+#include<mkl.h>
 #include <algorithm>
+#include <cfloat>
+
+#endif // _PARDISO_
 
 using namespace std;
 
@@ -86,6 +89,7 @@ void CLDLTSolver::BackSubstitution(double* Force)
 	}
 };
 
+#ifdef _PARDISO_
 void CSRSolver::solve(double* Force, unsigned NLCase)
 {
 	void* pt[64];
@@ -99,26 +103,18 @@ void CSRSolver::solve(double* Force, unsigned NLCase)
 	// Try 3 later
 	iparm[5] = 1; // write back to Force
 	char    *var;
-	var = getenv("OMP_NUM_THREADS");
-	if (var != NULL)
-		sscanf(var, "%d", &num_procs);
-	else 
-	{
-		cout << "Set environment OMP_NUM_THREADS to 1";
-		num_procs = 1;
-	}
+	num_procs = 4;
 	iparm[2] = num_procs;
 	
 	const int maxfct(1),mnum(1);
 	const int size = K->size;
 	double* values = K->values;
-	int* columns = K->columns;
-	int* rowIndexs = K->rowIndexs;
+	int* column_index = K->col_index;
+	int* row_index = K->row_index;
 
 	const int nrhs = NLCase;
 	double* rhs = Force;
 
-	// phase 13 is analysis and solve while 23 is solve without analysis
 	int phase = 13;
 	double* res = new double[nrhs*size];
 	for (std::size_t _ = 0; _ < nrhs*size; _++) res[_] = 0;
@@ -136,11 +132,11 @@ void CSRSolver::solve(double* Force, unsigned NLCase)
 		&phase, // go through all
 		&size,  // size of matrix
 		values,
-		rowIndexs,
-		columns,
-		perm, // idk wtf this is
+		row_index,
+		column_index,
+		perm, 
 		&nrhs,
-		iparm, // sort like settings
+		iparm, 
 		&msglvl, // print info or not
 		rhs,
 		res,
@@ -154,4 +150,7 @@ void CSRSolver::solve(double* Force, unsigned NLCase)
 	delete[] perm;
 	delete[] res;
 }
+#endif // _PARDISO_
+
+
 
