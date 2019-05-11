@@ -71,6 +71,9 @@ public:
 //! Output Beam element data
 	void PrintBeamElementData(unsigned int EleGrp);
 
+//! Output Shell element dara
+	void PrintShellElementData(unsigned int EleGrp);
+
 //! Output Infinite element data
 	void PrintInfiniteElementData(unsigned int EleGrp);
 

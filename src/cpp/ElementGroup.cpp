@@ -83,6 +83,10 @@ void CElementGroup::CalculateMemberSize()
 			ElementSize_ = sizeof(CBeam);
 			MaterialSize_ = sizeof(CBeamMaterial);
 			break;
+    case ElementTypes::Shell:
+      ElementSize_ = sizeof(CShell);
+      MaterialSize_ = sizeof(CShellMaterial);
+      break;
 		case ElementTypes::Plate:
 			ElementSize_ = sizeof(CPlate);
 			MaterialSize_ = sizeof(CPlateMaterial);
@@ -94,13 +98,10 @@ void CElementGroup::CalculateMemberSize()
 		case ElementTypes::Subpara:
 			ElementSize_ = sizeof(CSubpara);
 			MaterialSize_ = sizeof(CSubparaMaterial);
-
-		
-        default:
-            std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::CalculateMemberSize." << std::endl;
-            exit(5);
-            break;
-			
+    default:
+      std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::CalculateMemberSize." << std::endl;
+      exit(5);
+      break;
 
     }
 }
@@ -125,16 +126,19 @@ void CElementGroup::AllocateElements(std::size_t size)
 		case ElementTypes::Beam:
 			ElementList_ = new CBeam[size];
 			break;
+    case ElementTypes::Shell:
+      ElementList_ = new CShell[size];
+      break;
 		case ElementTypes::Plate:
 			ElementList_ = new CPlate[size];
 			break;
 		case ElementTypes::Infinite:
 			ElementList_ = new CInfi[size];
 			break;
-        default:
-            std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateElement." << std::endl;
-            exit(5);
-			break;
+    default:
+      std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateElement." << std::endl;
+      exit(5);
+	  break;
     }
 }
 
@@ -143,9 +147,9 @@ void CElementGroup::AllocateMaterials(std::size_t size)
 {
     switch(ElementType_)
     {
-        case ElementTypes::Bar:
-            MaterialList_ = new CBarMaterial[size];
-            break;
+    case ElementTypes::Bar:
+      MaterialList_ = new CBarMaterial[size];
+      break;
 		case ElementTypes::Q4:
 			MaterialList_ = new C4QMaterial[size];
 			break;
@@ -161,13 +165,16 @@ void CElementGroup::AllocateMaterials(std::size_t size)
 		case ElementTypes::Beam:
 			MaterialList_ = new CBeamMaterial[size];
 			break;
+    case ElementTypes::Shell:
+      MaterialList_ = new CShellMaterial[size];
+      break;
 		case ElementTypes::Infinite:
 			MaterialList_ = new CInfiMaterial[size];
 			break;
-        default:
-            std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateMaterial." << std::endl;
-            exit(5);
-			break;
+    default:
+      std::cerr << "Type " << ElementType_ << " not available. See CElementGroup::AllocateMaterial." << std::endl;
+      exit(5);
+		  break;
     }
 }
 

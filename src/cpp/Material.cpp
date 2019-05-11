@@ -123,7 +123,6 @@ void CBeamMaterial::Write(COutputter& output, unsigned int mset)
 	output << setw(5) << mset + 1 << setw(16) << E << setw(16) << mu << setw(16) << width << setw(16) << height << setw(16) << t_side << setw(16) << t_uplow << endl;
 }
 
-
 bool CPlateMaterial::Read(ifstream& Input, unsigned int mset)
 {
 	Input >> nset;	// Number of property set
@@ -151,8 +150,14 @@ void CPlateMaterial::Write(COutputter& output, unsigned int mset)
 bool CInfiMaterial::Read(ifstream& Input, unsigned int mset)
 {
 	Input >> nset;	// Number of property set
+  Input >> E >> poisson >> etype;	// Young's modulus,Poisson ratio and element type
 
-	if (nset != mset + 1)
+	return true;
+}
+
+bool CShellMaterial::Read(ifstream& Input, unsigned int mset){
+	Input >> nset;	// Number of property set;
+  if (nset != mset + 1)
 	{
 		cerr << "*** Error *** Material sets must be inputted in order !" << endl
 			<< "    Expected set : " << mset + 1 << endl
@@ -161,10 +166,14 @@ bool CInfiMaterial::Read(ifstream& Input, unsigned int mset)
 		return false;
 	}
 
-	Input >> E >> poisson >> etype;	// Young's modulus,Poisson ratio and element type
-
+	Input>>E>>nu>>density>>thick;
 	return true;
 }
+
+void CShellMaterial::Write(COutputter& output, unsigned int mset){
+	output << setw(5) << mset+1 << setw(16) << E << setw(16) << nu << setw(16) << density << setw(16)<< thick << endl;
+}
+
 
 //	Write material data to Stream
 void CInfiMaterial::Write(COutputter& output, unsigned int mset)

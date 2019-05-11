@@ -116,6 +116,17 @@ public:
 	virtual void Write(COutputter& output, unsigned int mset);
 };
 
+class CShellMaterial:public CMaterial{
+public:
+	double nu;			//Poisson ration
+	double thick;		//Shell's thickness
+
+public:
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
 
 class CPlateMaterial : public CMaterial
 {

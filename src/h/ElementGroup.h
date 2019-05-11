@@ -19,6 +19,7 @@
 #include "H8.h"
 #include "Plate.h"
 #include "Beam.h"
+#include "Shell.h"
 #include "Infinite.h"
 #include "Subpara.h"
 #include "Material.h"
