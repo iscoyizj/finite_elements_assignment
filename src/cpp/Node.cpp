@@ -70,50 +70,19 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 	unsigned int N;
 
 	Input >> N;	// node number
-	if (N != np + 1) 
+	if (N != np + 1)
 	{
-		cerr << "*** Error *** Nodes must be inputted in order !" << endl 
-			 << "   Expected node number : " << np + 1 << endl
-			 << "   Provided node number : " << N << endl;
+		cerr << "*** Error *** Nodes must be inputted in order !" << endl
+			<< "   Expected node number : " << np + 1 << endl
+			<< "   Provided node number : " << N << endl;
 
 		return false;
 	}
 
 	NodeNumber = N;
-	// Read the dataline
-	string NodeInfo, ModiNodeInfo;
-	getline(Input, NodeInfo);
 
-	int input_count = Count_for_theta(NodeInfo);
-
-	// Determine the input format:
-	//     if allow rotation for plate and beam , input_count is 9;
-	//     for elements with no rotation at nodes, input_count is 6.
-	
-
-	
-	if (input_count == 9)
-	{
-		Rotation_Flag = 1;
-		sscanf(NodeInfo.c_str(), "%d%d%d%d%d%d%lf%lf%lf",
-			bcode, bcode + 1, bcode + 2,
-			bcode + 3, bcode + 4, bcode + 5,
-			XYZ, XYZ + 1, XYZ + 2);
-	}
-	else if (input_count == 6)
-	{
-		Rotation_Flag = 0;
-		sscanf(NodeInfo.c_str(), "%d%d%d%lf%lf%lf",
-			bcode, bcode + 1, bcode + 2,
-			XYZ, XYZ + 1, XYZ + 2);
-	}
-	else
-	{
-		cerr << "*** Error *** NodeInfos must be inputted in the correct format! " << endl
-			<< "  Present Number of Nodeinfos: " << input_count << endl
-			<< "  Correct Number of Nodeinfos: 6 or 9 !" << endl;
-		return false;
-	}
+	Input >> bcode[0] >> bcode[1] >> bcode[2] >> bcode[3] >> bcode[4] >> bcode[5]
+		>> XYZ[0] >> XYZ[1] >> XYZ[2] ;
 
 	return true;
 }
@@ -121,7 +90,7 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 //	Output nodal point data to stream
 void CNode::Write(COutputter& output, unsigned int np)
 {
-	output << setw(9) << np + 1 << setw(5) << bcode[0] << setw(5) << bcode[1] << setw(5) << bcode[2]
+	output << setw(9) << np + 1 << setw(5) << bcode[0] << setw(5) << bcode[1] << setw(5) << bcode[2] << setw(5) << bcode[3] << setw(5) << bcode[4] << setw(5) << bcode[5]
 		   << setw(18) << XYZ[0] << setw(15) << XYZ[1] << setw(15) << XYZ[2] << endl;
 }
 

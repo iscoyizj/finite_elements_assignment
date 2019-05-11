@@ -44,6 +44,9 @@ public:
 	//!	Calculate element stress
 	virtual void ElementStress(double* stress, double* Displacement);
 
+	//! Recover element stress
+	virtual void RecoverElementStress(double* Displacement, double* A);
+
 	// Caculate Gravity of Elements
 	virtual void GravityCalculation(double* ptr_force);
 

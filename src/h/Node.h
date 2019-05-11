@@ -30,7 +30,7 @@ public:
 	double XYZ[NDF];
 //! the stress of node 
 
-	double stress_node[NDF + 1];
+	double stress_node[NDF];
 
 //!	Boundary code of each degree of freedom of the node
 /*!		0: The corresponding degree of freedom is active (defined in the global system) */

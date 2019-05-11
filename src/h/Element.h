@@ -80,8 +80,10 @@ public:
 //!	Calculate element stress 
 	virtual void ElementStress(double* stress, double* Displacement) = 0;
 
+
 //!	Calculate the values required in the POSTPROCESS 
 	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions) {};
+
 
 //!	Return nodes of the element
 	inline CNode** GetNodes() { return nodes_; }
@@ -100,4 +102,6 @@ public:
 
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix() = 0;     
+
+	inline unsigned int GetNEN() { return NEN_; }
 };
