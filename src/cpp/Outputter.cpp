@@ -777,6 +777,11 @@ void COutputter::OutputElementStress(unsigned int lcase)
 							<< shellstress[7*loop+1] << setw(16) << shellstress[7*loop+2] << setw(16)<<shellstress[7*loop+3]
 							<<setw(16)<<shellstress[7*loop+4]<<setw(16)<<shellstress[7*loop+5]<<setw(16)<<shellstress[7*loop+6]<<endl;
 					}
+					double mises=0;
+					for(unsigned int loop=0;loop<8;loop++)
+						mises+=shellstress[7*loop+6];
+					mises/=8;
+					Outplot->ElementStress(mises);
 				}
 				break;
 			case ElementTypes::Infinite:

@@ -51,6 +51,11 @@ void CShell::Write(COutputter& output, unsigned int Ele){
 		<< nodes_[3]->NodeNumber << setw(12) << ElementMaterial_->nset << endl;
 }
 
+void CShell::WritePlot(COutPlot& output, unsigned int Ele){
+	output << 4 << setw(9) << nodes_[0]->NodeNumber-1 << setw(9) << nodes_[1]->NodeNumber-1 
+		<< setw(9) << nodes_[2]->NodeNumber-1 <<  setw(9) << nodes_[3]->NodeNumber-1 <<endl;
+}
+
 void CShell::GenerateLocationMatrix(){
 	unsigned int i = 0;
 	for (unsigned int N = 0; N < NEN_; N++)
