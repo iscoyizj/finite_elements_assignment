@@ -1,0 +1,62 @@
+# vtk DataFile Version 3.0
+3t test
+ASCII
+DATASET UNSTRUCTURED_GRID
+
+POINTS         4   double
+0              1              0
+0              0              0
+1              0              0
+1              1              0
+
+CELLS           2           8
+3        0        1        2
+3        0        2        3
+
+CELL_TYPES           2
+5
+5
+
+POINT_DATA           4
+SCALARS load1_x   double  1
+LOOKUP_TABLE load1_x
+0
+0
+1e-005
+1e-005
+SCALARS load1_y   double  1
+LOOKUP_TABLE load1_y
+0
+3e-006
+3e-006
+0
+SCALARS load1_z   double  1
+LOOKUP_TABLE load1_z
+0
+0
+0
+0
+SCALARS load1_theta_1   double  1
+LOOKUP_TABLE load1_theta_1
+0
+0
+0
+0
+SCALARS load1_theta_2   double  1
+LOOKUP_TABLE load1_theta_2
+0
+0
+0
+0
+SCALARS load1_theta_3   double  1
+LOOKUP_TABLE load1_theta_3
+0
+0
+0
+0
+
+CELL_DATA           2
+SCALARS load1_Mises   double  1
+LOOKUP_TABLE load1__Mises
+100
+100

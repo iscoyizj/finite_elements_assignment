@@ -67,6 +67,12 @@ void CT3::Write(COutputter& output, unsigned int Ele)
 		<< setw(9) << nodes_[2]->NodeNumber << setw(12) << ElementMaterial_->nset << endl;
 }
 
+void CT3::WritePlot(COutPlot& output, unsigned int Ele)
+{
+	output << 3 << setw(9) << nodes_[0]->NodeNumber-1 << setw(9) << nodes_[1]->NodeNumber-1 
+		<< setw(9) << nodes_[2]->NodeNumber-1 << endl;
+}
+
 //  Generate location matrix: the global equation Number that corresponding to each DOF of the element
 //	Caution:  Equation Number is Numbered from 1 !
 void CT3::GenerateLocationMatrix()

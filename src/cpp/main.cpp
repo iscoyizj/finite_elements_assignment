@@ -12,7 +12,7 @@
 #include "Bar.h"
 #include "Outputter.h"
 #include "Clock.h"
-#include "Outputterplot1.h"
+//#include "Outputterplot1.h"
 
 using namespace std;
 
@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 
     string InFile = filename + ".dat";
 	string OutFile = filename + ".out";
-	string PostFile = filename + "_post.out";
+//	string PostFile = filename + "_post.out";
+	string PlotFile = filename + ".vtk";
 
 	CDomain* FEMData = CDomain::Instance();
 
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
     timer.Start();
 
 //  Read data and define the problem domain
-	if (!FEMData->ReadData(InFile, OutFile))
+	if (!FEMData->ReadData(InFile, OutFile, PlotFile))
 	{
 		cerr << "*** Error *** Data input failed!" << endl;
 		exit(1);
@@ -79,6 +80,7 @@ int main(int argc, char *argv[])
     Solver->LDLT();
 
     COutputter* Output = COutputter::Instance();
+	COutPlot* Outplot = COutPlot::Instance();
 
 #ifdef _DEBUG_
     Output->PrintStiffnessMatrix();
@@ -98,15 +100,17 @@ int main(int argc, char *argv[])
 #endif
             
         Output->OutputNodalDisplacement(lcase);
+		Outplot->OutputNodalDisplacement(lcase);
+//  Calculate and output stresses of all elements
+		Output->OutputElementStress(lcase);
     }
 
     double time_solution = timer.ElapsedTime();
 
-//  Calculate and output stresses of all elements
-	Output->OutputElementStress();
+
 	
-	COutputterplot1* Outputplot1 = COutputterplot1::Instanceplot1(PostFile);
-	Outputplot1->OutputElementStress();
+//	COutputterplot1* Outputplot1 = COutputterplot1::Instanceplot1(PostFile);
+//	Outputplot1->OutputElementStress();
 
     double time_stress = timer.ElapsedTime();
     

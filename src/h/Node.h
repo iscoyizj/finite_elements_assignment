@@ -11,6 +11,7 @@
 #pragma once
 
 #include "Outputter.h"
+#include "OutPlot.h"
 
 using namespace std;
 
@@ -52,6 +53,8 @@ public:
 
 //!	Output nodal point data to stream
 	void Write(COutputter& output, unsigned int np);
+	
+	void WritePlot(COutPlot& output);
 
 //!	Output equation numbers of nodal point to stream OutputFile
 	void WriteEquationNo(COutputter& OutputFile, unsigned int np);

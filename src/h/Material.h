@@ -75,7 +75,6 @@ public:
 	virtual void Write(COutputter& output, unsigned int mset);
 };
 
-
 class CH8Material : public CMaterial
 {
 public:

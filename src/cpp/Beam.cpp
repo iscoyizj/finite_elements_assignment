@@ -69,6 +69,12 @@ void CBeam::Write(COutputter& output, unsigned int Ele)
 		<< setw(12) << ElementMaterial_->nset << endl;
 }
 
+//	Write element data to stream
+void CBeam::WritePlot(COutPlot& output, unsigned int Ele)
+{
+	output << 2 << setw(9) << nodes_[0]->NodeNumber-1 << setw(9)<< nodes_[1]->NodeNumber-1 << endl;
+}
+
 //  Generate location matrix: the global equation number that corresponding to each DOF of the
 //  element
 //	Caution:  Equation number is numbered from 1 !

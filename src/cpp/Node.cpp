@@ -94,6 +94,11 @@ void CNode::Write(COutputter& output, unsigned int np)
 		   << setw(18) << XYZ[0] << setw(15) << XYZ[1] << setw(15) << XYZ[2] << endl;
 }
 
+void CNode::WritePlot(COutPlot& output)
+{
+	output << XYZ[0] << setw(15) << XYZ[1] << setw(15) << XYZ[2] << endl;
+}
+
 //	Output equation numbers of nodal point to stream
 void CNode::WriteEquationNo(COutputter& output, unsigned int np)
 {
@@ -126,3 +131,4 @@ void CNode::WriteNodalDisplacement(COutputter& output, unsigned int np, double* 
 
 	output << endl;
 }
+

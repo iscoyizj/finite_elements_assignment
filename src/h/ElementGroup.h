@@ -73,7 +73,7 @@ public:
     ~CElementGroup();
 
     //! Read element group data from stream Input
-    bool Read(ifstream& Input);
+    bool Read(ifstream& Input, unsigned int* n, unsigned int* sum);
 
     //! Calculate the size of the derived element class and material class
     void CalculateMemberSize();

@@ -158,10 +158,37 @@ void CElementGroup::AllocateMaterials(std::size_t size)
 }
 
 //! Read element group data from stream Input
-bool CElementGroup::Read(ifstream& Input)
+bool CElementGroup::Read(ifstream& Input, unsigned int* n, unsigned int* sum)
 {
     Input >> (int&)ElementType_ >> NUME_ >> NUMMAT_;
-    
+	unsigned int nen;
+	switch (ElementType_)
+	{
+		case ElementTypes::Bar:
+			nen=2;
+			break;
+		case ElementTypes::Q4:
+			nen=4;
+			break;
+		case ElementTypes::T3:
+			nen=3;
+			break;
+		case ElementTypes::H8:
+			nen=8;
+			break;
+		case ElementTypes::Plate:
+			nen=4;
+			break;
+		case ElementTypes::Beam:
+			nen=2;
+			break;
+		case ElementTypes::Shell:
+			nen=4;
+			break;
+	}
+	*sum = *sum + NUME_;
+    *n = *n + nen*NUME_ + NUME_;
+	
     CalculateMemberSize();
 
     if (!ReadElementData(Input))

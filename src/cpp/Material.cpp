@@ -93,7 +93,6 @@ void CH8Material::Write(COutputter& output, unsigned int mset)
 	output << setw(5) << mset+1 << setw(16) << E << setw(16) << Nu << setw(16) << G << setw(16) << Lam << setw(16) << Rou << endl;
 }
 
-
 bool CBeamMaterial::Read(ifstream& Input, unsigned int mset)
 {
 	Input >> nset;	// Number of property set

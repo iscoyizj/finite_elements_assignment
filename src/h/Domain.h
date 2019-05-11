@@ -13,6 +13,7 @@
 #include "Node.h"
 #include "ElementGroup.h"
 #include "Outputter.h"
+#include "OutPlot.h"
 #include "Solver.h"
 #include "LoadCaseData.h"
 #include "SkylineMatrix.h"
@@ -52,6 +53,8 @@ private:
 /*! An element group consists of a convenient collection of elements with same type */
 	unsigned int NUMEG;
 
+	unsigned int NUMELE;
+
 //! Element group list
     CElementGroup* EleGrpList;
     
@@ -87,7 +90,7 @@ public:
 	static CDomain* Instance();
 
 //!	Read domain data from the input data file
-	bool ReadData(string FileName, string OutFile);
+	bool ReadData(string FileName, string OutFile, string PlotFile);
 
 //!	Read nodal point data
 	bool ReadNodalPoints();
@@ -96,7 +99,7 @@ public:
 	bool ReadLoadCases();
 
 //!	Read element data
-	bool ReadElements();
+	bool ReadElements(unsigned int* n, unsigned int* sum);
 
 //!	Calculate global equation numbers corresponding to every degree of freedom of each node
 	void CalculateEquationNumber();
@@ -134,6 +137,8 @@ public:
 
 //!	Return total number of element groups
 	inline unsigned int GetNUMEG() { return NUMEG; }
+
+	inline unsigned int GetNUMELE() {return NUMELE; }
 
 //! Return element group list
     CElementGroup* GetEleGrpList() { return EleGrpList; }

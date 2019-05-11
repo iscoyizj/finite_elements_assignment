@@ -12,6 +12,7 @@
 
 #include <fstream>
 #include <iostream>
+#include "OutPlot.h"
 
 using namespace std;
 
@@ -77,7 +78,7 @@ public:
 	void OutputNodalDisplacement(unsigned int lcase);
 
 //!	Output element stresses 
-	void OutputElementStress();
+	void OutputElementStress(unsigned int lcase);
 
 //!	Print total system data
 	void OutputTotalSystemData();

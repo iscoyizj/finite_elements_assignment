@@ -39,6 +39,7 @@ CDomain::CDomain()
 	LoadCases = nullptr;
 	
 	NEQ = 0;
+	NUMELE = 0;
 
 	Force = nullptr;
 	StiffnessMatrix = nullptr;
@@ -68,7 +69,7 @@ CDomain* CDomain::Instance()
 }
 
 //	Read domain data from the input data file
-bool CDomain::ReadData(string FileName, string OutFile)
+bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
 {
 	Input.open(FileName);
 
@@ -79,17 +80,22 @@ bool CDomain::ReadData(string FileName, string OutFile)
 	}
 
 	COutputter* Output = COutputter::Instance(OutFile);
+	COutPlot* Outplot = COutPlot::Instance(PlotFile);
 
 //	Read the heading line
 	Input.getline(Title, 256);
 	Output->OutputHeading();
+	Outplot->OutputHeading();
 
 //	Read the control line
 	Input >> NUMNP >> NUMEG >> NLCASE >> MODEX;
 
 //	Read nodal point data
 	if (ReadNodalPoints())
+	{
         Output->OutputNodeInfo();
+		Outplot->OutNode();
+	}
     else
         return false;
 
@@ -103,9 +109,14 @@ bool CDomain::ReadData(string FileName, string OutFile)
     else
         return false;
 
+	unsigned int n=0;
 //	Read element data
-	if (ReadElements())
+	if (ReadElements(&n, &NUMELE))
+	{
         Output->OutputElementInfo();
+		Outplot->OutputElementInfo(n, NUMELE);
+		Outplot->OutputEleType(NUMELE, NUMNP);
+	}
     else
         return false;
 
@@ -160,13 +171,13 @@ bool CDomain::ReadLoadCases()
 }
 
 // Read element data
-bool CDomain::ReadElements()
+bool CDomain::ReadElements(unsigned int* n, unsigned int* sum)
 {
     EleGrpList = new CElementGroup[NUMEG];
 
 //	Loop over for all element group
 	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
-        if (!EleGrpList[EleGrp].Read(Input))
+        if (!EleGrpList[EleGrp].Read(Input,n,sum))
             return false;
     
     return true;
