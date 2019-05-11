@@ -69,7 +69,7 @@ void COutputterplot1::OutputElementStress()
 		switch (ElementType)
 		{
 			case ElementTypes::Q4: // 4Q element
-			*this << "  ELEMENT  LOCATION    X       Y       Z        SXX            SYY            TXY" << endl
+			*this << "  ELEMENT  LOCATION              X           Y           Z                     SXX            SYY            TXY" << endl
 				<< "  NUMBER   POINT" << endl;
 
 			for (unsigned int Ele = 0; Ele < NUME; Ele++)
@@ -129,7 +129,89 @@ void COutputterplot1::OutputElementStress()
 				}
 
 				*this << endl;
+				break;
 
+			case ElementTypes::Plate: // Plate element
+			*this << "  ELEMENT  LOCATION    X       Y       Z " << endl
+				<< "  NUMBER   POINT" << endl;
+
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					double *newlocation = new double[12];
+					double *stress_Plate = new double[24];
+					double *origin_loc = new double[12];
+					clear(origin_loc, 12);
+					clear(stress_Plate, 24);
+					clear(newlocation, 12);
+			
+					CElement& Element = EleGrp[Ele];
+					Element.ElementPostInfo(stress_Plate, Displacement, origin_loc, newlocation);
+					for (unsigned int i = 0; i < 4; i++)
+					{
+						*this << setw(5) << Ele + 1 << setw(9) << i + 1
+							<< setw(15) << newlocation[0 + 3 * i] << setw(15) << newlocation[1 + 3 * i] << setw(15) << newlocation[2 + 3 * i] << endl;
+					}
+					delete[] newlocation;
+				}
+
+				*this << endl;
+				break;
+
+			case ElementTypes::Infinite: // Plate element
+				*this << "  ELEMENT  LOCATION    X       Y       Z " << endl
+					<< "  NUMBER   POINT" << endl;
+
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					double *newlocation = new double[12];
+					double *stress_Infinite = new double[24];
+					double *origin_loc = new double[12];
+					clear(origin_loc, 12);
+					clear(stress_Infinite, 24);
+					clear(newlocation, 12);
+
+					CElement& Element = EleGrp[Ele];
+					Element.ElementPostInfo(stress_Infinite, Displacement, origin_loc, newlocation);
+					for (unsigned int i = 0; i < 4; i++)
+					{
+						*this << setw(5) << Ele + 1 << setw(9) << i + 1
+							<< setw(15) << newlocation[0 + 3 * i] << setw(15) << newlocation[1 + 3 * i] << setw(15) << newlocation[2 + 3 * i] << endl;
+
+					}
+					delete[] newlocation;
+				}
+
+				*this << endl;
+				break;
+
+			case ElementTypes::Subpara: // Plate element
+				*this << "  ELEMENT  LOCATION    X       Y       Z " << endl
+					<< "  NUMBER   POINT" << endl;
+
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					double *newlocation = new double[12];
+					double *stress_Subpara = new double[24];
+					double *origin_loc = new double[12];
+					clear(origin_loc, 12);
+					clear(stress_Subpara, 24);
+					clear(newlocation, 12);
+
+					CElement& Element = EleGrp[Ele];
+					Element.ElementPostInfo(stress_Subpara, Displacement, origin_loc, newlocation);
+					for (unsigned int i = 0; i < 4; i++)
+					{
+						*this << setw(5) << Ele + 1 << setw(9) << i + 1
+							<< setw(15) << newlocation[0 + 3 * i] << setw(15) << newlocation[1 + 3 * i] << setw(15) << newlocation[2 + 3 * i] << endl;
+
+					}
+					delete[] newlocation;
+				}
+
+				*this << endl;
 				break;
 				
 

@@ -7,52 +7,52 @@
 /*                                                                           */
 /*     http://www.comdyn.cn/                                                 */
 /*****************************************************************************/
-
 #pragma once
 
 #include "Element.h"
 
 using namespace std;
 
-//! Bar element class
-class CBar : public CElement
+//! Plane element class
+class CPlate : public CElement
 {
 public:
 
-//!	Constructor
-	CBar();
+	//!	Constructor
+	CPlate();
 
-//!	Desconstructor
-	~CBar();
+	//!	Desconstructor
+	~CPlate();
 
-//!	Read element data from stream Input
+	//!	Read element data from stream Input
 	virtual bool Read(ifstream& Input, unsigned int Ele, CMaterial* MaterialSets, CNode* NodeList);
 
-//!	Write element data to stream
+	//!	Write element data to stream
 	virtual void Write(COutputter& output, unsigned int Ele);
 
-//! Generate location matrix: the global equation number that corresponding to each DOF of the element
-//	Caution:  Equation number is numbered from 1 !
-    virtual void GenerateLocationMatrix();
+	//! Generate location matrix: the global equation number that corresponding to each DOF of the element
+	//	Caution:  Equation number is numbered from 1 !
+	virtual void GenerateLocationMatrix();
 
-//! Calculate element gravity
-	virtual void GravityCalculation(double* ptr_force);
-
-//!	Calculate element stiffness matrix
+	//!	Calculate element stiffness matrix
 	virtual void ElementStiffness(double* Matrix);
 
-//!	Calculate element stress
-	virtual void ElementStressplot1(double* newx, double* Displacement);
-
-//! Recover element stress
-	virtual void RecoverElementStress(double* Displacement, double* A);
-
-//!	Calculate element stiffness matrix 
-	virtual void ElementMass(double* Mass);
-
-//!	Calculate element stress
+	//!	Calculate element stress
 	virtual void ElementStress(double* stress, double* Displacement);
 
-//!	Return the size of the element stiffness matrix (stored as an array column by column)
+	//! Recover element stress
+	virtual void RecoverElementStress(double* Displacement, double* A);
+
+	//!	Calculate the values required in the POSTPROCESS 
+	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions);
+
+	//!	Calculate element stiffness matrix 
+	virtual void ElementMass(double* Mass);
+
+
+	//!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix();
+
+	// Caculate Gravity of Elements
+	virtual void GravityCalculation(double* ptr_force);
 };

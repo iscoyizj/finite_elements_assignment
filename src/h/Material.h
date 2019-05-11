@@ -75,6 +75,24 @@ public:
 	virtual void Write(COutputter& output, unsigned int mset);
 };
 
+
+class CH8Material : public CMaterial
+{
+public:
+
+	double Nu, G, Lam, Rou;
+
+
+public:
+	
+//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+
 class CBeamMaterial : public CMaterial
 {
 public:
@@ -88,6 +106,7 @@ public:
 	double n_y;       // y component of y' axis
 	double n_z;       // z component of y' axis
 
+
 public:
 
 	//!	Read material data from stream Input
@@ -95,4 +114,64 @@ public:
 
 	//!	Write material data to Stream
 	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+class CShellMaterial:public CMaterial{
+public:
+	double nu;			//Poisson ration
+	double thick;		//Shell's thickness
+
+public:
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+class CPlateMaterial : public CMaterial
+{
+public:
+
+	double poisson;	//!Poisson ratio of a 4Q element
+	double thick; // the thickness of element
+
+public:
+
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+
+class CInfiMaterial : public CMaterial
+{
+public:
+
+	double poisson;	//!Poisson ratio of a Infinite element
+	double etype;//!element type of strain and stress
+
+public:
+
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
+
+
+class CSubparaMaterial : public CMaterial
+{
+public:
+	double poisson;			// Poisson ratio of the material
+
+public:
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+	//!	Write material data to Stream OutputFile
+	virtual void Write(COutputter& output, unsigned int mset);
+
 };

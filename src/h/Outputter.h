@@ -59,9 +59,26 @@ public:
 
 //!	Output 4Q element data
 	void Print4QElementData(unsigned int EleGrp);
+	
+//!	Output 3T element data
+	void PrintT3ElementData(unsigned int EleGrp);
+	
+//!	Output 8H element data
+	void PrintH8ElementData(unsigned int EleGrp);
 
-//£¡ Output Beam element data
+//!	Output Plate element data
+	void PrintPlateElementData(unsigned int EleGrp);
+//! Output Beam element data
 	void PrintBeamElementData(unsigned int EleGrp);
+
+//! Output Shell element dara
+	void PrintShellElementData(unsigned int EleGrp);
+
+//! Output Infinite element data
+	void PrintInfiniteElementData(unsigned int EleGrp);
+
+//! Output Subparameter element data
+	void PrintSubparaElementData(unsigned int EleGrp);
 
 //!	Output load data 
 	void OutputLoadInfo(); 

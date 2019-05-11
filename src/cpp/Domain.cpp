@@ -350,7 +350,7 @@ void CDomain::Gravity()
 		double* ptr_force = nullptr;
 		switch (ElementType_ )
 		{
-		 case Bar://Bar element
+		 case Bar: //Bar element
 		     {
 			    unsigned int NUME = ElementGrp.GetNUME();
 
@@ -370,7 +370,7 @@ void CDomain::Gravity()
 				}
 		     }
 			 break;
-		 case Q4://4Q element
+		 case Q4: //4Q element
 		 {
 			 unsigned int NUME = ElementGrp.GetNUME();
 			 double* ptr_force = nullptr;
@@ -397,35 +397,72 @@ void CDomain::Gravity()
 					 Force[dof_four - 1] += -Element.GetGravity() / 4;
 			 }
 		 }
+		 	break;
 		 case Beam:
-			 unsigned int NUME = ElementGrp.GetNUME();
-			 double* ptr_force = new double[6];
-			 clear(ptr_force, 6);
-			 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
 			 {
-				 CElement& Element = ElementGrp[Ele];
-				 Element.GravityCalculation(ptr_force);
-				 CNode** node_ = Element.CElement::GetNodes();
-				 cout << "Gravity" << endl << endl;
-				 for (int i = 0; i < 2; i++)
+				 unsigned int NUME = ElementGrp.GetNUME();
+				 double* ptr_force = new double[6];
+				 clear(ptr_force, 6);
+				 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
 				 {
-					 for  (int j = 2; j < 5; j++)
+					 CElement& Element = ElementGrp[Ele];
+					 Element.GravityCalculation(ptr_force);
+					 CNode** node_ = Element.CElement::GetNodes();
+					 double gravity = Element.GetGravity();
+					 for (int i = 0; i < 2; i++)
 					 {
-						 if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
+						 for  (int j = 2; j < 5; j++)
 						 {
-							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
-#ifdef _DEBUG_
-							 cout << ptr_force[i * 3 + j - 2] << "     ";
-#endif // _DEBUG_
-
+							 if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
+								 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
 						 }
 					 }
 				 }
 			 }
 			 cout << endl << endl;
 			 break;
+		case Shell:
+		{
+			unsigned int NUME = ElementGrp.GetNUME();
+			double* ptr_force=new double[12];
+			clear(ptr_force,12);
+			for(unsigned int Ele=0;Ele<NUME;Ele++){
+				CElement& Element = ElementGrp[Ele];
+				Element.GravityCalculation(ptr_force);
+				CNode** node_ = Element.CElement::GetNodes();
+				for(unsigned int i=0;i<4;i++){
+					for(unsigned int j=2;j<5;j++)
+						if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
+							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
+				}
+			}
 		}
-		
+			 break;
+		case T3:
+			;
+			break;
+		case H8:
+			{
+				unsigned int NUME = ElementGrp.GetNUME();
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = ElementGrp[Ele];
+					unsigned int nen=Element.GetNEN();
+					double* EG = new double[nen];
+					Element.GravityCalculation(EG);
+					for (unsigned int nn = 0; nn < nen; nn++) 
+					{
+						unsigned int dof = Element.GetNodes()[nn] -> bcode[2];
+						if (dof)
+						{
+							Force[dof - 1] -= EG[nn]; 
+						}
+					}
+					delete [] EG;
+				}
+			}
+			break;
+		}
 	}
 }
 
