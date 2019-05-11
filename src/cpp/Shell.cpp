@@ -51,9 +51,9 @@ void CShell::Write(COutputter& output, unsigned int Ele){
 		<< nodes_[3]->NodeNumber << setw(12) << ElementMaterial_->nset << endl;
 }
 
-void CShell::WritePlot(COutPlot& output, unsigned int Ele){
-	output << 4 << setw(9) << nodes_[0]->NodeNumber-1 << setw(9) << nodes_[1]->NodeNumber-1 
-		<< setw(9) << nodes_[2]->NodeNumber-1 <<  setw(9) << nodes_[3]->NodeNumber-1 <<endl;
+void CShell::WritePlot(COutPlot& output, unsigned int Ele) {
+	output << 4 << setw(9) << nodes_[0]->NodeNumber - 1 << setw(9) << nodes_[1]->NodeNumber - 1
+		<< setw(9) << nodes_[2]->NodeNumber - 1 << setw(9) << nodes_[3]->NodeNumber - 1 << endl;
 }
 
 void CShell::GenerateLocationMatrix(){
@@ -100,7 +100,7 @@ void CShell::ElementStiffness(double* Matrix){
 	n1[loop]=-l3[loop]/lmn1;
 	l2[loop]=-m3[loop]*l3[loop]/lmn1;
 	m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-	n2[loop]=-m3[loop]*n3[loop]/lmn1;
+	n2[loop]=-m3[loop]*n2[loop]/lmn1;
 	}
 	//Calculate magnititude of non-zero elements of constitutive matrix
 	//D=[D1,D2,0,0,0;D2,D1,0,0,0;0,0,D3,0,0;0,0,0,D3,0;0,0,0,0,D3], dimension=5*5
@@ -696,7 +696,7 @@ void CShell::ElementMass(double* Mass){
 }
 
 void CShell::ElementStress(double* stress, double* Displacement){
-	clear(stress, 56);
+	clear(stress, 48);
 	double X[4]={nodes_[0]->XYZ[0],nodes_[1]->XYZ[0],nodes_[2]->XYZ[0],nodes_[3]->XYZ[0]};
 	double Y[4]={nodes_[0]->XYZ[1],nodes_[1]->XYZ[1],nodes_[2]->XYZ[1],nodes_[3]->XYZ[1]};
 	double Z[4]={nodes_[0]->XYZ[2],nodes_[1]->XYZ[2],nodes_[2]->XYZ[2],nodes_[3]->XYZ[2]};
@@ -730,7 +730,7 @@ void CShell::ElementStress(double* stress, double* Displacement){
 		n1[loop]=-l3[loop]/lmn1;
 		l2[loop]=-m3[loop]*l3[loop]/lmn1;
 		m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-		n2[loop]=-m3[loop]*n3[loop]/lmn1;
+		n2[loop]=-m3[loop]*n2[loop]/lmn1;
 	}
 
 	//Calculate magnititude of non-zero elements of constitutive matrix
@@ -938,16 +938,15 @@ void CShell::ElementStress(double* stress, double* Displacement){
 			DBe[loop][4][5]=D3*P23;
 	}
 
-	stress[7*num+2]=0.0;
+	stress[6*num+2]=0.0;
 	for(unsigned int loop2=0;loop2<4;loop2++){
 		for(unsigned int loop3=0;loop3<6;loop3++){
-			stress[7*num]+=DBe[loop2][0][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+1]+=DBe[loop2][1][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+3]+=DBe[loop2][3][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+4]+=DBe[loop2][4][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+5]+=DBe[loop2][5][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num]+=DBe[loop2][0][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+1]+=DBe[loop2][1][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+3]+=DBe[loop2][3][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+4]+=DBe[loop2][4][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+5]+=DBe[loop2][5][loop3]*Disp_element[6*loop2+loop3];
 		}
-		stress[7*num+6]=sqrt(stress[7*num]*stress[7*num]-stress[7*num]*stress[7*num+1]+stress[7*num+1]*stress[7*num+1]+3*(stress[7*num+3]*stress[7*num+3]+stress[7*num+4]*stress[7*num+4]+stress[7*num+5]*stress[7*num+5]));
 	}
 	num++;
 			}
@@ -997,7 +996,7 @@ void CShell::GravityCalculation(double* ptr_force){
 	n1[loop]=-l3[loop]/lmn1;
 	l2[loop]=-m3[loop]*l3[loop]/lmn1;
 	m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-	n2[loop]=-m3[loop]*n3[loop]/lmn1;
+	n2[loop]=-m3[loop]*n2[loop]/lmn1;
 	}
 
 	double gausspoint[2]={-0.57735027, 0.57735027};	//Gauss point when ngp=2
@@ -1082,7 +1081,7 @@ void CShell::ElementCoord(double* coord){
 		n1[loop]=-l3[loop]/lmn1;
 		l2[loop]=-m3[loop]*l3[loop]/lmn1;
 		m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-		n2[loop]=-m3[loop]*n3[loop]/lmn1;
+		n2[loop]=-m3[loop]*n2[loop]/lmn1;
 	}
 	double gausspoint[2]={-0.57735027, 0.57735027};	//Gauss point when ngp=2
 	unsigned int num=0;

@@ -32,12 +32,12 @@ enum ElementTypes
 {
 	UNDEFINED = 0,
 	Bar,    // Bar element
+	H8,     // 8H element
+	Shell,   // Shell elment
+	Beam,   // Beam element
 	Q4,     // 4Q element
 	T3,     // 3T element
-	H8,     // 8H element
-	Beam,   // Beam element
 	Plate,  // Plate element
-	Shell,   // Shell elment
 	Infinite,//Infinite element     
     Subpara  // Subparametric element
 };
@@ -89,6 +89,8 @@ public:
     //! Allocate array of derived materials
     void AllocateMaterials(std::size_t size);
 
+	CElement& GetElement(unsigned int index);
+
     //! Read element data from the input data file
     bool ReadElementData(ifstream& Input);
 
@@ -103,9 +105,7 @@ public:
     CElement& operator[](unsigned int i);
 
     //! Return the index-th material in this group
-	CMaterial& GetMaterial(unsigned int index);
-
-	CElement & GetElement(unsigned int index);
+    CMaterial& GetMaterial(unsigned int index);
 
     //! Return the number of material/section property setss in this element group
     unsigned int GetNUMMAT() { return NUMMAT_; }
