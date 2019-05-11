@@ -12,7 +12,6 @@
 
 #include "SkylineMatrix.h"
 #include "CSRMatrix.h"
-#include "SparseMatrix.h"
 
 //!	Base class for a solver
 /*	New solver should be derived from this base class, and match the storage scheme

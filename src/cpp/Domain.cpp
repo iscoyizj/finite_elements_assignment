@@ -112,8 +112,6 @@ bool CDomain::ReadData(string FileName, string OutFile)
     else
         return false;
 
-
-
 //	Read load data
 	if (ReadLoadCases())
         Output->OutputLoadInfo();
@@ -150,30 +148,7 @@ bool CDomain::ReadNodalPoints()
 //	Calculate global equation numbers corresponding to every degree of freedom of each node
 void CDomain::CalculateEquationNumber()
 {
-	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
-	{
-		ElementTypes eleType = EleGrpList[EleGrp].GetElementType();
-		const unsigned int NumE = EleGrpList[EleGrp].GetNUME();
-		for (unsigned int NumEle = 0; NumEle < NumE; NumEle++)
-		{
-			const unsigned int NEN = EleGrpList[EleGrp].GetElement(NumEle).GetNEN();
-			CNode** ElementNode = EleGrpList[EleGrp].GetElement(NumEle).GetNodes();
-			for (unsigned int NumNode = 0; NumNode < NEN; NumNode++)
-			{
-				if (!ElementNode[NumNode]->Rotation_Flag)
-				{
-					const unsigned int N = ElementNode[NumNode]->NodeNumber;
-					if (eleType==Beam)
-					{
-						NodeList[N - 1].bcode[3] = 0;
-						NodeList[N - 1].bcode[4] = 0;
-						NodeList[N - 1].bcode[5] = 0;
-					}
-					
-				}
-			}
-		}
-	}
+	
 	NEQ = 0;
 	for (unsigned int np = 0; np < NUMNP; np++)	// Loop over for all node
 	{

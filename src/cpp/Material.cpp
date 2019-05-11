@@ -203,4 +203,3 @@ void CSubparaMaterial::Write(COutputter& output, unsigned int mset)
 {
 	output << setw(5) << mset + 1 << setw(16) << E << setw(16) << poisson << endl;
 }
->>>>>>> 4d8f50f4b0d09c443ebd89f8409952f7699cb147

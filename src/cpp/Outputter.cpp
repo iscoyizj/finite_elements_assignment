@@ -179,7 +179,7 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Beam: //Beam element
 				PrintBeamElementData(EleGrp);
 				break;
-			case ElementTypes::Shell://Shell element
+			case ElementTypes::Shell: //element
 				PrintShellElementData(EleGrp);
 			case ElementTypes::Infinite: //Infinite element
 				PrintInfiniteElementData(EleGrp);

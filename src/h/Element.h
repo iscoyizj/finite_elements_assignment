@@ -100,7 +100,6 @@ public:
     //! Return the dimension of the location matrix
     inline unsigned int GetND() { return ND_; }
 
-	inline unsigned int GetNEN() { return NEN_; }
 //!	Return the size of the element stiffness matrix (stored as an array column by column)
 	virtual unsigned int SizeOfStiffnessMatrix() = 0;     
 
