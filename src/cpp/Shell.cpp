@@ -1032,7 +1032,7 @@ void CShell::GravityCalculation(double* ptr_force){
 	double Xc=(X[0]+X[1]+X[2]+X[3])/4;
 	double Yc=(Y[0]+Y[1]+Y[2]+Y[3])/4;
 	double Zc=(Z[0]+Z[1]+Z[2]+Z[3])/4;
-	for(unsigned int loop;loop<4;loop++){
+	for(unsigned int loop=0;loop<4;loop++){
 		ptr_force[3*loop]=-weight_avg;
 		ptr_force[3*loop+1]=2*weight_avg/3*(Yc-Y[loop]);
 		ptr_force[3*loop+2]=-2*weight_avg/3*(Xc-X[loop]);
