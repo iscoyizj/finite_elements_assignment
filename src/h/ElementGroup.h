@@ -19,6 +19,9 @@
 #include "H8.h"
 #include "Plate.h"
 #include "Beam.h"
+#include "Shell.h"
+#include "Infinite.h"
+#include "Subpara.h"
 #include "Material.h"
 #include "Node.h"
 
@@ -27,14 +30,16 @@ using namespace std;
 //! Define set of element types
 enum ElementTypes
 {
-    UNDEFINED = 0,
-    Bar,    // Bar element
-    Q4,     // 4Q element
-    T3,     // 3T element
-    H8,     // 8H element
-    Beam,   // Beam element
-    Plate,  // Plate element
-    Shell   // Shell elment
+	UNDEFINED = 0,
+	Bar,    // Bar element
+	Q4,     // 4Q element
+	T3,     // 3T element
+	H8,     // 8H element
+	Beam,   // Beam element
+	Plate,  // Plate element
+	Shell,   // Shell elment
+	Infinite,//Infinite element     
+    Subpara  // Subparametric element
 };
 
 //! Element group class
@@ -98,7 +103,9 @@ public:
     CElement& operator[](unsigned int i);
 
     //! Return the index-th material in this group
-    CMaterial& GetMaterial(unsigned int index);
+	CMaterial& GetMaterial(unsigned int index);
+
+	CElement & GetElement(unsigned int index);
 
     //! Return the number of material/section property setss in this element group
     unsigned int GetNUMMAT() { return NUMMAT_; }

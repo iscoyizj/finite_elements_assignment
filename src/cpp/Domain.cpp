@@ -10,11 +10,16 @@
 
 #include "Domain.h"
 #include "Material.h"
+#ifdef _PARDISO_
+#include <mkl.h>
+#include "CSRMatrix.h"
+#endif // _PARDISO_
 
 using namespace std;
 
 //	Clear an array
-template <class type> void clear( type* a, unsigned int N )
+template <class type> 
+void clear( type* a, unsigned int N )
 {
 	for (unsigned int i = 0; i < N; i++)
 		a[i] = 0;
@@ -42,7 +47,14 @@ CDomain::CDomain()
 	NUMELE = 0;
 
 	Force = nullptr;
+	
+#ifdef _PARDISO_
+	CSRStiffnessMatrix = nullptr;
+#else
 	StiffnessMatrix = nullptr;
+#endif // _PARDISO_
+
+	
 }
 
 //	Desconstructor
@@ -56,7 +68,14 @@ CDomain::~CDomain()
 	delete [] LoadCases;
 
 	delete [] Force;
+	
+#ifdef _PARDISO_
+	delete CSRStiffnessMatrix;
+#else
 	delete StiffnessMatrix;
+#endif // _PARDISO_
+
+	
 }
 
 //	Return pointer to the instance of the Domain class
@@ -99,10 +118,6 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
     else
         return false;
 
-//	Update equation number
-	CalculateEquationNumber();
-	Output->OutputEquationNumber();
-
 //	Read load data
 	if (ReadLoadCases())
         Output->OutputLoadInfo();
@@ -119,6 +134,10 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
 	}
     else
         return false;
+
+//	Update equation number
+	CalculateEquationNumber();
+	Output->OutputEquationNumber();
 
 	return true;
 }
@@ -140,6 +159,7 @@ bool CDomain::ReadNodalPoints()
 //	Calculate global equation numbers corresponding to every degree of freedom of each node
 void CDomain::CalculateEquationNumber()
 {
+	
 	NEQ = 0;
 	for (unsigned int np = 0; np < NUMNP; np++)	// Loop over for all node
 	{
@@ -228,17 +248,23 @@ void CDomain::AssembleStiffnessMatrix()
         {
             CElement& Element = ElementGrp[Ele];
             Element.ElementStiffness(Matrix);
-            StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+            
+#ifdef _PARDISO_
+			CSRStiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+#else
+			StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+#ifdef _DEBUG_
+			COutputter* Output = COutputter::Instance();
+			Output->PrintStiffnessMatrix();
+#endif
+#endif // _PARDISO_
         }
 
 		delete[] Matrix;
 		Matrix = nullptr;
 	}
 
-#ifdef _DEBUG_
-	COutputter* Output = COutputter::Instance();
-	Output->PrintStiffnessMatrix();
-#endif
+
 
 }
 
@@ -260,6 +286,44 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
 	}
 	return true;
 }
+
+#ifdef _PARDISO_
+void CDomain::CalculateCSRColumns()
+{
+	CSparseMatrix<double>* matrix = CSRStiffnessMatrix;
+
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
+	{
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		unsigned int NUME = ElementGrp.GetNUME();
+
+		for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		{
+			CElement& Element = ElementGrp[Ele];
+			Element.GenerateLocationMatrix();
+			unsigned LMSize = Element.GetND();
+			unsigned* LM = Element.GetLocationMatrix();
+			for (unsigned i = 0; i < LMSize; ++i)
+			{
+				unsigned index1 = LM[i];
+				if (!index1) continue;
+				for (unsigned j = i; j < LMSize; ++j)
+				{
+					unsigned index2 = LM[j];
+					if (!index2) continue;
+					if (index1 < index2) {
+						matrix->markPosition(index1, index2);
+					}
+					else
+					{
+						matrix->markPosition(index2, index1);
+					}
+				}
+			}
+		}
+	}
+}
+#endif // _PARDISO_
 
 void CDomain::Gravity()
 {
@@ -319,6 +383,7 @@ void CDomain::Gravity()
 					 Force[dof_four - 1] += -Element.GetGravity() / 4;
 			 }
 		 }
+		 	break;
 		 case Beam:
 			 {
 				 unsigned int NUME = ElementGrp.GetNUME();
@@ -335,13 +400,29 @@ void CDomain::Gravity()
 						 for  (int j = 2; j < 5; j++)
 						 {
 							 if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
-							 {
 								 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
-							 }
 						 }
 					 }
 				 }
 			 }
+			 cout << endl << endl;
+			 break;
+		case Shell:
+		{
+			unsigned int NUME = ElementGrp.GetNUME();
+			double* ptr_force=new double[12];
+			clear(ptr_force,12);
+			for(unsigned int Ele=0;Ele<NUME;Ele++){
+				CElement& Element = ElementGrp[Ele];
+				Element.GravityCalculation(ptr_force);
+				CNode** node_ = Element.CElement::GetNodes();
+				for(unsigned int i=0;i<4;i++){
+					for(unsigned int j=2;j<5;j++)
+						if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
+							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
+				}
+			}
+		}
 			 break;
 		case T3:
 			;
@@ -368,7 +449,6 @@ void CDomain::Gravity()
 			}
 			break;
 		}
-		
 	}
 }
 
@@ -381,17 +461,21 @@ void CDomain::AllocateMatrices()
     clear(Force, NEQ);
 
 //  Create the banded stiffness matrix
-    StiffnessMatrix = new CSkylineMatrix<double>(NEQ);
 
+#ifdef _PARDISO_
+	CSRStiffnessMatrix = new CSparseMatrix<double>(NEQ);
+	CalculateCSRColumns();
+	CSRStiffnessMatrix->Allocate();
+#else
+	StiffnessMatrix = new CSkylineMatrix<double>(NEQ);
 //	Calculate column heights
 	CalculateColumnHeights();
-
 //	Calculate address of diagonal elements in banded matrix
 	StiffnessMatrix->CalculateDiagnoalAddress();
-
 //	Allocate for banded global stiffness matrix
     StiffnessMatrix->Allocate();
-
 	COutputter* Output = COutputter::Instance();
 	Output->OutputTotalSystemData();
+#endif // _PARDISO_
+	
 }

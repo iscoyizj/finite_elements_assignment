@@ -9,15 +9,16 @@
 /*****************************************************************************/
 
 #include "Solver.h"
-
 #include <cmath>
-#include <cfloat>
 #include <iostream>
+#ifdef _PARDISO_
+#include<mkl.h>
 #include <algorithm>
+#include <cfloat>
+
+#endif // _PARDISO_
 
 using namespace std;
-
-CSolver::CSolver(CSkylineMatrix<double>* K) : K(K) {};
 
 // LDLT facterization
 void CLDLTSolver::LDLT()
@@ -87,3 +88,69 @@ void CLDLTSolver::BackSubstitution(double* Force)
 			Force[i-1] -= (*K)(i,j) * Force[j-1];	// a_i = Vbar_i - sum_j(L_ij Vbar_j)
 	}
 };
+
+#ifdef _PARDISO_
+void CSRSolver::solve(double* Force, unsigned NLCase)
+{
+	void* pt[64];
+	for (unsigned _ = 0; _ < 64; _++) pt[_] = 0;
+	int num_procs;
+	const int mtype = 2;
+	int iparm[64] = { 0 };
+	pardisoinit(pt, &mtype, iparm);
+	
+	iparm[1] = 2; // The parallel (OpenMP) version of the nested dissection algorithm.
+	// Try 3 later
+	iparm[5] = 1; // write back to Force
+	char    *var;
+	num_procs = 4;
+	iparm[2] = num_procs;
+	
+	const int maxfct(1),mnum(1);
+	const int size = K->size;
+	double* values = K->values;
+	int* column_index = K->col_index;
+	int* row_index = K->row_index;
+
+	const int nrhs = NLCase;
+	double* rhs = Force;
+
+	int phase = 13;
+	double* res = new double[nrhs*size];
+	for (std::size_t _ = 0; _ < nrhs*size; _++) res[_] = 0;
+
+	int msglvl = 0; // print info
+
+	int* perm = new int[size];
+	int error;
+
+	pardiso(
+		pt, // handle to some shit
+		&maxfct, // maxfct
+		&mnum, // mnum
+		&mtype, // sym pos matrix
+		&phase, // go through all
+		&size,  // size of matrix
+		values,
+		row_index,
+		column_index,
+		perm, 
+		&nrhs,
+		iparm, 
+		&msglvl, // print info or not
+		rhs,
+		res,
+		&error // see if any error
+	);
+	if (error)
+	{
+		std::cerr << "ERROR IN PARDISO SOLVER: " << error << std::endl;
+		exit(8);
+	}
+	delete[] perm;
+	delete[] res;
+}
+#endif // _PARDISO_
+
+
+
