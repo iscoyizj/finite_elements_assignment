@@ -1,5 +1,5 @@
 TITLE : Cables to test Plate element of STAP++
-        (22:42:4 on May 9, 2019, Thursday)
+        (14:25:12 on May 11, 2019, Saturday)
 
 C O N T R O L   I N F O R M A T I O N
 
@@ -15,18 +15,18 @@ C O N T R O L   I N F O R M A T I O N
     NODE               BOUNDARY                                   NODAL POINT
    NUMBER          CONDITION  CODES                               COORDINATES
         1    1    1    1    1    1    1       0.00000e+00    0.00000e+00    0.00000e+00
-        2    1    1    0    0    0    1       4.00000e+00    0.00000e+00    0.00000e+00
+        2    1    1    1    1    1    1       0.00000e+00    2.00000e+00    0.00000e+00
         3    1    1    0    0    0    1       4.00000e+00    2.00000e+00    0.00000e+00
-        4    1    1    1    1    1    1       0.00000e+00    2.00000e+00    0.00000e+00
+        4    1    1    0    0    0    1       4.00000e+00    0.00000e+00    0.00000e+00
 
  EQUATION NUMBERS
 
    NODE NUMBER                DEGREES OF FREEDOM
         N           X    Y    Z  sitax  sitay  sitaz
         1           0    0    0    0    0    0
-        2           0    0    1    2    3    0
-        3           0    0    4    5    6    0
-        4           0    0    0    0    0    0
+        2           0    0    0    0    0    0
+        3           0    0    1    2    3    0
+        4           0    0    4    5    6    0
 
  L O A D   C A S E   D A T A
 
@@ -35,8 +35,8 @@ C O N T R O L   I N F O R M A T I O N
 
     NODE       DIRECTION      LOAD
    NUMBER                   MAGNITUDE
-      2            3       -2.00000e+01
-      3            3       -2.00000e+01
+      3            3        2.00000e+01
+      4            3       -2.00000e+01
 
  E L E M E N T   G R O U P   D A T A
 
@@ -64,7 +64,7 @@ C O N T R O L   I N F O R M A T I O N
  E L E M E N T   I N F O R M A T I O N
  ELEMENT     NODE     NODE     NODE     NODE       MATERIAL
  NUMBER-N      I        J        K        L       SET NUMBER
-    1          1        2        3        4           1
+    1          1        4        3        2           1
 
 	TOTAL SYSTEM DATA
 
@@ -81,24 +81,24 @@ C O N T R O L   I N F O R M A T I O N
 
   NODE           X-DISPLACEMENT    Y-DISPLACEMENT    Z-DISPLACEMENT     X-ROTATION     Y-ROTATION     Z-ROTATION
     1               0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00
-    2               0.00000e+00       0.00000e+00      -1.58810e-04      -4.37895e-06       6.08674e-05       0.00000e+00
-    3               0.00000e+00       0.00000e+00      -1.58810e-04       4.37895e-06       6.08674e-05       0.00000e+00
-    4               0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00
+    2               0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00       0.00000e+00
+    3               0.00000e+00       0.00000e+00       1.74381e-05       1.74442e-05      -4.27711e-06       0.00000e+00
+    4               0.00000e+00       0.00000e+00      -1.74381e-05       1.74442e-05       4.27711e-06       0.00000e+00
 
  S T R E S S  C A L C U L A T I O N S  F O R  E L E M E N T  G R O U P    1
 
  ELEMENT NUMBER :    1
  GAUSS POINT   DEGREES    OF    FREEDOM     BENDING MOMENT   BENDING MOMENT    BENDING MOMENT
    NUMBER         X                Y                X                Y                 XY 
-    1       8.45299e-01       4.22650e-01       3.78564e+02       9.96885e+01       7.29285e+00
-    2       8.45299e-01       1.57735e+00       3.78564e+02       9.96885e+01      -7.29285e+00
-    3       3.15470e+00       4.22650e-01       1.01436e+02      -2.13727e+01       7.29285e+00
-    4       3.15470e+00       1.57735e+00       1.01436e+02      -2.13727e+01      -7.29285e+00
+    1       8.45299e-01       4.22650e-01       2.84918e+01       8.58089e+00      -3.60558e+01
+    2       8.45299e-01       1.57735e+00      -2.84918e+01      -8.58089e+00      -3.60558e+01
+    3       3.15470e+00       4.22650e-01      -8.08763e+00      -2.30181e+00      -6.45487e+01
+    4       3.15470e+00       1.57735e+00       8.08763e+00       2.30181e+00      -6.45487e+01
 
  S O L U T I O N   T I M E   L O G   I N   S E C 
 
-     TIME FOR INPUT PHASE = 8.30000e-02
-     TIME FOR CALCULATION OF STIFFNESS MATRIX = 3.00000e-03
-     TIME FOR FACTORIZATION AND LOAD CASE SOLUTIONS = 2.80000e-02
+     TIME FOR INPUT PHASE = 7.90000e-02
+     TIME FOR CALCULATION OF STIFFNESS MATRIX = 8.00000e-03
+     TIME FOR FACTORIZATION AND LOAD CASE SOLUTIONS = 3.30000e-02
 
-     T O T A L   S O L U T I O N   T I M E = 1.58000e-01
+     T O T A L   S O L U T I O N   T I M E = 1.87000e-01

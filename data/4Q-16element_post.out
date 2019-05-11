@@ -1,4 +1,4 @@
-  ELEMENT  LOCATION    X       Y       Z        SXX            SYY            TXY
+  ELEMENT  LOCATION              X           Y           Z                     SXX            SYY            TXY
   NUMBER   POINT
     1        1              0              0              0       -104.181        1.47403       -3.80276
     1        2       0.499998       0.124997              0       -202.229       -27.9406       -10.0966
