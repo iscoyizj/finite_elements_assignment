@@ -67,7 +67,6 @@ void C4QMaterial::Write(COutputter& output, unsigned int mset)
 	output << setw(5) << mset+1 << setw(16) << E << setw(16) << poisson << setw(16) << density << setw(16)<< thick << endl;
 }
 
-
 bool CH8Material::Read(ifstream& Input, unsigned int mset)
 {
 	Input >> nset;	// Number of property set
