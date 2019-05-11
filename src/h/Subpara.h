@@ -50,14 +50,12 @@ public:
 //!	Calculate element stiffness matrix 
 	virtual void ElementMass(double* Mass){Mass = 0;};
 	
-	//!	Calculate the values required in the POSTPROCESS 
-	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions) {};
+//!	Calculate the values required in the POSTPROCESS 
+	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions);
 
 //! Recover element stress
 	virtual void RecoverElementStress(double* Displacement, double* A);
 
-//!	Calculate the values required in the POSTPROCESS 
-	virtual void ElementPostInfo(double* stress, double* Displacement, double* PrePositions, double* PostPositions) {};
 private:
 
 //! calculate shape function N at (xi,eta)
