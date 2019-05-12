@@ -777,13 +777,12 @@ void COutputter::OutputElementStress(unsigned int lcase)
 							<< shellstress[7*loop+1] << setw(16) << shellstress[7*loop+2] << setw(16)<<shellstress[7*loop+3]
 							<<setw(16)<<shellstress[7*loop+4]<<setw(16)<<shellstress[7*loop+5]<<setw(16)<<shellstress[7*loop+6]<<endl;
 					}
-				}
-				double MisesShell=0;
-				for(unsigned int gs=0;gs<8;gs++){
-					MisesShell+=shellstress[7*gs+6];
-				}
+					double MisesShell=0;
+					for(unsigned int gs=0;gs<8;gs++)
+						MisesShell+=shellstress[7*gs+6];
 				MisesShell/=8;
 				Outplot->ElementStress(MisesShell);
+				}
 				break;
 			case ElementTypes::Infinite:
 				*this << "  ELEMENT  GAUSS    X-COORD        Y-COORD        Z-COORD         SXX            SYY            TXY" << endl
@@ -835,6 +834,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 
 				}
 				delete[] stress_Subpara;
+				break;
 			}
 			default: // Invalid element type
 				cerr << "*** Error *** Elment type " << ElementType
