@@ -124,6 +124,9 @@ void COutPlot::OutputEleType(double n, double nnd)
 			case ElementTypes::Beam:
 				type_=3;
 				break;
+			case ElementTypes::Shell:
+				type_=7;
+				break;
 		}
 		for (unsigned int i=0;i<NUME;i++)
 			*this << type_ << endl;
