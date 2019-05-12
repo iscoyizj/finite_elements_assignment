@@ -29,7 +29,7 @@ CBeam::CBeam()
 }
 
 //	Desconstructor
-CBeam::~CBeam() 
+CBeam::~CBeam()
 {
 	delete[]nodes_;
 	delete[]LocationMatrix_;
@@ -64,15 +64,15 @@ bool CBeam::Read(ifstream& Input, unsigned int Ele, CMaterial* MaterialSets, CNo
 //	Write element data to stream
 void CBeam::Write(COutputter& output, unsigned int Ele)
 {
-	output << setw(5) << Ele + 1 << setw(11) << nodes_[0]->NodeNumber 
-		<< setw(9)<< nodes_[1]->NodeNumber 
+	output << setw(5) << Ele + 1 << setw(11) << nodes_[0]->NodeNumber
+		<< setw(9) << nodes_[1]->NodeNumber
 		<< setw(12) << ElementMaterial_->nset << endl;
 }
 
 //	Write element data to stream
 void CBeam::WritePlot(COutPlot& output, unsigned int Ele)
 {
-	output << 2 << setw(9) << nodes_[0]->NodeNumber-1 << setw(9)<< nodes_[1]->NodeNumber-1 << endl;
+	output << 2 << setw(9) << nodes_[0]->NodeNumber - 1 << setw(9) << nodes_[1]->NodeNumber - 1 << endl;
 }
 
 //  Generate location matrix: the global equation number that corresponding to each DOF of the
@@ -133,10 +133,10 @@ void CBeam::ElementStiffness(double* Matrix)
 	double len_orientation;
 	len_orientation = sqrt(material.n_x*material.n_x + material.n_y*material.n_y + material.n_z*material.n_z);
 
-    // n matrix is the orientation cosine matrix
-	n[1][0] = material.n_x/len_orientation;
-	n[1][1] = material.n_y/len_orientation;
-	n[1][2] = material.n_z/len_orientation; // orientation of y'
+	// n matrix is the orientation cosine matrix
+	n[1][0] = material.n_x / len_orientation;
+	n[1][1] = material.n_y / len_orientation;
+	n[1][2] = material.n_z / len_orientation; // orientation of y'
 	n[2][0] = n[0][1] * n[1][2] - n[0][2] * n[1][1];
 	n[2][1] = n[0][2] * n[1][0] - n[0][0] * n[1][2];
 	n[2][2] = n[0][0] * n[1][1] - n[0][1] * n[1][0]; //orientation of z'
@@ -285,7 +285,6 @@ void CBeam::ElementStress(double* stress, double* Displacement)
 	}
 }
 
-
 void CBeam::ElementMass(double* mass)
 {
 	clear(mass, 1);
@@ -311,13 +310,13 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	double len_orientation;
 	len_orientation = sqrt(material.n_x*material.n_x + material.n_y*material.n_y + material.n_z*material.n_z);
 
-	n[1][0] = material.n_x/len_orientation;
-	n[1][1] = material.n_y/len_orientation;
-	n[1][2] = material.n_z/len_orientation; // orientation of y'
+	n[1][0] = material.n_x / len_orientation;
+	n[1][1] = material.n_y / len_orientation;
+	n[1][2] = material.n_z / len_orientation; // orientation of y'
 	n[2][0] = n[0][1] * n[1][2] - n[0][2] * n[1][1];
 	n[2][1] = n[0][2] * n[1][0] - n[0][0] * n[1][2];
 	n[2][2] = n[0][0] * n[1][1] - n[0][1] * n[1][0]; //orientation of z'
-	
+
 	double pos_origin[2][3]; // preposition
 /*
 	double local_diag[4][3];//vector from center of rectangle to four angles in the local coordinate
@@ -346,8 +345,8 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	local_diag[1][2] = magCodim * material.height;
 	local_diag[2][2] = -magCodim * material.height;
 	local_diag[3][2] = -magCodim * material.height;
-	
-	for (unsigned int i = 0; i < 4; i++) 
+
+	for (unsigned int i = 0; i < 4; i++)
 	{
 		global_diag[i][0] = n[0][0] * local_diag[i][0] + n[1][0] * local_diag[i][1] + n[2][0] * local_diag[i][2];
 		global_diag[i][1] = n[0][1] * local_diag[i][0] + n[1][1] * local_diag[i][1] + n[2][1] * local_diag[i][2];
@@ -359,7 +358,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	double global_theta[2][3]; //rotation in the global coordinate
 
 	// Loop over displacements
-	for (unsigned int i = 0; i < 3; i++) 
+	for (unsigned int i = 0; i < 3; i++)
 	{
 
 		if (LocationMatrix_[i]) {
@@ -400,7 +399,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	}
 	/*
 	for (unsigned int i = 0; i < 2; i++) {
-		for (unsigned int j = 0; j < 4; j++) 
+		for (unsigned int j = 0; j < 4; j++)
 		{
 			postPositionBeam[(i * 4 + j) * 3] = pos_origin[i][0] + global_d[i][0] + global_diag[j][0] + global_diag[j][2] * global_theta[i][1] - global_diag[j][1] * global_theta[i][2];
 			postPositionBeam[(i * 4 + j) * 3 + 1] = pos_origin[i][1] + global_d[i][1] + global_diag[j][1] + global_diag[j][0] * global_theta[i][2] - global_diag[j][2] * global_theta[i][0];
@@ -413,7 +412,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	*/
 	double element_theta[2][3]; //rotation in the local coordinate
 	//coordinate conversion
-	for (unsigned int i = 0; i < 2; i++) 
+	for (unsigned int i = 0; i < 2; i++)
 	{
 		element_d[i][0] = n[0][0] * global_d[i][0] + n[1][0] * global_d[i][1] + n[2][0] * global_d[i][2];
 		element_d[i][1] = n[0][1] * global_d[i][0] + n[1][1] * global_d[i][1] + n[2][1] * global_d[i][2];
@@ -443,7 +442,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	// beam stress is aligned in the following way
 	// 1 left up  2 left down  3 right down  4 right up
 	// sigma xx yy zz xy yz xz
-	for (unsigned int i = 0; i < 2; i++) 
+	for (unsigned int i = 0; i < 2; i++)
 	{
 		sigma2[i][0] = material.E * material.width * dtheta[i][2] / 2;
 		sigma2[i][1] = material.E * material.height * dtheta[i][1] / 2;
@@ -476,11 +475,10 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	beamstress[48] = 0;
 	for (int i = 0; i < 8; i++)
 	{
-		beamstress[48] = beamstress[48] + sqrt(beamstress[i*6]*beamstress[i*6]+3*(beamstress[i*6+3]*beamstress[i*6+3]+beamstress[i*6+5]*beamstress[i*6+5]))/8;
+		beamstress[48] = beamstress[48] + sqrt(beamstress[i * 6] * beamstress[i * 6] + 3 * (beamstress[i * 6 + 3] * beamstress[i * 6 + 3] + beamstress[i * 6 + 5] * beamstress[i * 6 + 5]));
 	}
 	beamstress[48] = beamstress[48] / 8;
 }
-
 
 void CBeam::GravityCalculation(double* ptr_force)
 {
