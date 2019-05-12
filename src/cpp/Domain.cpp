@@ -39,6 +39,7 @@ CDomain::CDomain()
 	LoadCases = nullptr;
 	
 	NEQ = 0;
+	NUMELE = 0;
 
 	Force = nullptr;
 	StiffnessMatrix = nullptr;
@@ -92,11 +93,15 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
 //	Read nodal point data
 	if (ReadNodalPoints())
 	{
-		Output->OutputNodeInfo();
+        Output->OutputNodeInfo();
 		Outplot->OutNode();
 	}
     else
         return false;
+
+//	Update equation number
+	CalculateEquationNumber();
+	Output->OutputEquationNumber();
 
 //	Read load data
 	if (ReadLoadCases())
@@ -104,20 +109,16 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
     else
         return false;
 
-	unsigned int n = 0;
-	//	Read element data
+	unsigned int n=0;
+//	Read element data
 	if (ReadElements(&n, &NUMELE))
 	{
-		Output->OutputElementInfo();
+        Output->OutputElementInfo();
 		Outplot->OutputElementInfo(n, NUMELE);
 		Outplot->OutputEleType(NUMELE, NUMNP);
 	}
-	else
-		return false;
-
-	//	Update equation number
-	CalculateEquationNumber();
-	Output->OutputEquationNumber();
+    else
+        return false;
 
 	return true;
 }
@@ -136,7 +137,24 @@ bool CDomain::ReadNodalPoints()
 	return true;
 }
 
-
+//	Calculate global equation numbers corresponding to every degree of freedom of each node
+void CDomain::CalculateEquationNumber()
+{
+	NEQ = 0;
+	for (unsigned int np = 0; np < NUMNP; np++)	// Loop over for all node
+	{
+		for (unsigned int dof = 0; dof < CNode::NDF; dof++)	// Loop over for DOFs of node np
+		{
+			if (NodeList[np].bcode[dof]) 
+				NodeList[np].bcode[dof] = 0;
+			else
+			{
+				NEQ++;
+				NodeList[np].bcode[dof] = NEQ;
+			}
+		}
+	}
+}
 
 //	Read load case data
 bool CDomain::ReadLoadCases()
@@ -152,7 +170,6 @@ bool CDomain::ReadLoadCases()
 	return true;
 }
 
-
 // Read element data
 bool CDomain::ReadElements(unsigned int* n, unsigned int* sum)
 {
@@ -164,79 +181,6 @@ bool CDomain::ReadElements(unsigned int* n, unsigned int* sum)
             return false;
     
     return true;
-}
-
-//	Calculate global equation numbers corresponding to every degree of freedom of each node
-void CDomain::CalculateEquationNumber()
-{
-	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)		//	Loop over for all element groups
-	{
-		CElementGroup& ElementGrp = EleGrpList[EleGrp];
-		ElementTypes ElementType_;
-		ElementType_ = ElementGrp.GetElementType();
-		switch (ElementType_)
-		{
-		case Beam: // Bar element
-		{
-			unsigned int NUME = ElementGrp.GetNUME();
-			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
-			{
-				CElement& Element = ElementGrp[Ele];
-				CNode** node_ = Element.CElement::GetNodes();
-				unsigned int node_left = node_[0]->NodeNumber;
-				unsigned int node_right = node_[1]->NodeNumber;
-				NodeList[node_left - 1].bcode[3] = 0;
-				NodeList[node_left - 1].bcode[4] = 0;
-				NodeList[node_left - 1].bcode[5] = 0;
-				NodeList[node_right - 1].bcode[3] = 0;
-				NodeList[node_right - 1].bcode[4] = 0;
-				NodeList[node_right - 1].bcode[5] = 0;
-			}
-		}
-		break;
-
-		case Shell: // Shell element
-		{
-			unsigned int NUME = ElementGrp.GetNUME();
-			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
-			{
-				CElement& Element = ElementGrp[Ele];
-				CNode** node_ = Element.CElement::GetNodes();
-				unsigned int node_one = node_[0]->NodeNumber;
-				unsigned int node_two = node_[1]->NodeNumber;
-				unsigned int node_three = node_[2]->NodeNumber;
-				unsigned int node_four = node_[3]->NodeNumber;
-				NodeList[node_one - 1].bcode[3] = 0;
-				NodeList[node_one - 1].bcode[4] = 0;
-				NodeList[node_one - 1].bcode[5] = 0;
-				NodeList[node_two - 1].bcode[3] = 0;
-				NodeList[node_two - 1].bcode[4] = 0;
-				NodeList[node_two - 1].bcode[5] = 0;
-				NodeList[node_three - 1].bcode[3] = 0;
-				NodeList[node_three - 1].bcode[4] = 0;
-				NodeList[node_three - 1].bcode[5] = 0;
-				NodeList[node_four - 1].bcode[3] = 0;
-				NodeList[node_four - 1].bcode[4] = 0;
-				NodeList[node_four - 1].bcode[5] = 0;
-			}
-		}
-		break;
-		}
-	}
-	NEQ = 0;
-	for (unsigned int np = 0; np < NUMNP; np++)	// Loop over for all node
-	{
-		for (unsigned int dof = 0; dof < CNode::NDF; dof++)	// Loop over for DOFs of node np
-		{
-			if (NodeList[np].bcode[dof])
-				NodeList[np].bcode[dof] = 0;
-			else
-			{
-				NEQ++;
-				NodeList[np].bcode[dof] = NEQ;
-			}
-		}
-	}
 }
 
 //	Calculate column heights
@@ -317,8 +261,6 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
 	return true;
 }
 
-
-
 void CDomain::Gravity()
 {
 
@@ -341,8 +283,8 @@ void CDomain::Gravity()
 					CNode** node_ = Element.CElement::GetNodes();
 					unsigned int node_left = node_[0]->NodeNumber;
 					unsigned int node_right = node_[1]->NodeNumber;
-					unsigned int dof_left = NodeList[node_left - 1].bcode[2];
-					unsigned int dof_right = NodeList[node_right - 1].bcode[2];
+					unsigned int dof_left = NodeList[node_left - 1].bcode[1];
+					unsigned int dof_right = NodeList[node_right - 1].bcode[1];
 					if (dof_left)
 						Force[dof_left - 1] += -Element.GetGravity() / 2;
 					if (dof_right)
@@ -377,7 +319,6 @@ void CDomain::Gravity()
 					 Force[dof_four - 1] += -Element.GetGravity() / 4;
 			 }
 		 }
-		 	break;
 		 case Beam:
 			 {
 				 unsigned int NUME = ElementGrp.GetNUME();
@@ -401,53 +342,6 @@ void CDomain::Gravity()
 					 }
 				 }
 			 }
-			 break;
-
-		 case Plate: //Plate element
-		 {
-			 unsigned int NUME = ElementGrp.GetNUME();
-			 double* ptr_force = nullptr;
-			 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
-			 {
-				 CElement& Element = ElementGrp[Ele];
-				 Element.GravityCalculation(ptr_force);
-				 CNode** node_ = Element.CElement::GetNodes();
-				 unsigned int node_one = node_[0]->NodeNumber;
-				 unsigned int node_two = node_[1]->NodeNumber;
-				 unsigned int node_three = node_[2]->NodeNumber;
-				 unsigned int node_four = node_[3]->NodeNumber;
-				 unsigned int dof_one = NodeList[node_one - 1].bcode[2];
-				 unsigned int dof_two = NodeList[node_two - 1].bcode[2];
-				 unsigned int dof_three = NodeList[node_three - 1].bcode[2];
-				 unsigned int dof_four = NodeList[node_four - 1].bcode[2];
-				 if (dof_one)
-					 Force[dof_one - 1] += -Element.GetGravity() / 4;
-				 if (dof_two)
-					 Force[dof_two - 1] += -Element.GetGravity() / 4;
-				 if (dof_three)
-					 Force[dof_three - 1] += -Element.GetGravity() / 4;
-				 if (dof_four)
-					 Force[dof_four - 1] += -Element.GetGravity() / 4;
-			 }
-		 }
-		 break;
-
-		case Shell:
-		{
-			unsigned int NUME = ElementGrp.GetNUME();
-			double* ptr_force=new double[12];
-			clear(ptr_force,12);
-			for(unsigned int Ele=0;Ele<NUME;Ele++){
-				CElement& Element = ElementGrp[Ele];
-				Element.GravityCalculation(ptr_force);
-				CNode** node_ = Element.CElement::GetNodes();
-				for(unsigned int i=0;i<4;i++){
-					for(unsigned int j=2;j<5;j++)
-						if (NodeList[node_[i]->NodeNumber - 1].bcode[j]) 
-							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
-				}
-			}
-		}
 			 break;
 		case T3:
 			;
@@ -474,6 +368,7 @@ void CDomain::Gravity()
 			}
 			break;
 		}
+		
 	}
 }
 

@@ -74,7 +74,7 @@ private:
 /*! A one-dimensional array storing only the elements below the	skyline of the 
     global stiffness matrix. */
     CSkylineMatrix<double>* StiffnessMatrix;
-	CSparseMatrix<double>* CSRStiffnessMatrix;
+
 //!	Global nodal force/displacement vector
 	double* Force;
 
@@ -118,9 +118,7 @@ public:
 	void Gravity();
 
 //!	Assemble the global nodal force vector for load case LoadCase
-	bool AssembleForce(unsigned int LoadCase);
-	void CalculateCSRColumns();
-
+	bool AssembleForce(unsigned int LoadCase); 
 
 //!	Return solution mode
 	inline unsigned int GetMODEX() { return MODEX; }
@@ -163,5 +161,4 @@ public:
 //!	Return pointer to the banded stiffness matrix
 	inline CSkylineMatrix<double>* GetStiffnessMatrix() { return StiffnessMatrix; }
 
-	inline CSparseMatrix<double>* GetCSRStiffnessMatrix() { return CSRStiffnessMatrix; }
 };

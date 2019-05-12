@@ -19,9 +19,6 @@
 #include "H8.h"
 #include "Plate.h"
 #include "Beam.h"
-#include "Shell.h"
-#include "Infinite.h"
-#include "Subpara.h"
 #include "Material.h"
 #include "Node.h"
 
@@ -30,16 +27,14 @@ using namespace std;
 //! Define set of element types
 enum ElementTypes
 {
-	UNDEFINED = 0,
-	Bar,    // Bar element
-	H8,     // 8H element
-	Shell,   // Shell elment
-	Beam,   // Beam element
-	Q4,     // 4Q element
-	T3,     // 3T element
-	Plate,  // Plate element
-	Infinite,//Infinite element     
-    Subpara  // Subparametric element
+    UNDEFINED = 0,
+    Bar,    // Bar element
+    Q4,     // 4Q element
+    T3,     // 3T element
+    H8,     // 8H element
+    Beam,   // Beam element
+    Plate,  // Plate element
+    Shell   // Shell elment
 };
 
 //! Element group class
@@ -88,8 +83,6 @@ public:
 
     //! Allocate array of derived materials
     void AllocateMaterials(std::size_t size);
-
-	CElement& GetElement(unsigned int index);
 
     //! Read element data from the input data file
     bool ReadElementData(ifstream& Input);
