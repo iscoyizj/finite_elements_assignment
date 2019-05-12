@@ -789,6 +789,8 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						<< beamstress[1] << setw(22) << beamstress[2] << endl;
 					Outplot->ElementStress(beamstress[48]);
 					delete[] beamstress;
+					delete [] pre_pos;
+					delete [] post_pos;
 				}
 
 				*this << endl;
