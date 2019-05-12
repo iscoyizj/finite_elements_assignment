@@ -133,7 +133,8 @@ public:
 
 	double poisson;	//!Poisson ratio of a 4Q element
 	double thick; // the thickness of element
-
+	double Ix;
+	double Iy;
 public:
 
 	//!	Read material data from stream Input

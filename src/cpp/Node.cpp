@@ -28,8 +28,8 @@ CNode::CNode(double X, double Y, double Z)
 	bcode[0] = 0;	// Boundary codes
 	bcode[1] = 0;
 	bcode[2] = 0;
-	bcode[3] = 1;
-	bcode[4] = 1;
+	bcode[3] = 0;
+	bcode[4] = 0;
 	bcode[5] = 1;
 
 	stress_node[0] = 0.0;
@@ -93,7 +93,7 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 //	Output nodal point data to stream
 void CNode::Write(COutputter& output, unsigned int np)
 {
-	output << setw(9) << np + 1 << setw(5) << bcode[0] << setw(5) << bcode[1] << setw(5) << bcode[2] << setw(5) << bcode[3] << setw(5) << bcode[4] << setw(5) << bcode[5]
+	output << setw(9) << np + 1 << setw(5) << bcode[0] << setw(5) << bcode[1] << setw(5) << bcode[2]
 		<< setw(18) << XYZ[0] << setw(15) << XYZ[1] << setw(15) << XYZ[2] << endl;
 }
 

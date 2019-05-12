@@ -121,11 +121,11 @@ void COutPlot::OutputEleType(double n, double nnd)
 			case ElementTypes::Plate: // Plate element
 				type_=7;
 				break;
-			case ElementTypes::Beam:
+			case ElementTypes::Beam: // Beam element
 				type_=3;
 				break;
-			case ElementTypes::Shell:
-				type_=7;
+			case ElementTypes::Shell: // Shell element
+				type_ = 7;
 				break;
 		}
 		for (unsigned int i=0;i<NUME;i++)

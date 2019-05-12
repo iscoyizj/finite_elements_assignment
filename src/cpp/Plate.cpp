@@ -318,7 +318,7 @@ void CPlate::ElementMass(double* Mass)
 //	Calculate element stress 
 void CPlate::ElementStress(double* stress, double* Displacement)
 {
-	clear(stress, 20);
+	clear(stress, 32);
 
 	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
 
@@ -326,10 +326,14 @@ void CPlate::ElementStress(double* stress, double* Displacement)
 	double poisson = material->poisson;
 	double t = material->thick;
 
+
 	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
 	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
 	double x0 = (nodes_[1]->XYZ[0] + nodes_[0]->XYZ[0]) / 2;
 	double y0 = (nodes_[3]->XYZ[1] + nodes_[0]->XYZ[1]) / 2;
+
+
+
 	//double G  = E*t*t*t/96/(1-poisson*poisson)/a/b;
 	double G = E * t / 16 / (1 - poisson * poisson) / a / b;
 
@@ -344,8 +348,8 @@ void CPlate::ElementStress(double* stress, double* Displacement)
 		{
 			double psi = gp[i];
 			double eta = gp[j];
-			stress[4 * i + 2 * j + 12] = x0 + a * psi;
-			stress[4 * i + 2 * j + 13] = y0 + b * eta;
+			stress[4 * i + 2 * j + 24] = x0 + a * psi;
+			stress[4 * i + 2 * j + 25] = y0 + b * eta;
 			double S[36];
 			for (unsigned int k = 0; k < 4; k++)
 			{
@@ -372,6 +376,9 @@ void CPlate::ElementStress(double* stress, double* Displacement)
 					stress[6 * i + 3 * j + 2] += S[3 * k + 2] * Displacement[LocationMatrix_[k] - 1];
 				}
 			}
+			stress[12 + 6 * i + 3 * j] = stress[6 * i + 3 * j] / (t*t*t/12);
+			stress[12 + 6 * i + 3 * j + 1] = stress[6 * i + 3 * j + 1] / (t*t*t / 12);
+			stress[12 + 6 * i + 3 * j + 2] = stress[6 * i + 3 * j + 2] / (t*t*t / 12);
 		}
 	}
 }
@@ -398,11 +405,91 @@ void CPlate::ElementPostInfo(double* stress, double* Displacement, double* PrePo
 //! Calulate element gravity
 void CPlate::GravityCalculation(double* ptr_force)
 {
-	CPlateMaterial* material = dynamic_cast<CPlateMaterial*>(ElementMaterial_);
-	double a = abs(nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0]) / 2;
-	double b = abs(nodes_[3]->XYZ[1] - nodes_[0]->XYZ[1]) / 2;
-	weight = a * b*material->density*material->thick*9.8*4;
+	double g = 9.8;
+	CPlateMaterial* material_ = dynamic_cast<CPlateMaterial*>(ElementMaterial_);	// Pointer to material of the element
+	double density = material_->density;
+	double thick = material_->thick;
+	double X[4] = { nodes_[0]->XYZ[0],nodes_[1]->XYZ[0],nodes_[2]->XYZ[0],nodes_[3]->XYZ[0] };
+	double Y[4] = { nodes_[0]->XYZ[1],nodes_[1]->XYZ[1],nodes_[2]->XYZ[1],nodes_[3]->XYZ[1] };
+	double Z[4] = { nodes_[0]->XYZ[2],nodes_[1]->XYZ[2],nodes_[2]->XYZ[2],nodes_[3]->XYZ[2] };
+
+	//Calculate the unit normal vector for each node
+	double l3[4], m3[4], n3[4];
+	l3[0] = (Z[0] * (Y[0] - Y[1]) - Z[0] * (Y[0] - Y[3]) + Z[1] * (Y[0] - Y[3]) - Z[3] * (Y[0] - Y[1])) / 4;
+	m3[0] = (X[0] * (Z[0] - Z[1]) - X[0] * (Z[0] - Z[3]) + X[1] * (Z[0] - Z[3]) - X[3] * (Z[0] - Z[1])) / 4;
+	n3[0] = (Y[0] * (X[0] - X[1]) - Y[0] * (X[0] - X[3]) + Y[1] * (X[0] - X[3]) - Y[3] * (X[0] - X[1])) / 4;
+	l3[1] = (Z[1] * (Y[0] - Y[1]) - Z[0] * (Y[1] - Y[2]) - Z[2] * (Y[0] - Y[1]) + Z[1] * (Y[1] - Y[2])) / 4;
+	m3[1] = (X[1] * (Z[0] - Z[1]) - X[0] * (Z[1] - Z[2]) - X[2] * (Z[0] - Z[1]) + X[1] * (Z[1] - Z[2])) / 4;
+	n3[1] = (Y[1] * (X[0] - X[1]) - Y[0] * (X[1] - X[2]) - Y[2] * (X[0] - X[1]) + Y[1] * (X[1] - X[2])) / 4;
+	l3[2] = (Z[2] * (Y[1] - Y[2]) - Z[1] * (Y[2] - Y[3]) - Z[3] * (Y[1] - Y[2]) + Z[2] * (Y[2] - Y[3])) / 4;
+	m3[2] = (X[2] * (Z[1] - Z[2]) - X[1] * (Z[2] - Z[3]) - X[3] * (Z[1] - Z[2]) + X[2] * (Z[2] - Z[3])) / 4;
+	n3[2] = (Y[2] * (X[1] - X[2]) - Y[1] * (X[2] - X[3]) - Y[3] * (X[1] - X[2]) + Y[2] * (X[2] - X[3])) / 4;
+	l3[3] = (Z[2] * (Y[0] - Y[3]) - Z[0] * (Y[2] - Y[3]) - Z[3] * (Y[0] - Y[3]) + Z[3] * (Y[2] - Y[3])) / 4;
+	m3[3] = (X[2] * (Z[0] - Z[3]) - X[0] * (Z[2] - Z[3]) - X[3] * (Z[0] - Z[3]) + X[3] * (Z[2] - Z[3])) / 4;
+	n3[3] = (Y[2] * (X[0] - X[3]) - Y[0] * (X[2] - X[3]) - Y[3] * (X[0] - X[3]) + Y[3] * (X[2] - X[3])) / 4;
+	for (unsigned int loop = 0; loop < 4; loop++) {
+		double lmn3 = sqrt(l3[loop] * l3[loop] + m3[loop] * m3[loop] + n3[loop] * n3[loop]);
+		l3[loop] /= lmn3;
+		m3[loop] /= lmn3;
+		n3[loop] /= lmn3;
+	}
+	double l1[4], m1[4], n1[4];
+	double l2[4], m2[4], n2[4];
+	for (unsigned int loop = 0; loop < 4; loop++) {
+		double lmn1 = sqrt(n3[loop] * n3[loop] + l3[loop] * l3[loop]);
+		l1[loop] = n3[loop] / lmn1;
+		m1[loop] = 0;
+		n1[loop] = -l3[loop] / lmn1;
+		l2[loop] = -m3[loop] * l3[loop] / lmn1;
+		m2[loop] = (n3[loop] * n3[loop] + l3[loop] * l3[loop]) / lmn1;
+		n2[loop] = -m3[loop] * n2[loop] / lmn1;
+	}
+
+	double gausspoint[2] = { -0.57735027, 0.57735027 };	//Gauss point when ngp=2
+	double weight_gauss[2] = { 1,1 };	//Gauss weight
+
+	double volumn = 0;
+	for (unsigned int i = 0; i < 2; i++) {
+		double xi = gausspoint[i];
+		for (unsigned int j = 0; j < 2; j++) {
+			double eta = gausspoint[j];
+			for (unsigned int k = 0; k < 2; k++) {
+				double zeta = gausspoint[k];
+				double N[4] = { (1 - xi)*(1 - eta) / 4,(1 + xi)*(1 - eta) / 4,(1 + xi)*(1 + eta) / 4,(1 - xi)*(1 + eta) / 4 };
+				double GNxi[4] = { -(1 - eta) / 4,(1 - eta) / 4,(1 + eta) / 4,-(1 + eta) / 4 };		//GNxi=dN/dxi
+				double GNeta[4] = { -(1 - xi) / 4,-(1 + xi) / 4,(1 + xi) / 4,(1 - xi) / 4 };		//GNeta=dN/deta
+				double J[3][3] = { 0,0,0,0,0,0,0,0,0 };			//Calculate the Jocabian Matrix
+				for (unsigned int loop = 0; loop < 4; loop++) {
+					J[0][0] += GNxi[loop] * (X[loop] + 0.5*zeta*thick*l3[loop]);
+					J[0][1] += GNxi[loop] * (Y[loop] + 0.5*zeta*thick*m3[loop]);
+					J[0][2] += GNxi[loop] * (Z[loop] + 0.5*zeta*thick*n3[loop]);
+					J[1][0] += GNeta[loop] * (X[loop] + 0.5*zeta*thick*l3[loop]);
+					J[1][1] += GNeta[loop] * (Y[loop] + 0.5*zeta*thick*m3[loop]);
+					J[1][2] += GNeta[loop] * (Z[loop] + 0.5*zeta*thick*n3[loop]);
+					J[2][0] += N[loop] * 0.5*thick*l3[loop];
+					J[2][1] += N[loop] * 0.5*thick*m3[loop];
+					J[2][2] += N[loop] * 0.5*thick*n3[loop];
+				}
+				double detJ = J[0][0] * J[1][1] * J[2][2] - J[0][0] * J[1][2] * J[2][1] - J[0][1] * J[1][0] * J[2][2] + J[0][1] * J[1][2] * J[2][0] + J[0][2] * J[1][0] * J[2][1] - J[0][2] * J[1][1] * J[2][0];
+				volumn += fabs(detJ)*weight_gauss[i] * weight_gauss[j] * weight_gauss[k];
+
+
+			}
+		}
+	}
+	weight = volumn * g*density;
+	double weight_avg = weight / 4;
+	double Xc = (X[0] + X[1] + X[2] + X[3]) / 4;
+	double Yc = (Y[0] + Y[1] + Y[2] + Y[3]) / 4;
+	double Zc = (Z[0] + Z[1] + Z[2] + Z[3]) / 4;
+	for (unsigned int loop = 0; loop < 4; loop++) {
+		ptr_force[3 * loop] = -weight_avg;
+		ptr_force[3 * loop + 1] = 2 * weight_avg / 3 * (Yc - Y[loop]);
+		ptr_force[3 * loop + 2] = -2 * weight_avg / 3 * (Xc - X[loop]);
+	}
+
 }
+
 
 //	Recover element stress 
 void CPlate::RecoverElementStress(double* Displacement, double* A)

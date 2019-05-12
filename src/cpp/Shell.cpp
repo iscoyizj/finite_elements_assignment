@@ -696,7 +696,7 @@ void CShell::ElementMass(double* Mass){
 }
 
 void CShell::ElementStress(double* stress, double* Displacement){
-	clear(stress, 56);
+	clear(stress, 48);
 	double X[4]={nodes_[0]->XYZ[0],nodes_[1]->XYZ[0],nodes_[2]->XYZ[0],nodes_[3]->XYZ[0]};
 	double Y[4]={nodes_[0]->XYZ[1],nodes_[1]->XYZ[1],nodes_[2]->XYZ[1],nodes_[3]->XYZ[1]};
 	double Z[4]={nodes_[0]->XYZ[2],nodes_[1]->XYZ[2],nodes_[2]->XYZ[2],nodes_[3]->XYZ[2]};
@@ -755,7 +755,7 @@ void CShell::ElementStress(double* stress, double* Displacement){
 			Disp_element[i]=Displacement[LocationMatrix_[i]-1];
 	}
 
-	unsigned int num=0;		//stress[num],num=0:7,	8 gauss point, each with 7 stress component
+	unsigned int num=0;		//stress[num],num=0:7,	8 gauss point, each with 6 stress component
 
 	for(unsigned int i=0;i<2;i++){
 		double xi=gausspoint[i];
@@ -938,16 +938,15 @@ void CShell::ElementStress(double* stress, double* Displacement){
 			DBe[loop][4][5]=D3*P23;
 	}
 
-	stress[7*num+2]=0.0;
+	stress[6*num+2]=0.0;
 	for(unsigned int loop2=0;loop2<4;loop2++){
 		for(unsigned int loop3=0;loop3<6;loop3++){
-			stress[7*num]+=DBe[loop2][0][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+1]+=DBe[loop2][1][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+3]+=DBe[loop2][3][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+4]+=DBe[loop2][4][loop3]*Disp_element[6*loop2+loop3];
-			stress[7*num+5]+=DBe[loop2][5][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num]+=DBe[loop2][0][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+1]+=DBe[loop2][1][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+3]+=DBe[loop2][3][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+4]+=DBe[loop2][4][loop3]*Disp_element[6*loop2+loop3];
+			stress[6*num+5]+=DBe[loop2][5][loop3]*Disp_element[6*loop2+loop3];
 		}
-		stress[7*num+6]=sqrt(stress[7*num]*stress[7*num]-stress[7*num]*stress[7*num+1]+stress[7*num+1]*stress[7*num+1]+3*(stress[7*num+3]*stress[7*num+3]+stress[7*num+4]*stress[7*num+4]+stress[7*num+5]*stress[7*num+5]));
 	}
 	num++;
 			}

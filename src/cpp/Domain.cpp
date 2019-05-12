@@ -177,7 +177,52 @@ void CDomain::CalculateEquationNumber()
 		ElementType_ = ElementGrp.GetElementType();
 		switch (ElementType_)
 		{
-		case Beam: // Bar element
+			//		 case Beam: // Bar element
+			//		{
+			//			unsigned int NUME = ElementGrp.GetNUME();
+			//			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+			//			{
+			//				CElement& Element = ElementGrp[Ele];
+			//				CNode** node_ = Element.CElement::GetNodes();
+			//				unsigned int node_left = node_[0]->NodeNumber;
+			//				unsigned int node_right = node_[1]->NodeNumber;
+			//				NodeList[node_left - 1].bcode[3] = 0;
+			//				NodeList[node_left - 1].bcode[4] = 0;
+			//				NodeList[node_left - 1].bcode[5] = 0;
+			//				NodeList[node_right - 1].bcode[3] = 0;
+			//				NodeList[node_right - 1].bcode[4] = 0;
+			//			    NodeList[node_right - 1].bcode[5] = 0;
+			//			}
+			//		}
+			//		break;
+
+			//		case Shell: // Shell element
+			//		{
+			//			unsigned int NUME = ElementGrp.GetNUME();
+			//			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+			//			{
+			//				CElement& Element = ElementGrp[Ele];
+			//				CNode** node_ = Element.CElement::GetNodes();
+			//				unsigned int node_one = node_[0]->NodeNumber;
+			//				unsigned int node_two = node_[1]->NodeNumber;
+			//				unsigned int node_three = node_[2]->NodeNumber;
+			//				unsigned int node_four = node_[3]->NodeNumber;
+			//				NodeList[node_one - 1].bcode[3] = 0;
+			//				NodeList[node_one - 1].bcode[4] = 0;
+			//				NodeList[node_one - 1].bcode[5] = 0;
+			//				NodeList[node_two - 1].bcode[3] = 0;
+				//			NodeList[node_two - 1].bcode[4] = 0;
+			//				NodeList[node_two - 1].bcode[5] = 0;
+			//				NodeList[node_three - 1].bcode[3] = 0;
+			//				NodeList[node_three - 1].bcode[4] = 0;
+			//				NodeList[node_three - 1].bcode[5] = 0;
+			//				NodeList[node_four - 1].bcode[3] = 0;
+			//				NodeList[node_four - 1].bcode[4] = 0;
+			//				NodeList[node_four - 1].bcode[5] = 0;
+			//			}
+			//		}
+			//		break;
+		case Bar: // Bar element
 		{
 			unsigned int NUME = ElementGrp.GetNUME();
 			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
@@ -186,39 +231,46 @@ void CDomain::CalculateEquationNumber()
 				CNode** node_ = Element.CElement::GetNodes();
 				unsigned int node_left = node_[0]->NodeNumber;
 				unsigned int node_right = node_[1]->NodeNumber;
-				NodeList[node_left - 1].bcode[3] = 0;
-				NodeList[node_left - 1].bcode[4] = 0;
-				NodeList[node_left - 1].bcode[5] = 0;
-				NodeList[node_right - 1].bcode[3] = 0;
-				NodeList[node_right - 1].bcode[4] = 0;
-				NodeList[node_right - 1].bcode[5] = 0;
+				NodeList[node_left - 1].bcode[3] = 1;
+				NodeList[node_left - 1].bcode[4] = 1;
+
+				NodeList[node_right - 1].bcode[3] = 1;
+				NodeList[node_right - 1].bcode[4] = 1;
+
 			}
 		}
 		break;
-
-		case Shell: // Shell element
+		case H8: // 8H element
 		{
 			unsigned int NUME = ElementGrp.GetNUME();
 			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
 			{
 				CElement& Element = ElementGrp[Ele];
 				CNode** node_ = Element.CElement::GetNodes();
-				unsigned int node_one = node_[0]->NodeNumber;
-				unsigned int node_two = node_[1]->NodeNumber;
-				unsigned int node_three = node_[2]->NodeNumber;
-				unsigned int node_four = node_[3]->NodeNumber;
-				NodeList[node_one - 1].bcode[3] = 0;
-				NodeList[node_one - 1].bcode[4] = 0;
-				NodeList[node_one - 1].bcode[5] = 0;
-				NodeList[node_two - 1].bcode[3] = 0;
-				NodeList[node_two - 1].bcode[4] = 0;
-				NodeList[node_two - 1].bcode[5] = 0;
-				NodeList[node_three - 1].bcode[3] = 0;
-				NodeList[node_three - 1].bcode[4] = 0;
-				NodeList[node_three - 1].bcode[5] = 0;
-				NodeList[node_four - 1].bcode[3] = 0;
-				NodeList[node_four - 1].bcode[4] = 0;
-				NodeList[node_four - 1].bcode[5] = 0;
+				unsigned int node_1 = node_[0]->NodeNumber;
+				unsigned int node_2 = node_[1]->NodeNumber;
+				unsigned int node_3 = node_[2]->NodeNumber;
+				unsigned int node_4 = node_[3]->NodeNumber;
+				unsigned int node_5 = node_[4]->NodeNumber;
+				unsigned int node_6 = node_[5]->NodeNumber;
+				unsigned int node_7 = node_[6]->NodeNumber;
+				unsigned int node_8 = node_[7]->NodeNumber;
+				NodeList[node_1 - 1].bcode[3] = 1;
+				NodeList[node_1 - 1].bcode[4] = 1;
+				NodeList[node_2 - 1].bcode[3] = 1;
+				NodeList[node_2 - 1].bcode[4] = 1;
+				NodeList[node_3 - 1].bcode[3] = 1;
+				NodeList[node_3 - 1].bcode[4] = 1;
+				NodeList[node_4 - 1].bcode[3] = 1;
+				NodeList[node_4 - 1].bcode[4] = 1;
+				NodeList[node_5 - 1].bcode[3] = 1;
+				NodeList[node_5 - 1].bcode[4] = 1;
+				NodeList[node_6 - 1].bcode[3] = 1;
+				NodeList[node_6 - 1].bcode[4] = 1;
+				NodeList[node_7 - 1].bcode[3] = 1;
+				NodeList[node_7 - 1].bcode[4] = 1;
+				NodeList[node_8 - 1].bcode[3] = 1;
+				NodeList[node_8 - 1].bcode[4] = 1;
 			}
 		}
 		break;
@@ -407,28 +459,17 @@ void CDomain::Gravity()
 		 case Plate: //Plate element
 		 {
 			 unsigned int NUME = ElementGrp.GetNUME();
-			 double* ptr_force = nullptr;
-			 for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
-			 {
+			 double* ptr_force = new double[12];
+			 clear(ptr_force, 12);
+			 for (unsigned int Ele = 0; Ele < NUME; Ele++) {
 				 CElement& Element = ElementGrp[Ele];
 				 Element.GravityCalculation(ptr_force);
 				 CNode** node_ = Element.CElement::GetNodes();
-				 unsigned int node_one = node_[0]->NodeNumber;
-				 unsigned int node_two = node_[1]->NodeNumber;
-				 unsigned int node_three = node_[2]->NodeNumber;
-				 unsigned int node_four = node_[3]->NodeNumber;
-				 unsigned int dof_one = NodeList[node_one - 1].bcode[2];
-				 unsigned int dof_two = NodeList[node_two - 1].bcode[2];
-				 unsigned int dof_three = NodeList[node_three - 1].bcode[2];
-				 unsigned int dof_four = NodeList[node_four - 1].bcode[2];
-				 if (dof_one)
-					 Force[dof_one - 1] += -Element.GetGravity() / 4;
-				 if (dof_two)
-					 Force[dof_two - 1] += -Element.GetGravity() / 4;
-				 if (dof_three)
-					 Force[dof_three - 1] += -Element.GetGravity() / 4;
-				 if (dof_four)
-					 Force[dof_four - 1] += -Element.GetGravity() / 4;
+				 for (unsigned int i = 0; i < 4; i++) {
+					 for (unsigned int j = 2; j < 5; j++)
+						 if (NodeList[node_[i]->NodeNumber - 1].bcode[j])
+							 Force[NodeList[node_[i]->NodeNumber - 1].bcode[j] - 1] += ptr_force[i * 3 + j - 2];
+				 }
 			 }
 		 }
 		 break;

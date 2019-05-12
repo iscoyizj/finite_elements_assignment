@@ -63,6 +63,9 @@ public:
 	
 //!	Output 3T element data
 	void PrintT3ElementData(unsigned int EleGrp);
+
+//!	Output Shell element data
+	void PrintShellElementData(unsigned int EleGrp);
 	
 //!	Output 8H element data
 	void PrintH8ElementData(unsigned int EleGrp);
@@ -72,14 +75,12 @@ public:
 //£¡ Output Beam element data
 	void PrintBeamElementData(unsigned int EleGrp);
 
-//!	Output Shell element data
-	void PrintShellElementData(unsigned int EleGrp);
+//£¡ Output Infinite element data
+	void PrintInfiniteElementData(unsigned int EleGrp);
 
-//!	Output SubparaElement data
+//£¡ Output Infinite element data
 	void PrintSubparaElementData(unsigned int EleGrp);
 
-//!	Output InfiniteElementData
-	void PrintInfiniteElementData(unsigned int EleGrp);
 //!	Output load data 
 	void OutputLoadInfo(); 
 
