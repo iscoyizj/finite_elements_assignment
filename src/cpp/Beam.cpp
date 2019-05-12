@@ -285,6 +285,7 @@ void CBeam::ElementStress(double* stress, double* Displacement)
 	}
 }
 
+
 void CBeam::ElementMass(double* mass)
 {
 	clear(mass, 1);
@@ -475,10 +476,11 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	beamstress[48] = 0;
 	for (int i = 0; i < 8; i++)
 	{
-		beamstress[48] = beamstress[48] + sqrt(beamstress[i*6]*beamstress[i*6]+3*(beamstress[i*6+3]*beamstress[i*6+3]+beamstress[i*6+5]*beamstress[i*6+5]));
+		beamstress[48] = beamstress[48] + sqrt(beamstress[i*6]*beamstress[i*6]+3*(beamstress[i*6+3]*beamstress[i*6+3]+beamstress[i*6+5]*beamstress[i*6+5]))/8;
 	}
 	beamstress[48] = beamstress[48] / 8;
 }
+
 
 void CBeam::GravityCalculation(double* ptr_force)
 {

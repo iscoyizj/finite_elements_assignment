@@ -624,6 +624,8 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					CBarMaterial& material = *dynamic_cast<CBarMaterial*>(Element.GetElementMaterial());
 					*this << setw(5) << Ele + 1 << setw(22) << stress * material.Area << setw(18)
 						<< stress << endl;
+					if (stress<0)
+						stress = -stress;
 					Outplot->ElementStress(stress);
 
 				}
@@ -662,9 +664,9 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					for (unsigned int iQ4 = 0; iQ4 < 4; iQ4++)
 					{
 						MStressQ4 = MStressQ4 + sqrt(stress_4Q[6 * iQ4 + 3] * stress_4Q[6 * iQ4 + 3] + stress_4Q[6 * iQ4 + 4] * stress_4Q[6 * iQ4 + 4] - stress_4Q[6 * iQ4 + 3] * stress_4Q[6 * iQ4 + 4] + 3 * stress_4Q[6 * iQ4 + 5] * stress_4Q[6 * iQ4 + 5]) / 4;
-						Outplot->ElementStress(MStressQ4);
 					}
 					delete[] stress_4Q;
+					Outplot->ElementStress(MStressQ4);
 				}
 				*this << endl;
 				break;
@@ -704,7 +706,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					double MStressH8=0;
 					for (unsigned int cd = 0; cd < 8; cd++)
 					{
-						*this << setw(5) << Ele + 1 << setw(18) << H8coord[3*cd] << setw(18) << H8coord[3*cd+1] << setw(18) << H8coord[3*cd+2]  << setw(18) << H8Stress[6*cd] << setw(18) << H8Stress[6*cd+1] << setw(18) << H8Stress[6*cd+2] << setw(18) << H8Stress[6*cd+3] << setw(18) << H8Stress[6*cd+4] << setw(18) << H8Stress[6*cd+5] << endl;
+//						*this << setw(5) << Ele + 1 << setw(18) << H8coord[3*cd] << setw(18) << H8coord[3*cd+1] << setw(18) << H8coord[3*cd+2]  << setw(18) << H8Stress[6*cd] << setw(18) << H8Stress[6*cd+1] << setw(18) << H8Stress[6*cd+2] << setw(18) << H8Stress[6*cd+3] << setw(18) << H8Stress[6*cd+4] << setw(18) << H8Stress[6*cd+5] << endl;
 						MStressH8 = MStressH8 + sqrt( H8Stress[6*cd]*H8Stress[6*cd] + H8Stress[6*cd+1]*H8Stress[6*cd+1] + H8Stress[6*cd+2]*H8Stress[6*cd+2] - H8Stress[6*cd]*H8Stress[6*cd+1] - H8Stress[6*cd]*H8Stress[6*cd+2] - H8Stress[6*cd+1]*H8Stress[6*cd+2] + 3*H8Stress[6*cd+3]*H8Stress[6*cd+3] + H8Stress[6*cd+4]*H8Stress[6*cd+4] + H8Stress[6*cd+5]*H8Stress[6*cd+5] )/8;
 					}
 					Outplot->ElementStress(MStressH8);
@@ -735,17 +737,16 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						<< setw(18) << stress_plate[7] << setw(18) << stress_plate[8] << endl;
 					*this << setw(5) << 4 << setw(18) << stress_plate[30] << setw(18) << stress_plate[31] << setw(18) << stress_plate[9]
 						<< setw(18) << stress_plate[10] << setw(18) << stress_plate[11] << endl;
-					
+			
 					double MStressP = 0;
 					for (unsigned int iP = 0; iP < 4; iP++)
-					{
 						MStressP = MStressP + sqrt(stress_plate[12+3 * iP] * stress_plate[12+3 * iP] + stress_plate[12+3 * iP + 1] * stress_plate[12+3 * iP + 1] - stress_plate[12+3 * iP] * stress_plate[12+3 * iP + 1] + 3 * stress_plate[12+3 * iP + 2] * stress_plate[12+3 * iP + 2]) / 4;
-						Outplot->ElementStress(MStressP);
+					Outplot->ElementStress(MStressP);
 
 
 						delete[] stress_plate;
-					}
 				}
+				*this << endl;
 				break;
 
 			case ElementTypes::Beam:
@@ -758,9 +759,9 @@ void COutputter::OutputElementStress(unsigned int lcase)
 				{
 					CElement& Element = EleGrp[Ele];
 					double* beamstress = new double[49];
-					double* pre_pos;
-					double* post_pos;
-					Element.ElementPostInfo(beamstress, Displacement, pre_pos, post_pos);
+					double pre_pos;
+					double post_pos;
+					Element.ElementPostInfo(beamstress, Displacement, &pre_pos, &post_pos);
 					CBeamMaterial* material = dynamic_cast<CBeamMaterial*>(Element.GetElementMaterial());
 					*this << setw(5) << Ele + 1 << setw(22) << beamstress[0] << setw(22)
 						<< beamstress[1] << setw(22) << beamstress[2] << endl;
@@ -778,13 +779,13 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					CShell& Element = dynamic_cast<CShell&>(EleGrp[Ele]);
 					Element.ElementStress(shellstress, Displacement);
 					Element.ElementCoord(gaussposition);
-					for(unsigned int loop=0;loop<8;loop++){
+/*					for(unsigned int loop=0;loop<8;loop++){
 						*this << setw(5) << Ele + 1 << setw(20) <<gaussposition[3*loop]<<setw(20)<<gaussposition[3*loop+1]
 							<<setw(20)<<gaussposition[3*loop+2]<< setw(20)<<shellstress[6*loop] << setw(20)
 							<< shellstress[6*loop+1] << setw(20) << shellstress[6*loop+2] << setw(20)<<shellstress[6*loop+3]
 							<<setw(20)<<shellstress[6*loop+4]<<setw(20)<<shellstress[6*loop+5]<<endl;
 					}
-					double MStressShell = 0;
+*/					double MStressShell = 0;
 					for (unsigned int iSh = 0; iSh < 8; iSh++)
 					{    
 						double SXY2 = (shellstress[6 * iSh]- shellstress[6 * iSh + 1]) * (shellstress[6 * iSh] - shellstress[6 * iSh + 1]);
@@ -792,8 +793,8 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						double SYZ2 = (shellstress[6 * iSh + 1] - shellstress[6 * iSh + 2]) * (shellstress[6 * iSh + 1] - shellstress[6 * iSh + 2]);
 						double T = 6 * (shellstress[6 * iSh + 3] * shellstress[6 * iSh + 3] + shellstress[6 * iSh + 4] * shellstress[6 * iSh + 4] + shellstress[6 * iSh + 5] * shellstress[6 * iSh + 5]);
 						MStressShell = MStressShell + sqrt((SXY2 + SXZ2 + SYZ2 + T)/2) / 8;
-						Outplot->ElementStress(MStressShell);
 					}
+					Outplot->ElementStress(MStressShell);
 				}
 				break;
 			case ElementTypes::Infinite:
@@ -828,8 +829,9 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					for (unsigned int iIn = 0; iIn < 4; iIn++)
 					{
 						MStressInfi = MStressInfi + sqrt(stress_Infi[6 * iIn + 3] * stress_Infi[6 * iIn + 3] + stress_Infi[6 * iIn + 4] * stress_Infi[6 * iIn + 4] - stress_Infi[6 * iIn + 3] * stress_Infi[6 * iIn + 4] + 3 * stress_Infi[6 * iIn + 5] * stress_Infi[6 * iIn + 5]) / 4;
-						Outplot->ElementStress(MStressInfi);
+						
 					}
+					Outplot->ElementStress(MStressInfi);
 					delete[] stress_Infi;
 				}
 				*this << endl;
@@ -854,8 +856,9 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					{
 						unsigned int temp1 = 27 + 2 * iSu;  unsigned int temp2 = 3 * iSu;
 						MStressSub = MStressSub + sqrt(stress_Subpara[temp2] * stress_Subpara[temp2] + stress_Subpara[temp2 + 1] * stress_Subpara[temp2 + 1] - stress_Subpara[temp2] * stress_Subpara[temp2+1] + 3 * stress_Subpara[temp2 + 2] * stress_Subpara[temp2 + 2]) / 4;
-						Outplot->ElementStress(MStressSub);
+						
 					}
+					Outplot->ElementStress(MStressSub);
 					delete[] stress_Subpara;
 				}
 				
