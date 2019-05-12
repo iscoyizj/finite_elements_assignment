@@ -99,8 +99,8 @@ void COutputter::OutputNodeInfo()
 		  << endl;
 
 	*this << " N O D A L   P O I N T   D A T A" << endl << endl;
-	*this << "    NODE               BOUNDARY                                   NODAL POINT" << endl
-		  << "   NUMBER          CONDITION  CODES                               COORDINATES" << endl;
+	*this << "    NODE       BOUNDARY                          NODAL POINT" << endl
+		  << "   NUMBER   CONDITION  CODES                     COORDINATES" << endl;
 
 	for (unsigned int np = 0; np < NUMNP; np++)
 		NodeList[np].Write(*this, np);
@@ -118,8 +118,8 @@ void COutputter::OutputEquationNumber()
 
 	*this << " EQUATION NUMBERS" << endl
 		  << endl;
-	*this << "   NODE NUMBER                DEGREES OF FREEDOM" << endl;
-	*this << "        N           X    Y    Z  sitax  sitay  sitaz" << endl;
+	*this << "   NODE NUMBER                     DEGREES OF FREEDOM" << endl;
+	*this << "        N              X        Y        Z      sitax     sitay     sitaz" << endl;
 
 	for (unsigned int np = 0; np < NUMNP; np++) // Loop over for all node
 		NodeList[np].WriteEquationNo(*this, np);
@@ -179,7 +179,7 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::Beam: //Beam element
 				PrintBeamElementData(EleGrp);
 				break;
-			case ElementTypes::Shell: //element
+			case ElementTypes::Shell://Shell element
 				PrintShellElementData(EleGrp);
 			case ElementTypes::Infinite: //Infinite element
 				PrintInfiniteElementData(EleGrp);
@@ -361,9 +361,9 @@ void COutputter::PrintBeamElementData(unsigned int EleGrp)
 		<< endl
 		<< endl;
 
-	*this << "  SET       YOUNG'S       POISSON'S     DENSITY                                 CROSS-SECTIONAL CONSTANTS [ONLY VALID FOR SQUARE]" << endl
-		  << " NUMBER     MODULUS         RATIO                 " << endl
-		  << "               E             nu           rho         width            height               t1               t2               t3              t4" << endl;
+	*this << "  SET       YOUNG'S   ELASTIC CONSTANTS      PLANE" << endl
+		<< " NUMBER     MODULUS         POISSON          THICKNESS" << endl
+		<< "               E            poisson               thick   " << endl;
 
 	*this << setiosflags(ios::scientific) << setprecision(5);
 
@@ -374,8 +374,8 @@ void COutputter::PrintBeamElementData(unsigned int EleGrp)
 	*this << endl
 		<< endl
 		<< " E L E M E N T   I N F O R M A T I O N" << endl;
-	*this << " ELEMENT     NODE     NODE     NODE     NODE       MATERIAL" << endl
-		<< " NUMBER-N      I        J        K        L       SET NUMBER" << endl;
+	*this << " ELEMENT     NODE     NODE       MATERIAL" << endl
+		<< " NUMBER-N      I        J       SET NUMBER" << endl;
 
 	const unsigned int NUME = ElementGroup.GetNUME();
 
@@ -591,12 +591,6 @@ void COutputter::OutputElementStress(unsigned int lcase)
 
 	unsigned int NUMEG = FEMData->GetNUMEG();
 
-	COutPlot* Outplot = COutPlot::Instance();
-
-	unsigned int nele = FEMData->GetNUMELE();
-
-	Outplot->StressHead(lcase, nele);
-
 	for (unsigned int EleGrpIndex = 0; EleGrpIndex < NUMEG; EleGrpIndex++)
 	{
 		*this << " S T R E S S  C A L C U L A T I O N S  F O R  E L E M E N T  G R O U P" << setw(5)
@@ -606,7 +600,6 @@ void COutputter::OutputElementStress(unsigned int lcase)
 		CElementGroup& EleGrp = FEMData->GetEleGrpList()[EleGrpIndex];
 		unsigned int NUME = EleGrp.GetNUME();
 		ElementTypes ElementType = EleGrp.GetElementType();
-		
 
 		switch (ElementType)
 		{
@@ -624,11 +617,10 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					CBarMaterial& material = *dynamic_cast<CBarMaterial*>(Element.GetElementMaterial());
 					*this << setw(5) << Ele + 1 << setw(22) << stress * material.Area << setw(18)
 						<< stress << endl;
-					Outplot->ElementStress(stress);
-
 				}
 
 				*this << endl;
+
 				break;
 
 			case ElementTypes::Q4: // 4Q element
@@ -658,11 +650,6 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					*this << setw(5) << Ele + 1 << setw(9) << "4"
 						<< setw(15) << stress_4Q[18] << setw(15) << stress_4Q[19] << setw(15) << stress_4Q[20]
 						<< setw(15) << stress_4Q[21] << setw(15) << stress_4Q[22] << setw(15) << stress_4Q[23] << endl;
-					double MStressQ4=0;
-					for (unsigned int iQ4=0; iQ4<4; iQ4++)
-						MStressQ4 = MStressQ4 + sqrt( stress_4Q[6*iQ4+3]*stress_4Q[6*iQ4+3] + stress_4Q[6*iQ4+4]*stress_4Q[6*iQ4+4] - stress_4Q[6*iQ4+3]*stress_4Q[6*iQ4+4] +3*stress_4Q[6*iQ4+5]*stress_4Q[6*iQ4+5] )/4;
-					Outplot->ElementStress(MStressQ4);
-						
 					delete[] stress_4Q;
 				}
 				*this << endl;
@@ -679,9 +666,6 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					CT3& Element = dynamic_cast<CT3&>(EleGrp[Ele]);
 					Element.ElementStress(T3Stress, Displacement);
 					*this << setw(5) << Ele + 1 << setw(18) << T3Stress[0] << setw(18) << T3Stress[1] << setw(18) << T3Stress[2] << endl;
-					double MStressT3;
-					MStressT3 = sqrt( T3Stress[0]*T3Stress[0] + T3Stress[1]*T3Stress[1] - T3Stress[0]*T3Stress[1] +3*T3Stress[2]*T3Stress[2] );
-					Outplot->ElementStress(MStressT3);
 				}
 
 				*this << endl;
@@ -700,13 +684,10 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					CH8& Element = dynamic_cast<CH8&>(EleGrp[Ele]);
 					Element.ElementStress(H8Stress, Displacement);
 					Element.ElementCoord(H8coord);
-					double MStressH8=0;
 					for (unsigned int cd = 0; cd < 8; cd++)
 					{
 						*this << setw(5) << Ele + 1 << setw(18) << H8coord[3*cd] << setw(18) << H8coord[3*cd+1] << setw(18) << H8coord[3*cd+2]  << setw(18) << H8Stress[6*cd] << setw(18) << H8Stress[6*cd+1] << setw(18) << H8Stress[6*cd+2] << setw(18) << H8Stress[6*cd+3] << setw(18) << H8Stress[6*cd+4] << setw(18) << H8Stress[6*cd+5] << endl;
-						MStressH8 = MStressH8 + sqrt( H8Stress[6*cd]*H8Stress[6*cd] + H8Stress[6*cd+1]*H8Stress[6*cd+1] + H8Stress[6*cd+2]*H8Stress[6*cd+2] - H8Stress[6*cd]*H8Stress[6*cd+1] - H8Stress[6*cd]*H8Stress[6*cd]*H8Stress[6*cd+2] - H8Stress[6*cd+1]*H8Stress[6*cd+2] + 3*H8Stress[6*cd+3]*H8Stress[6*cd+3] + H8Stress[6*cd+4]*H8Stress[6*cd+4] + H8Stress[6*cd+5]*H8Stress[6*cd+5] )/8;
 					}
-					Outplot->ElementStress(MStressH8);
 				}
 
 				*this << endl;
@@ -734,12 +715,6 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						<< setw(18) << stress_plate[7] << setw(18) << stress_plate[8] << endl;
 					*this << setw(5) << 4 << setw(18) << stress_plate[18] << setw(18) << stress_plate[19] << setw(18) << stress_plate[9]
 						<< setw(18) << stress_plate[10] << setw(18) << stress_plate[11] << endl;
-					
-					double MStressP=0;
-					for (unsigned int iP=0; iP<4; iP++)
-						MStressP = MStressP + sqrt( stress_plate[3*iP]*stress_plate[3*iP] + stress_plate[3*iP+1]*stress_plate[3*iP+1] - stress_plate[3*iP]*stress_plate[3*iP+1] +3*stress_plate[3*iP+2]*stress_plate[3*iP+2] )/4;
-					Outplot->ElementStress(MStressP);
-
 
 					delete[] stress_plate;
 				}
@@ -764,24 +739,19 @@ void COutputter::OutputElementStress(unsigned int lcase)
 				*this << endl;
 				break;
 			case ElementTypes::Shell:
-				*this<<"ELEMENT      X-COORD        Y-COORD        Z-COORD            SXX              SYY            SZZ            TXY             TYZ            TZX            Mises"<<endl;
-				double shellstress[56];
+				*this<<"ELEMENT      X-COORD       Y-COORD      Z-COORD       SXX            SYY          SZZ          TXY          TYZ         TZX"<<endl;
+				double shellstress[48];
 				double gaussposition[24];
 				for (unsigned int Ele = 0; Ele < NUME; Ele++){
 					CShell& Element = dynamic_cast<CShell&>(EleGrp[Ele]);
 					Element.ElementStress(shellstress, Displacement);
 					Element.ElementCoord(gaussposition);
 					for(unsigned int loop=0;loop<8;loop++){
-						*this << setw(5) << Ele + 1 << setw(16) <<gaussposition[3*loop]<<setw(16)<<gaussposition[3*loop+1]
-							<<setw(16)<<gaussposition[3*loop+2]<< setw(16)<<shellstress[6*loop] << setw(16)
-							<< shellstress[7*loop+1] << setw(16) << shellstress[7*loop+2] << setw(16)<<shellstress[7*loop+3]
-							<<setw(16)<<shellstress[7*loop+4]<<setw(16)<<shellstress[7*loop+5]<<setw(16)<<shellstress[7*loop+6]<<endl;
+						*this << setw(5) << Ele + 1 << setw(20) <<gaussposition[3*loop]<<setw(20)<<gaussposition[3*loop+1]
+							<<setw(20)<<gaussposition[3*loop+2]<< setw(20)<<shellstress[6*loop] << setw(20)
+							<< shellstress[6*loop+1] << setw(20) << shellstress[6*loop+2] << setw(20)<<shellstress[6*loop+3]
+							<<setw(20)<<shellstress[6*loop+4]<<setw(20)<<shellstress[6*loop+5]<<endl;
 					}
-					double mises=0;
-					for(unsigned int loop=0;loop<8;loop++)
-						mises+=shellstress[7*loop+6];
-					mises/=8;
-					Outplot->ElementStress(mises);
 				}
 				break;
 			case ElementTypes::Infinite:

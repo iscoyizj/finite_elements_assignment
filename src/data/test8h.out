@@ -1,5 +1,5 @@
 TITLE : 8h test
-        (18:30:42 on May 11, 2019, Saturday)
+        (9:1:15 on May 12, 2019, Sunday)
 
 C O N T R O L   I N F O R M A T I O N
 
@@ -12,29 +12,16 @@ C O N T R O L   I N F O R M A T I O N
 
  N O D A L   P O I N T   D A T A
 
-    NODE       BOUNDARY                         NODAL POINT
-   NUMBER  CONDITION  CODES                     COORDINATES
-        1    1    1    1      0.00000e+000   0.00000e+000   0.00000e+000
-        2    0    1    1      1.00000e+000   0.00000e+000   0.00000e+000
-        3    0    0    0      1.00000e+000   1.00000e+000   0.00000e+000
-        4    0    0    0      0.00000e+000   1.00000e+000   0.00000e+000
-        5    1    1    0      0.00000e+000   0.00000e+000   1.00000e+000
-        6    0    1    0      1.00000e+000   0.00000e+000   1.00000e+000
-        7    0    0    0      1.00000e+000   1.00000e+000   1.00000e+000
-        8    0    0    0      0.00000e+000   1.00000e+000   1.00000e+000
-
- EQUATION NUMBERS
-
-   NODE NUMBER   DEGREES OF FREEDOM
-        N           X    Y    Z
-        1           0    0    0    0    0    0
-        2           1    0    0    0    0    0
-        3           2    3    4    0    0    0
-        4           5    6    7    0    0    0
-        5           0    0    8    0    0    0
-        6           9    0   10    0    0    0
-        7          11   12   13    0    0    0
-        8          14   15   16    0    0    0
+    NODE       BOUNDARY                          NODAL POINT
+   NUMBER   CONDITION  CODES                     COORDINATES
+        1    1    1    1    1    1    1      0.00000e+000   0.00000e+000   0.00000e+000
+        2    0    1    1    1    1    1      1.00000e+000   0.00000e+000   0.00000e+000
+        3    0    0    0    1    1    1      1.00000e+000   1.00000e+000   0.00000e+000
+        4    0    0    0    1    1    1      0.00000e+000   1.00000e+000   0.00000e+000
+        5    1    1    0    1    1    1      0.00000e+000   0.00000e+000   1.00000e+000
+        6    0    1    0    1    1    1      1.00000e+000   0.00000e+000   1.00000e+000
+        7    0    0    0    1    1    1      1.00000e+000   1.00000e+000   1.00000e+000
+        8    0    0    0    1    1    1      0.00000e+000   1.00000e+000   1.00000e+000
 
  L O A D   C A S E   D A T A
 
@@ -53,7 +40,7 @@ C O N T R O L   I N F O R M A T I O N
 
  E L E M E N T   D E F I N I T I O N
 
- ELEMENT TYPE  . . . . . . . . . . . . .( NPAR(1) ) . . =    4
+ ELEMENT TYPE  . . . . . . . . . . . . .( NPAR(1) ) . . =    2
      EQ.1, TRUSS ELEMENTS
      EQ.2, ELEMENTS CURRENTLY
      EQ.3, NOT AVAILABLE
@@ -76,6 +63,19 @@ C O N T R O L   I N F O R M A T I O N
  NUMBER-N      I       II      III       IV        V       VI       VII      VIII     SET NUMBER
     1          1        2        3        4        5        6        7        8           1
 
+ EQUATION NUMBERS
+
+   NODE NUMBER                     DEGREES OF FREEDOM
+        N              X        Y        Z      sitax     sitay     sitaz
+        1                0         0         0         0         0         0
+        2                1         0         0         0         0         0
+        3                2         3         4         0         0         0
+        4                5         6         7         0         0         0
+        5                0         0         8         0         0         0
+        6                9         0        10         0         0         0
+        7               11        12        13         0         0         0
+        8               14        15        16         0         0         0
+
 	TOTAL SYSTEM DATA
 
      NUMBER OF EQUATIONS . . . . . . . . . . . . . .(NEQ) = 16
@@ -89,7 +89,7 @@ C O N T R O L   I N F O R M A T I O N
 
  D I S P L A C E M E N T S
 
-  NODE           X-DISPLACEMENT    Y-DISPLACEMENT    Z-DISPLACEMENT
+  NODE           X-DISPLACEMENT    Y-DISPLACEMENT    Z-DISPLACEMENT     X-ROTATION     Y-ROTATION     Z-ROTATION
     1              0.00000e+000      0.00000e+000      0.00000e+000      0.00000e+000      0.00000e+000      0.00000e+000
     2             -3.00000e-006      0.00000e+000      0.00000e+000      0.00000e+000      0.00000e+000      0.00000e+000
     3             -3.00000e-006      1.00000e-005      3.55277e-021      0.00000e+000      0.00000e+000      0.00000e+000
@@ -115,8 +115,8 @@ C O N T R O L   I N F O R M A T I O N
 
  S O L U T I O N   T I M E   L O G   I N   S E C 
 
-     TIME FOR INPUT PHASE = 1.80000e-001
-     TIME FOR CALCULATION OF STIFFNESS MATRIX = 2.90000e-002
-     TIME FOR FACTORIZATION AND LOAD CASE SOLUTIONS = 1.64000e-001
+     TIME FOR INPUT PHASE = 4.29000e-001
+     TIME FOR CALCULATION OF STIFFNESS MATRIX = 3.00000e-002
+     TIME FOR FACTORIZATION AND LOAD CASE SOLUTIONS = 5.70000e-001
 
-     T O T A L   S O L U T I O N   T I M E = 3.73000e-001
+     T O T A L   S O L U T I O N   T I M E = 1.02900e+000
