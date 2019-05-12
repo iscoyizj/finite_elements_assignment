@@ -764,20 +764,26 @@ void COutputter::OutputElementStress(unsigned int lcase)
 				*this << endl;
 				break;
 			case ElementTypes::Shell:
-				*this<<"ELEMENT      X-COORD       Y-COORD      Z-COORD       SXX            SYY          SZZ          TXY          TYZ         TZX"<<endl;
-				double shellstress[48];
+				*this<<"ELEMENT      X-COORD        Y-COORD        Z-COORD            SXX              SYY            SZZ            TXY             TYZ            TZX            Mises"<<endl;
+				double shellstress[56];
 				double gaussposition[24];
 				for (unsigned int Ele = 0; Ele < NUME; Ele++){
 					CShell& Element = dynamic_cast<CShell&>(EleGrp[Ele]);
 					Element.ElementStress(shellstress, Displacement);
 					Element.ElementCoord(gaussposition);
 					for(unsigned int loop=0;loop<8;loop++){
-						*this << setw(5) << Ele + 1 << setw(20) <<gaussposition[3*loop]<<setw(20)<<gaussposition[3*loop+1]
-							<<setw(20)<<gaussposition[3*loop+2]<< setw(20)<<shellstress[6*loop] << setw(20)
-							<< shellstress[6*loop+1] << setw(20) << shellstress[6*loop+2] << setw(20)<<shellstress[6*loop+3]
-							<<setw(20)<<shellstress[6*loop+4]<<setw(20)<<shellstress[6*loop+5]<<endl;
+						*this << setw(5) << Ele + 1 << setw(16) <<gaussposition[3*loop]<<setw(16)<<gaussposition[3*loop+1]
+							<<setw(16)<<gaussposition[3*loop+2]<< setw(16)<<shellstress[6*loop] << setw(16)
+							<< shellstress[7*loop+1] << setw(16) << shellstress[7*loop+2] << setw(16)<<shellstress[7*loop+3]
+							<<setw(16)<<shellstress[7*loop+4]<<setw(16)<<shellstress[7*loop+5]<<setw(16)<<shellstress[7*loop+6]<<endl;
 					}
 				}
+				double MisesShell=0;
+				for(unsigned int gs=0;gs<8;gs++){
+					MisesShell+=shellstress[7*gs+6];
+				}
+				MisesShell/=8;
+				Outplot->ElementStress(MisesShell);
 				break;
 			case ElementTypes::Infinite:
 				*this << "  ELEMENT  GAUSS    X-COORD        Y-COORD        Z-COORD         SXX            SYY            TXY" << endl
