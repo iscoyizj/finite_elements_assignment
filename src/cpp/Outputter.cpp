@@ -708,7 +708,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					for (unsigned int cd = 0; cd < 8; cd++)
 					{
 						*this << setw(5) << Ele + 1 << setw(18) << H8coord[3*cd] << setw(18) << H8coord[3*cd+1] << setw(18) << H8coord[3*cd+2]  << setw(18) << H8Stress[6*cd] << setw(18) << H8Stress[6*cd+1] << setw(18) << H8Stress[6*cd+2] << setw(18) << H8Stress[6*cd+3] << setw(18) << H8Stress[6*cd+4] << setw(18) << H8Stress[6*cd+5] << endl;
-						MStressH8 = MStressH8 + sqrt( H8Stress[6*cd]*H8Stress[6*cd] + H8Stress[6*cd+1]*H8Stress[6*cd+1] + H8Stress[6*cd+2]*H8Stress[6*cd+2] - H8Stress[6*cd]*H8Stress[6*cd+1] - H8Stress[6*cd]*H8Stress[6*cd+2] - H8Stress[6*cd+1]*H8Stress[6*cd+2] + 3*H8Stress[6*cd+3]*H8Stress[6*cd+3] + H8Stress[6*cd+4]*H8Stress[6*cd+4] + H8Stress[6*cd+5]*H8Stress[6*cd+5] )/8;
+						MStressH8 = MStressH8 + sqrt( H8Stress[6*cd]*H8Stress[6*cd] + H8Stress[6*cd+1]*H8Stress[6*cd+1] + H8Stress[6*cd+2]*H8Stress[6*cd+2] - H8Stress[6*cd]*H8Stress[6*cd+1] - H8Stress[6*cd]*H8Stress[6*cd+2] - H8Stress[6*cd+1]*H8Stress[6*cd+2] + 3*H8Stress[6*cd+3]*H8Stress[6*cd+3] + 3*H8Stress[6*cd+4]*H8Stress[6*cd+4] + 3*H8Stress[6*cd+5]*H8Stress[6*cd+5] )/8;
 					}
 					Outplot->ElementStress(MStressH8);
 				}
