@@ -316,10 +316,12 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	n[2][0] = n[0][1] * n[1][2] - n[0][2] * n[1][1];
 	n[2][1] = n[0][2] * n[1][0] - n[0][0] * n[1][2];
 	n[2][2] = n[0][0] * n[1][1] - n[0][1] * n[1][0]; //orientation of z'
-
+	
 	double pos_origin[2][3]; // preposition
+/*
 	double local_diag[4][3];//vector from center of rectangle to four angles in the local coordinate
 	double global_diag[4][3];//vector from center of rectangle to four angles in the main coordinate
+*/
 	double Iz = (material.width * material.width * material.width) * material.height / 12 -
 		pow(material.width - 2 * material.t_side, 3.0) *
 		(material.height - 2 * material.t_uplow) / 12;
@@ -329,6 +331,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	double Ip = Iz + Iy;
 
 	// Define the scale of plot
+	/*
 	double magCodim = 1E-1;
 	local_diag[0][0] = 0;
 	local_diag[1][0] = 0;
@@ -342,14 +345,14 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 	local_diag[1][2] = magCodim * material.height;
 	local_diag[2][2] = -magCodim * material.height;
 	local_diag[3][2] = -magCodim * material.height;
-
+	
 	for (unsigned int i = 0; i < 4; i++) 
 	{
 		global_diag[i][0] = n[0][0] * local_diag[i][0] + n[1][0] * local_diag[i][1] + n[2][0] * local_diag[i][2];
 		global_diag[i][1] = n[0][1] * local_diag[i][0] + n[1][1] * local_diag[i][1] + n[2][1] * local_diag[i][2];
 		global_diag[i][2] = n[0][2] * local_diag[i][0] + n[1][2] * local_diag[i][1] + n[2][2] * local_diag[i][2];
 	}
-
+	*/
 	double global_d[2][3]; //displacement in the global coordinate
 	double element_d[2][3]; //displacement in the local coordinate
 	double global_theta[2][3]; //rotation in the global coordinate
@@ -394,7 +397,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 			global_theta[1][i - 3] = nodes_[1]->XYZ[i];
 		}
 	}
-
+	/*
 	for (unsigned int i = 0; i < 2; i++) {
 		for (unsigned int j = 0; j < 4; j++) 
 		{
@@ -406,7 +409,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 			prePositionBeam[(i * 4 + j) * 3 + 2] = pos_origin[i][2] + global_diag[j][2];
 		}
 	}
-
+	*/
 	double element_theta[2][3]; //rotation in the local coordinate
 	//coordinate conversion
 	for (unsigned int i = 0; i < 2; i++) 
@@ -469,6 +472,12 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 		beamstress[i * 24 + 22] = 0;
 		beamstress[i * 24 + 23] = -tau_xz;
 	}
+	beamstress[48] = 0;
+	for (int i = 0; i < 8; i++)
+	{
+		beamstress[48] = beamstress[48] + sqrt(beamstress[i*6]*beamstress[i*6]+3*(beamstress[i*6+3]*beamstress[i*6+3]+beamstress[i*6+5]*beamstress[i*6+5]));
+	}
+	beamstress[48] = beamstress[48] / 8;
 }
 
 void CBeam::GravityCalculation(double* ptr_force)
