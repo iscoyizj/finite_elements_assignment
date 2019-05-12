@@ -84,6 +84,10 @@ void CElementGroup::CalculateMemberSize()
 			ElementSize_ = sizeof(CH8);
 			MaterialSize_ = sizeof(CH8Material);
 			break;
+		case ElementTypes::H8R:
+			ElementSize_ = sizeof(CH8R);
+			MaterialSize_ = sizeof(CH8Material);
+			break;
 		case ElementTypes::Beam:
 			ElementSize_ = sizeof(CBeam);
 			MaterialSize_ = sizeof(CBeamMaterial);
@@ -128,6 +132,9 @@ void CElementGroup::AllocateElements(std::size_t size)
 		case ElementTypes::H8:
 			ElementList_ = new CH8[size];
 			break;
+		case ElementTypes::H8R:
+			ElementList_ = new CH8R[size];
+			break;
 		case ElementTypes::Beam:
 			ElementList_ = new CBeam[size];
 			break;
@@ -162,6 +169,9 @@ void CElementGroup::AllocateMaterials(std::size_t size)
 			MaterialList_ = new C4QMaterial[size];
 			break;
 		case ElementTypes::H8:
+			MaterialList_ = new CH8Material[size];
+			break;
+		case ElementTypes::H8R:
 			MaterialList_ = new CH8Material[size];
 			break;
 		case ElementTypes::Plate:
@@ -200,6 +210,9 @@ bool CElementGroup::Read(ifstream& Input, unsigned int* n, unsigned int* sum)
 			nen=3;
 			break;
 		case ElementTypes::H8:
+			nen=8;
+			break;
+		case ElementTypes::H8R:
 			nen=8;
 			break;
 		case ElementTypes::Plate:

@@ -515,6 +515,27 @@ void CDomain::Gravity()
 				}
 			}
 			break;
+		case H8R:
+			{
+				unsigned int NUME = ElementGrp.GetNUME();
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CElement& Element = ElementGrp[Ele];
+					unsigned int nen=Element.GetNEN();
+					double* EG = new double[nen];
+					Element.GravityCalculation(EG);
+					for (unsigned int nn = 0; nn < nen; nn++) 
+					{
+						unsigned int dof = Element.GetNodes()[nn] -> bcode[2];
+						if (dof)
+						{
+							Force[dof - 1] -= EG[nn]; 
+						}
+					}
+					delete [] EG;
+				}
+			}
+			break;
 		}
 	}
 }

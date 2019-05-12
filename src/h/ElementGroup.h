@@ -17,6 +17,7 @@
 #include "4Q.h"
 #include "T3.h"
 #include "H8.h"
+#include "H8R.h"
 #include "Plate.h"
 #include "Beam.h"
 #include "Shell.h"
@@ -39,7 +40,8 @@ enum ElementTypes
 	T3,     // 3T element
 	Plate,  // Plate element
 	Infinite,//Infinite element     
-    Subpara  // Subparametric element
+    Subpara,  // Subparametric element
+	H8R
 };
 
 //! Element group class

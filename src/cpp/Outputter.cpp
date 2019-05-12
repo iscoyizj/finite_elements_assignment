@@ -173,6 +173,9 @@ void COutputter::OutputElementInfo()
 			case ElementTypes::H8: // 4Q element
 				PrintH8ElementData(EleGrp);
 				break;
+			case ElementTypes::H8R: // 4Q element
+				PrintH8ElementData(EleGrp);
+				break;
 			case ElementTypes::Plate: // Plate element
 				PrintPlateElementData(EleGrp);
 				break;
@@ -714,6 +717,28 @@ void COutputter::OutputElementStress(unsigned int lcase)
 
 				break;
 			
+			case ElementTypes::H8R:
+				*this << "  ELEMENT         X_coord         Y_coord         Z_coord         STRESS_XX         STRESS_YY         STRESS_ZZ         STRESS_YZ         STRESS_ZX         STRESS_XY" << endl
+					<< "  NUMBER" << endl;
+
+				double H8RStress[6];
+				double H8Rcoord[3];
+
+				for (unsigned int Ele = 0; Ele < NUME; Ele++)
+				{
+					CH8R& Element = dynamic_cast<CH8R&>(EleGrp[Ele]);
+					Element.ElementStress(H8RStress, Displacement);
+					Element.ElementCoord(H8Rcoord);
+					double MStressH8R;
+						*this << setw(5) << Ele + 1 << setw(18) << H8Rcoord[0] << setw(18) << H8Rcoord[1] << setw(18) << H8Rcoord[2]  << setw(18) << H8RStress[0] << setw(18) << H8RStress[1] << setw(18) << H8RStress[2] << setw(18) << H8RStress[3] << setw(18) << H8RStress[4] << setw(18) << H8RStress[5] << endl;
+						MStressH8R = sqrt( H8RStress[0]*H8RStress[0] + H8RStress[1]*H8RStress[1] + H8RStress[2]*H8RStress[2] - H8RStress[0]*H8RStress[1] - H8RStress[0]*H8RStress[2] - H8RStress[1]*H8RStress[2] + 3*H8RStress[3]*H8RStress[3] + 3*H8RStress[4]*H8RStress[4] + 3*H8RStress[5]*H8RStress[5] );
+					Outplot->ElementStress(MStressH8R);
+				}
+
+				*this << endl;
+
+				break;
+				
 			case ElementTypes::Plate: // Plate element
 				for (unsigned int Ele = 0; Ele < NUME; Ele++)
 				{
