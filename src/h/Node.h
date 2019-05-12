@@ -21,7 +21,7 @@ class CNode
 public:
 
 //!	Maximum number of degrees of freedom per node
-/*!	For 3D bar and solid elements, NDF = 3. For 3D beam or shell elements, NDF = 5 or 6 */
+/*!	For 3D bar and solid elements, NDF = 3. For 3D beam or shell elements, NDF = 6 */
 	const static unsigned int NDF = 6;
 
 //!	Node numer
@@ -31,7 +31,7 @@ public:
 	double XYZ[NDF];
 //! the stress of node 
 
-	double stress_node[NDF + 1];
+	double stress_node[NDF];
 
 //!	Boundary code of each degree of freedom of the node
 /*!		0: The corresponding degree of freedom is active (defined in the global system) */

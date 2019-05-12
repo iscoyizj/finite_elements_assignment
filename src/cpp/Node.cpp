@@ -16,17 +16,18 @@
 
 CNode::CNode(double X, double Y, double Z)
 {
-    XYZ[0] = X;		// Coordinates of the node
-    XYZ[1] = Y;
-    XYZ[2] = Z;
+	Rotation_Flag = 0;
+	XYZ[0] = X;		// Coordinates of the node
+	XYZ[1] = Y;
+	XYZ[2] = Z;
 	XYZ[3] = 0;
 	XYZ[4] = 0;
 	XYZ[5] = 0;
 	NodeNumber = 0;
-    
-    bcode[0] = 0;	// Boundary codes
-    bcode[1] = 0;
-    bcode[2] = 0;
+
+	bcode[0] = 0;	// Boundary codes
+	bcode[1] = 0;
+	bcode[2] = 0;
 	bcode[3] = 1;
 	bcode[4] = 1;
 	bcode[5] = 1;
@@ -38,11 +39,11 @@ CNode::CNode(double X, double Y, double Z)
 	stress_node[4] = 0.0;
 	stress_node[5] = 0.0;
 
-	Rotation_Flag = 0;
+
 };
 
 // return total count of non-blank args in string
-int Count_for_theta(std::string getstr)
+int Count_for_rotation_arg(std::string getstr)
 {
 	int count = 0;
 	bool on_num = false;
@@ -81,8 +82,10 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 
 	NodeNumber = N;
 
-	Input >> bcode[0] >> bcode[1] >> bcode[2]
+
+	Input >> bcode[0] >> bcode[1] >> bcode[2] 
 		>> XYZ[0] >> XYZ[1] >> XYZ[2];
+
 
 	return true;
 }
@@ -90,8 +93,8 @@ bool CNode::Read(ifstream& Input, unsigned int np)
 //	Output nodal point data to stream
 void CNode::Write(COutputter& output, unsigned int np)
 {
-	output << setw(9) << np + 1 << setw(5) << bcode[0] << setw(5) << bcode[1] << setw(5) << bcode[2]
-		   << setw(18) << XYZ[0] << setw(15) << XYZ[1] << setw(15) << XYZ[2] << endl;
+	output << setw(9) << np + 1 << setw(5) << bcode[0] << setw(5) << bcode[1] << setw(5) << bcode[2] << setw(5) << bcode[3] << setw(5) << bcode[4] << setw(5) << bcode[5]
+		<< setw(18) << XYZ[0] << setw(15) << XYZ[1] << setw(15) << XYZ[2] << endl;
 }
 
 void CNode::WritePlot(COutPlot& output)
@@ -102,11 +105,11 @@ void CNode::WritePlot(COutPlot& output)
 //	Output equation numbers of nodal point to stream
 void CNode::WriteEquationNo(COutputter& output, unsigned int np)
 {
-	output << setw(9) << np+1 << "       ";
+	output << setw(9) << np + 1 << "       ";
 
 	for (unsigned int dof = 0; dof < CNode::NDF; dof++)	// Loop over for DOFs of node np
 	{
-		output << setw(5) << bcode[dof];
+		output << setw(10) << bcode[dof];
 	}
 
 	output << endl;
@@ -131,4 +134,3 @@ void CNode::WriteNodalDisplacement(COutputter& output, unsigned int np, double* 
 
 	output << endl;
 }
-

@@ -74,29 +74,45 @@ int main(int argc, char *argv[])
     double time_assemble = timer.ElapsedTime();
 
 //  Solve the linear equilibrium equations for displacements
+#ifdef _PARDISO_
+	CSRSolver* SRSolver = new CSRSolver(FEMData->GetCSRStiffnessMatrix());
+#else
 	CLDLTSolver* Solver = new CLDLTSolver(FEMData->GetStiffnessMatrix());
-    
+	Solver->LDLT();
+#endif // _PARDISO_
 //  Perform L*D*L(T) factorization of stiffness matrix
-    Solver->LDLT();
+    
 
     COutputter* Output = COutputter::Instance();
 	COutPlot* Outplot = COutPlot::Instance();
 
 #ifdef _DEBUG_
-    Output->PrintStiffnessMatrix();
+#ifndef _PARDISO_
+ Output->PrintStiffnessMatrix();
+#endif // !_PARDISO_
 #endif
         
 //  Loop over for all load cases
     for (unsigned int lcase = 0; lcase < FEMData->GetNLCASE(); lcase++)
     {
 //      Assemble righ-hand-side vector (force vector)
-        FEMData->AssembleForce(lcase + 1);
-            
+        
+		FEMData->AssembleForce(lcase + 1);
+		
 //      Reduce right-hand-side force vector and back substitute
-        Solver->BackSubstitution(FEMData->GetForce());
-            
+        
+#ifdef  _PARDISO_
+		
+		SRSolver->solve(FEMData->GetForce(), 1);  
+#else
+		//      Reduce right-hand-side force vector and back substitute
+		Solver->BackSubstitution(FEMData->GetForce());
+#endif //  _PARDISO_
+
+        
 #ifdef _DEBUG_
         Output->PrintDisplacement(lcase);
+		
 #endif
             
         Output->OutputNodalDisplacement(lcase);
