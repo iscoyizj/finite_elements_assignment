@@ -755,7 +755,7 @@ void CShell::ElementStress(double* stress, double* Displacement){
 			Disp_element[i]=Displacement[LocationMatrix_[i]-1];
 	}
 
-	unsigned int num=0;		//stress[num],num=0:7,	8 gauss point, each with 6 stress component
+	unsigned int num=0;		//stress[num],num=0:7,	8 gauss point, each with 7 stress component
 
 	for(unsigned int i=0;i<2;i++){
 		double xi=gausspoint[i];
