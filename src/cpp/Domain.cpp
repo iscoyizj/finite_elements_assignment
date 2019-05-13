@@ -40,6 +40,7 @@ CDomain::CDomain()
 	
 	NEQ = 0;
 	NUMELE = 0;
+	NUMPLOT = 0;
 
 	Force = nullptr;
 	StiffnessMatrix = nullptr;
@@ -69,7 +70,7 @@ CDomain* CDomain::Instance()
 }
 
 //	Read domain data from the input data file
-bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
+bool CDomain::ReadData(string FileName, string OutFile, string PlotFile, string PostFile)
 {
 	Input.open(FileName);
 
@@ -81,11 +82,13 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
 
 	COutputter* Output = COutputter::Instance(OutFile);
 	COutPlot* Outplot = COutPlot::Instance(PlotFile);
+	COutPlotPost* Outpost = COutPlotPost::Instance(PostFile);
 
 //	Read the heading line
 	Input.getline(Title, 256);
 	Output->OutputHeading();
 	Outplot->OutputHeading();
+	Outpost->OutputHeading();
 
 //	Read the control line
 	Input >> NUMNP >> NUMEG >> NLCASE >> MODEX;
@@ -105,12 +108,11 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
     else
         return false;
 
-	unsigned int n = 0;
 	//	Read element data
-	if (ReadElements(&n, &NUMELE))
+	if (ReadElements(&NUMPLOT, &NUMELE))
 	{
 		Output->OutputElementInfo();
-		Outplot->OutputElementInfo(n, NUMELE);
+		Outplot->OutputElementInfo(NUMPLOT, NUMELE);
 		Outplot->OutputEleType(NUMELE, NUMNP);
 	}
 	else

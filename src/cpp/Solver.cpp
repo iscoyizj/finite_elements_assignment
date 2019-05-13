@@ -9,7 +9,7 @@
 /*****************************************************************************/
 
 #include "Solver.h"
-#include "libpardiso600-WIN-X86-64.h"
+//#include "libpardiso600-WIN-X86-64.h"
 #include <cmath>
 #include <iostream>
 #include <algorithm>

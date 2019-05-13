@@ -76,6 +76,12 @@ void C4Q::WritePlot(COutPlot& output, unsigned int Ele)
 		<< nodes_[3]->NodeNumber-1  << endl;
 }
 
+void C4Q::WritePlotPost(COutPlotPost& output, unsigned int Ele)
+{
+	output << 4 << setw(11) << nodes_[0]->NodeNumber-1 << nodes_[1]->NodeNumber-1 << setw(9) << nodes_[2]->NodeNumber-1 << setw(9) 
+		<< nodes_[3]->NodeNumber-1  << endl;
+}
+
 //  Generate location matrix: the global equation number that corresponding to each DOF of the element
 //	Caution:  Equation number is numbered from 1 !
 void C4Q::GenerateLocationMatrix()

@@ -54,6 +54,8 @@ private:
 	unsigned int NUMEG;
 
 	unsigned int NUMELE;
+	
+	unsigned int NUMPLOT;
 
 //! Element group list
     CElementGroup* EleGrpList;
@@ -90,7 +92,7 @@ public:
 	static CDomain* Instance();
 
 //!	Read domain data from the input data file
-	bool ReadData(string FileName, string OutFile, string PlotFile);
+	bool ReadData(string FileName, string OutFile, string PlotFile, string PostFile);
 
 //!	Read nodal point data
 	bool ReadNodalPoints();
@@ -141,6 +143,8 @@ public:
 	inline unsigned int GetNUMEG() { return NUMEG; }
 
 	inline unsigned int GetNUMELE() {return NUMELE; }
+	
+	inline unsigned int GetNUMPLOT() {return NUMPLOT; }
 
 //! Return element group list
     CElementGroup* GetEleGrpList() { return EleGrpList; }

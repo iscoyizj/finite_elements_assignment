@@ -595,10 +595,12 @@ void COutputter::OutputElementStress(unsigned int lcase)
 	unsigned int NUMEG = FEMData->GetNUMEG();
 
 	COutPlot* Outplot = COutPlot::Instance();
+	COutPlotPost* Outpost = COutPlotPost::Instance();
 
 	unsigned int nele = FEMData->GetNUMELE();
 
 	Outplot->StressHead(lcase, nele);
+	Outpost->StressHead(lcase, nele);
 
 	for (unsigned int EleGrpIndex = 0; EleGrpIndex < NUMEG; EleGrpIndex++)
 	{
@@ -628,6 +630,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					*this << setw(5) << Ele + 1 << setw(22) << stress * material.Area << setw(18)
 						<< stress << endl;
 					Outplot->ElementStress(abs(stress));
+					Outpost->ElementStress(abs(stress));
 
 				}
 
@@ -667,6 +670,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						MStressQ4 = MStressQ4 + sqrt(stress_4Q[6 * iQ4 + 3] * stress_4Q[6 * iQ4 + 3] + stress_4Q[6 * iQ4 + 4] * stress_4Q[6 * iQ4 + 4] - stress_4Q[6 * iQ4 + 3] * stress_4Q[6 * iQ4 + 4] + 3 * stress_4Q[6 * iQ4 + 5] * stress_4Q[6 * iQ4 + 5]) / 4;
 					}
 					Outplot->ElementStress(MStressQ4);
+					Outpost->ElementStress(MStressQ4);
 					delete[] stress_4Q;
 				}
 				*this << endl;
@@ -686,6 +690,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					double MStressT3;
 					MStressT3 = sqrt( T3Stress[0]*T3Stress[0] + T3Stress[1]*T3Stress[1] - T3Stress[0]*T3Stress[1] +3*T3Stress[2]*T3Stress[2] );
 					Outplot->ElementStress(MStressT3);
+					Outpost->ElementStress(MStressT3);
 				}
 
 				*this << endl;
@@ -711,6 +716,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						MStressH8 = MStressH8 + sqrt( H8Stress[6*cd]*H8Stress[6*cd] + H8Stress[6*cd+1]*H8Stress[6*cd+1] + H8Stress[6*cd+2]*H8Stress[6*cd+2] - H8Stress[6*cd]*H8Stress[6*cd+1] - H8Stress[6*cd]*H8Stress[6*cd+2] - H8Stress[6*cd+1]*H8Stress[6*cd+2] + 3*H8Stress[6*cd+3]*H8Stress[6*cd+3] + 3*H8Stress[6*cd+4]*H8Stress[6*cd+4] + 3*H8Stress[6*cd+5]*H8Stress[6*cd+5] )/8;
 					}
 					Outplot->ElementStress(MStressH8);
+					Outpost->ElementStress(MStressH8);
 				}
 
 				*this << endl;
@@ -733,6 +739,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						*this << setw(5) << Ele + 1 << setw(18) << H8Rcoord[0] << setw(18) << H8Rcoord[1] << setw(18) << H8Rcoord[2]  << setw(18) << H8RStress[0] << setw(18) << H8RStress[1] << setw(18) << H8RStress[2] << setw(18) << H8RStress[3] << setw(18) << H8RStress[4] << setw(18) << H8RStress[5] << endl;
 						MStressH8R = sqrt( H8RStress[0]*H8RStress[0] + H8RStress[1]*H8RStress[1] + H8RStress[2]*H8RStress[2] - H8RStress[0]*H8RStress[1] - H8RStress[0]*H8RStress[2] - H8RStress[1]*H8RStress[2] + 3*H8RStress[3]*H8RStress[3] + 3*H8RStress[4]*H8RStress[4] + 3*H8RStress[5]*H8RStress[5] );
 					Outplot->ElementStress(MStressH8R);
+					Outpost->ElementStress(MStressH8R);
 				}
 
 				*this << endl;
@@ -767,6 +774,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						MStressP = MStressP + sqrt(stress_plate[12+3 * iP] * stress_plate[12+3 * iP] + stress_plate[12+3 * iP + 1] * stress_plate[12+3 * iP + 1] - stress_plate[12+3 * iP] * stress_plate[12+3 * iP + 1] + 3 * stress_plate[12+3 * iP + 2] * stress_plate[12+3 * iP + 2]) / 4;
 					}
 					Outplot->ElementStress(MStressP);
+					Outpost->ElementStress(MStressP);
                     delete[] stress_plate;
 				}
 				break;
@@ -781,16 +789,19 @@ void COutputter::OutputElementStress(unsigned int lcase)
 				{
 					CElement& Element = EleGrp[Ele];
 					double* beamstress = new double[49];
-					double* pre_pos = new double [12];
-					double* post_pos = new double[12];
-					Element.ElementPostInfo(beamstress, Displacement, pre_pos, post_pos);
+//					double* pre_pos = new double [12];
+//					double* post_pos = new double[12];
+					double pre_pos,post_pos;
+//					Element.ElementPostInfo(beamstress, Displacement, pre_pos, post_pos);
+					Element.ElementPostInfo(beamstress, Displacement, &pre_pos, &post_pos);
 					CBeamMaterial* material = dynamic_cast<CBeamMaterial*>(Element.GetElementMaterial());
 //					*this << setw(5) << Ele + 1 << setw(22) << beamstress[0] << setw(22)
 //						<< beamstress[1] << setw(22) << beamstress[2] << endl;
 					Outplot->ElementStress(beamstress[48]);
+					Outpost->ElementStress(beamstress[48]);
 					delete[] beamstress;
-					delete [] pre_pos;
-					delete [] post_pos;
+//					delete [] pre_pos;
+//					delete [] post_pos;
 				}
 
 				*this << endl;
@@ -819,6 +830,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 						MStressShell = MStressShell + sqrt((SXY2 + SXZ2 + SYZ2 + T)/2) / 8;
 					}
 					Outplot->ElementStress(MStressShell);
+					Outpost->ElementStress(MStressShell);
 				}
 				break;
 			case ElementTypes::Infinite:
@@ -856,6 +868,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 
 					}
 					Outplot->ElementStress(MStressInfi);
+					Outpost->ElementStress(MStressInfi);
 					delete[] stress_Infi;
 				}
 				*this << endl;
@@ -883,6 +896,7 @@ void COutputter::OutputElementStress(unsigned int lcase)
 
 					}
 					Outplot->ElementStress(MStressSub);
+					Outpost->ElementStress(MStressSub);
 					delete[] stress_Subpara;
 				}
 				
