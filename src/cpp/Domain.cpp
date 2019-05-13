@@ -177,52 +177,52 @@ void CDomain::CalculateEquationNumber()
 		ElementType_ = ElementGrp.GetElementType();
 		switch (ElementType_)
 		{
-			//		 case Beam: // Bar element
-			//		{
-			//			unsigned int NUME = ElementGrp.GetNUME();
-			//			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
-			//			{
-			//				CElement& Element = ElementGrp[Ele];
-			//				CNode** node_ = Element.CElement::GetNodes();
-			//				unsigned int node_left = node_[0]->NodeNumber;
-			//				unsigned int node_right = node_[1]->NodeNumber;
-			//				NodeList[node_left - 1].bcode[3] = 0;
-			//				NodeList[node_left - 1].bcode[4] = 0;
-			//				NodeList[node_left - 1].bcode[5] = 0;
-			//				NodeList[node_right - 1].bcode[3] = 0;
-			//				NodeList[node_right - 1].bcode[4] = 0;
-			//			    NodeList[node_right - 1].bcode[5] = 0;
-			//			}
-			//		}
-			//		break;
+					 case Beam: // Bar element
+					{
+						unsigned int NUME = ElementGrp.GetNUME();
+						for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+						{
+							CElement& Element = ElementGrp[Ele];
+							CNode** node_ = Element.CElement::GetNodes();
+							unsigned int node_left = node_[0]->NodeNumber;
+							unsigned int node_right = node_[1]->NodeNumber;
+							NodeList[node_left - 1].bcode[3] = 0;
+							NodeList[node_left - 1].bcode[4] = 0;
+							NodeList[node_left - 1].bcode[5] = 0;
+							NodeList[node_right - 1].bcode[3] = 0;
+							NodeList[node_right - 1].bcode[4] = 0;
+						    NodeList[node_right - 1].bcode[5] = 0;
+						}
+					}
+					break;
 
-			//		case Shell: // Shell element
-			//		{
-			//			unsigned int NUME = ElementGrp.GetNUME();
-			//			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
-			//			{
-			//				CElement& Element = ElementGrp[Ele];
-			//				CNode** node_ = Element.CElement::GetNodes();
-			//				unsigned int node_one = node_[0]->NodeNumber;
-			//				unsigned int node_two = node_[1]->NodeNumber;
-			//				unsigned int node_three = node_[2]->NodeNumber;
-			//				unsigned int node_four = node_[3]->NodeNumber;
-			//				NodeList[node_one - 1].bcode[3] = 0;
-			//				NodeList[node_one - 1].bcode[4] = 0;
-			//				NodeList[node_one - 1].bcode[5] = 0;
-			//				NodeList[node_two - 1].bcode[3] = 0;
-				//			NodeList[node_two - 1].bcode[4] = 0;
-			//				NodeList[node_two - 1].bcode[5] = 0;
-			//				NodeList[node_three - 1].bcode[3] = 0;
-			//				NodeList[node_three - 1].bcode[4] = 0;
-			//				NodeList[node_three - 1].bcode[5] = 0;
-			//				NodeList[node_four - 1].bcode[3] = 0;
-			//				NodeList[node_four - 1].bcode[4] = 0;
-			//				NodeList[node_four - 1].bcode[5] = 0;
-			//			}
-			//		}
-			//		break;
-		case Bar: // Bar element
+					case Shell: // Shell element
+					{
+						unsigned int NUME = ElementGrp.GetNUME();
+						for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
+						{
+							CElement& Element = ElementGrp[Ele];
+							CNode** node_ = Element.CElement::GetNodes();
+							unsigned int node_one = node_[0]->NodeNumber;
+							unsigned int node_two = node_[1]->NodeNumber;
+							unsigned int node_three = node_[2]->NodeNumber;
+							unsigned int node_four = node_[3]->NodeNumber;
+							NodeList[node_one - 1].bcode[3] = 0;
+							NodeList[node_one - 1].bcode[4] = 0;
+	//						NodeList[node_one - 1].bcode[5] = 0;
+							NodeList[node_two - 1].bcode[3] = 0;
+							NodeList[node_two - 1].bcode[4] = 0;
+	//						NodeList[node_two - 1].bcode[5] = 0;
+							NodeList[node_three - 1].bcode[3] = 0;
+							NodeList[node_three - 1].bcode[4] = 0;
+	//						NodeList[node_three - 1].bcode[5] = 0;
+							NodeList[node_four - 1].bcode[3] = 0;
+							NodeList[node_four - 1].bcode[4] = 0;
+	//						NodeList[node_four - 1].bcode[5] = 0;
+						}
+					}
+					break;
+/*		case Bar: // Bar element
 		{
 			unsigned int NUME = ElementGrp.GetNUME();
 			for (unsigned int Ele = 0; Ele < NUME; Ele++)	//	Loop over for all elements in group EleGrp
@@ -274,7 +274,7 @@ void CDomain::CalculateEquationNumber()
 			}
 		}
 		break;
-		}
+	*/	}
 	}
 	NEQ = 0;
 	for (unsigned int np = 0; np < NUMNP; np++)	// Loop over for all node

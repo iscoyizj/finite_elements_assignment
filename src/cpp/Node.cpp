@@ -28,8 +28,8 @@ CNode::CNode(double X, double Y, double Z)
 	bcode[0] = 0;	// Boundary codes
 	bcode[1] = 0;
 	bcode[2] = 0;
-	bcode[3] = 0;
-	bcode[4] = 0;
+	bcode[3] = 1;
+	bcode[4] = 1;
 	bcode[5] = 1;
 
 	stress_node[0] = 0.0;
