@@ -10,7 +10,7 @@
 
 #include "Domain.h"
 #include "Material.h"
-
+#include "CSRMatrix.h"
 using namespace std;
 
 //	Clear an array
@@ -101,7 +101,7 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
 
 //	Read load data
 	if (ReadLoadCases())
-        Output->OutputLoadInfo();
+		Output->OutputLoadInfo();
     else
         return false;
 
@@ -320,36 +320,39 @@ void CDomain::CalculateColumnHeights()
 
 }
 
-//	Assemble the banded gloabl stiffness matrix
 void CDomain::AssembleStiffnessMatrix()
 {
-//	Loop over for all element groups
+	//	Loop over for all element groups
 	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
 	{
-        CElementGroup& ElementGrp = EleGrpList[EleGrp];
-        unsigned int NUME = ElementGrp.GetNUME();
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		unsigned int NUME = ElementGrp.GetNUME();
 
 		unsigned int size = ElementGrp[0].SizeOfStiffnessMatrix();
 		double* Matrix = new double[size];
 
-//		Loop over for all elements in group EleGrp
+		//		Loop over for all elements in group EleGrp
 		for (unsigned int Ele = 0; Ele < NUME; Ele++)
-        {
-            CElement& Element = ElementGrp[Ele];
-            Element.ElementStiffness(Matrix);
-            StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
-        }
+		{
+			CElement& Element = ElementGrp[Ele];
+			Element.ElementStiffness(Matrix);
+
+#ifdef _PARDISO_
+			CSRStiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+#else
+			StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
+#ifdef _DEBUG_
+			COutputter* Output = COutputter::Instance();
+			Output->PrintStiffnessMatrix();
+#endif
+#endif // _PARDISO_
+		}
 
 		delete[] Matrix;
 		Matrix = nullptr;
 	}
-
-#ifdef _DEBUG_
-	COutputter* Output = COutputter::Instance();
-	Output->PrintStiffnessMatrix();
-#endif
-
 }
+
 
 //	Assemble the global nodal force vector for load case LoadCase
 bool CDomain::AssembleForce(unsigned int LoadCase)
@@ -369,9 +372,43 @@ bool CDomain::AssembleForce(unsigned int LoadCase)
 	}
 	return true;
 }
+#ifdef _PARDISO_
+void CDomain::CalculateCSRColumns()
+{
+	CSparseMatrix<double>* matrix = CSRStiffnessMatrix;
 
+	for (unsigned int EleGrp = 0; EleGrp < NUMEG; EleGrp++)
+	{
+		CElementGroup& ElementGrp = EleGrpList[EleGrp];
+		unsigned int NUME = ElementGrp.GetNUME();
 
-
+		for (unsigned int Ele = 0; Ele < NUME; Ele++)
+		{
+			CElement& Element = ElementGrp[Ele];
+			Element.GenerateLocationMatrix();
+			unsigned LMSize = Element.GetND();
+			unsigned* LM = Element.GetLocationMatrix();
+			for (unsigned i = 0; i < LMSize; ++i)
+			{
+				unsigned index1 = LM[i];
+				if (!index1) continue;
+				for (unsigned j = i; j < LMSize; ++j)
+				{
+					unsigned index2 = LM[j];
+					if (!index2) continue;
+					if (index1 < index2) {
+						matrix->markPosition(index1, index2);
+					}
+					else
+					{
+						matrix->markPosition(index2, index1);
+					}
+				}
+			}
+		}
+	}
+}
+#endif // _PARDISO_
 void CDomain::Gravity()
 {
 
@@ -549,17 +586,27 @@ void CDomain::AllocateMatrices()
     clear(Force, NEQ);
 
 //  Create the banded stiffness matrix
-    StiffnessMatrix = new CSkylineMatrix<double>(NEQ);
-
+#ifdef _PARDISO_
+	CSRStiffnessMatrix = new CSparseMatrix<double>(NEQ);
+	CalculateCSRColumns();
+	CSRStiffnessMatrix->Allocate();
+#else
+	StiffnessMatrix = new CSkylineMatrix<double>(NEQ);
 //	Calculate column heights
 	CalculateColumnHeights();
-
 //	Calculate address of diagonal elements in banded matrix
 	StiffnessMatrix->CalculateDiagnoalAddress();
 
 //	Allocate for banded global stiffness matrix
     StiffnessMatrix->Allocate();
-
 	COutputter* Output = COutputter::Instance();
 	Output->OutputTotalSystemData();
+#endif // _PARDISO_
+
+    
+
+
+
+
+	
 }

@@ -9,17 +9,22 @@
 /*****************************************************************************/
 
 #include "Solver.h"
+#include "libpardiso600-WIN-X86-64.h"
 #include <cmath>
 #include <iostream>
-#ifdef _PARDISO_
-#include<mkl.h>
 #include <algorithm>
 #include <cfloat>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
+#ifdef _PARDISO_
+#ifndef _PARDISO_NEW_
+#include<mkl.h>
+#else
+#endif
 #endif // _PARDISO_
-
 using namespace std;
-
 // LDLT facterization
 void CLDLTSolver::LDLT()
 {
@@ -90,6 +95,71 @@ void CLDLTSolver::BackSubstitution(double* Force)
 };
 
 #ifdef _PARDISO_
+#ifdef _PARDISO_NEW_
+void CSRSolver::solve(double* Force, unsigned NLCase)
+{
+/* Matrix data. */
+    int    n = K->size;
+    int*   ia;
+    ia = K->row_index;
+    int*   ja;
+    ja = K->col_index;
+    double* a=K->values;
+    int      mtype = -2;        /* Real symmetric matrix */
+    double* x;
+    x = new double[n];
+    int      nrhs = 1;          /* Number of right hand sides. */
+    void    *pt[64]; 
+
+    /* Pardiso control parameters. */
+    int      iparm[64];
+    double   dparm[64];
+    int      maxfct, mnum, phase, error, msglvl, solver;
+
+    /* Number of processors. */
+    int      num_procs(4);
+
+    double   ddum;              /* Double dummy */
+    int      idum;              /* Integer dummy. */
+
+   
+/* -------------------------------------------------------------------- */
+/* ..  Setup Pardiso control parameters.                                */
+/* -------------------------------------------------------------------- */
+
+    error = 0;
+    solver = 0; /* use sparse direct solver */
+    pardisoinit (pt,  &mtype, &solver, iparm, dparm, &error); 
+
+    if (error != 0) 
+    {
+        if (error == -10 )
+           printf("No license file found \n");
+        if (error == -11 )
+           printf("License is expired \n");
+        if (error == -12 )
+           printf("Wrong username or hostname \n");
+         return ; 
+    }
+    else
+        printf("[PARDISO]: License check was successful ... \n");
+    
+    /* Numbers of processors, value of OMP_NUM_THREADS */
+
+    iparm[2]  = num_procs;
+    iparm[5] = 1;
+    maxfct = 1;		/* Maximum number of numerical factorizations.  */
+    mnum   = 1;         /* Which factorization to use. */
+    
+    msglvl = 1;         /* Print statistical information  */
+    error  = 0;         /* Initialize error flag */
+
+    phase = 13;  
+    pardiso (pt, &maxfct, &mnum, &mtype, &phase,
+             &n, a, ia, ja, &idum, &nrhs,
+             iparm, &msglvl, Force, x, &error,  dparm);
+}
+#else
 void CSRSolver::solve(double* Force, unsigned NLCase)
 {
 	void* pt[64];
@@ -150,6 +220,7 @@ void CSRSolver::solve(double* Force, unsigned NLCase)
 	delete[] perm;
 	delete[] res;
 }
+#endif
 #endif // _PARDISO_
 
 
