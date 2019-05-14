@@ -271,7 +271,7 @@ void CBeam::ElementStress(double* stress, double* Displacement)
 	double S[6];
 	for (unsigned int i = 0; i < 3; i++)
 	{
-		S[i] = -DX[i] * DX[i] * material.E / (L * L * L);
+		S[i] = -DX[i] * material.E / (L * L);
 		S[i + 3] = -S[i];
 	}
 
@@ -296,7 +296,7 @@ void CBeam::ElementPostInfo(double* beamstress, double* Displacement, double* pr
 		dynamic_cast<CBeamMaterial&>(*ElementMaterial_); // Pointer to material of the element
 	double DX[3];	//	dx = x2-x1, dy = y2-y1, dz = z2-z1
 	double L2 = 0;	//	Square of bar length (L^2)
-
+	clear(beamstress, 49);
 	for (unsigned int i = 0; i < 3; i++) {
 		DX[i] = nodes_[1]->XYZ[i] - nodes_[0]->XYZ[i];
 		L2 = L2 + DX[i] * DX[i];

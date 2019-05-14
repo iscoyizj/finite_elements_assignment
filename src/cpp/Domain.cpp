@@ -101,9 +101,9 @@ bool CDomain::ReadData(string FileName, string OutFile, string PlotFile)
 
 //	Read load data
 	if (ReadLoadCases())
-		Output->OutputLoadInfo();
+			Output->OutputLoadInfo();
     else
-        return false;
+       return false;
 
 	unsigned int n = 0;
 	//	Read element data
@@ -336,21 +336,17 @@ void CDomain::AssembleStiffnessMatrix()
 		{
 			CElement& Element = ElementGrp[Ele];
 			Element.ElementStiffness(Matrix);
-
 #ifdef _PARDISO_
 			CSRStiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
 #else
 			StiffnessMatrix->Assembly(Matrix, Element.GetLocationMatrix(), Element.GetND());
-#ifdef _DEBUG_
-			COutputter* Output = COutputter::Instance();
-			Output->PrintStiffnessMatrix();
-#endif
 #endif // _PARDISO_
 		}
-
+		
 		delete[] Matrix;
 		Matrix = nullptr;
 	}
+	
 }
 
 

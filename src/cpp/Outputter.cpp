@@ -776,21 +776,18 @@ void COutputter::OutputElementStress(unsigned int lcase)
 					<< "  NUMBER" << endl;
 
 
-
+				double Beam_mises(0);
 				for (unsigned int Ele = 0; Ele < NUME; Ele++)
 				{
 					CElement& Element = EleGrp[Ele];
-					double* beamstress = new double[49];
-					double* pre_pos = new double [12];
-					double* post_pos = new double[12];
-					Element.ElementPostInfo(beamstress, Displacement, pre_pos, post_pos);
+					double* beamstress = new double[3];
+					Element.ElementStress(beamstress, Displacement);
 					CBeamMaterial* material = dynamic_cast<CBeamMaterial*>(Element.GetElementMaterial());
 //					*this << setw(5) << Ele + 1 << setw(22) << beamstress[0] << setw(22)
 //						<< beamstress[1] << setw(22) << beamstress[2] << endl;
-					Outplot->ElementStress(beamstress[48]);
+					Beam_mises = sqrt(beamstress[0] * beamstress[0] + beamstress[1] * beamstress[1] + beamstress[2] * beamstress[2] - (beamstress[0] * beamstress[1] + beamstress[1] * beamstress[2] + beamstress[2] * beamstress[1]));
+					Outplot->ElementStress(Beam_mises);
 					delete[] beamstress;
-					delete [] pre_pos;
-					delete [] post_pos;
 				}
 
 				*this << endl;

@@ -9,7 +9,6 @@
 /*****************************************************************************/
 
 #include "Solver.h"
-#include "libpardiso600-WIN-X86-64.h"
 #include <cmath>
 #include <iostream>
 #include <algorithm>
@@ -173,7 +172,7 @@ void CSRSolver::solve(double* Force, unsigned NLCase)
 	// Try 3 later
 	iparm[5] = 1; // write back to Force
 	char    *var;
-	num_procs = 4;
+	num_procs = 8;
 	iparm[2] = num_procs;
 	
 	const int maxfct(1),mnum(1);
