@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     string InFile = filename + ".dat";
 	string OutFile = filename + ".out";
-//	string PostFile = filename + "_post.out";
+	string PostFile = filename + "_post.vtk";
 	string PlotFile = filename + ".vtk";
 
 	CDomain* FEMData = CDomain::Instance();
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     timer.Start();
 
 //  Read data and define the problem domain
-	if (!FEMData->ReadData(InFile, OutFile, PlotFile))
+	if (!FEMData->ReadData(InFile, OutFile, PlotFile, PostFile))
 	{
 		cerr << "*** Error *** Data input failed!" << endl;
 		exit(1);
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
     COutputter* Output = COutputter::Instance();
 	COutPlot* Outplot = COutPlot::Instance();
-
+	COutPlotPost* Outpost = COutPlotPost::Instance();
 #ifdef _DEBUG_
 #ifndef _PARDISO_
  Output->PrintStiffnessMatrix();
@@ -116,8 +116,12 @@ int main(int argc, char *argv[])
 		
 #endif
             
+        Outpost->OutNode();
+		Outpost->OutputElementInfo(FEMData->GetNUMPLOT(), FEMData->GetNUMELE());
+		Outpost->OutputEleType(FEMData->GetNUMELE(), FEMData->GetNUMNP());
         Output->OutputNodalDisplacement(lcase);
 		Outplot->OutputNodalDisplacement(lcase);
+		Outpost->OutputNodalDisplacement(lcase);
 //  Calculate and output stresses of all elements
 		Output->OutputElementStress(lcase);
     }

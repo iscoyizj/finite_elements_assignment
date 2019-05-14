@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include "OutPlot.h"
+#include "OutPlotPost.h"
 
 using namespace std;
 

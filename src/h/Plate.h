@@ -32,6 +32,8 @@ public:
 	
 	virtual void WritePlot(COutPlot& output, unsigned int Ele);
 
+	virtual void WritePlotPost(COutPlotPost& output, unsigned int Ele);
+
 	//! Generate location matrix: the global equation number that corresponding to each DOF of the element
 	//	Caution:  Equation number is numbered from 1 !
 	virtual void GenerateLocationMatrix();
