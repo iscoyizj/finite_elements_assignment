@@ -285,7 +285,7 @@ void CBeam::ElementStress(double* stress, double* Displacement)
 		for (unsigned int j = 0; j < 3; j++)
 		{
 			if (LocationMatrix_[i * 6 + j])
-				stress[j] += S[i * 3 + j] * Displacement[LocationMatrix_[i * 6 + j] - 1];
+				stress= S[i * 3 + j] * Displacement[LocationMatrix_[i * 6 + j] - 1];
 		}
 	}
 }
