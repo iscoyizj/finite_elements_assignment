@@ -794,7 +794,11 @@ void COutputter::OutputElementStress(unsigned int lcase)
 //					*this << setw(5) << Ele + 1 << setw(22) << beamstress[0] << setw(22)
 //						<< beamstress[1] << setw(22) << beamstress[2] << endl;
 					double Beam_mises(0);
+<<<<<<< HEAD
 					Beam_mises = sqrt(beamstress[0] * beamstress[0] + beamstress[1] * beamstress[1] + beamstress[2] * beamstress[2]);
+=======
+					Beam_mises = sqrt(beamstress[0] * beamstress[0] + beamstress[1] * beamstress[1] + beamstress[2] * beamstress[2] - (beamstress[0] * beamstress[1] + beamstress[1] * beamstress[2] + beamstress[2] * beamstress[0]));
+>>>>>>> 6245da6a00e6a55d4fb5d273becf0b065f3b494b
 					Outplot->ElementStress(Beam_mises);
 					Outpost->ElementStress(Beam_mises);
 					delete[] beamstress;
