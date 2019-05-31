@@ -498,8 +498,8 @@ void CBeam::GravityCalculation(double* ptr_force)
 	weight = density * L*A*g;
 	ptr_force[0] = -weight / 2;
 	ptr_force[3] = ptr_force[0];
-	ptr_force[1] = weight * DX[0] / 12;
-	ptr_force[2] = -weight * DX[1] / 12;
-	ptr_force[4] = -weight * DX[0] / 12;
-	ptr_force[5] = weight * DX[1];
+	ptr_force[1] = -weight * DX[1] / 12;
+	ptr_force[2] = weight * DX[0] / 12;
+	ptr_force[4] = weight * DX[1] / 12;
+	ptr_force[5] = -weight * DX[0] / 12;
 }
