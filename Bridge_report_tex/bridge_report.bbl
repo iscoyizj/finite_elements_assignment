@@ -1,0 +1,87 @@
+\begin{thebibliography}{10}
+
+\bibitem{Bell:SpMV:NVIDIA:2008}
+N.~Bell and M.~Garland.
+\newblock Efficient sparse matrix-vector multiplication on {CUDA}.
+\newblock NVIDIA Technical Report NVR-2008-004, NVIDIA Corporation, Dec. 2008.
+
+\bibitem{Bustamam2013Implementation}
+A.~Bustamam, G.~Ardaneswari, and D.~Lestari.
+\newblock Implementation of cuda gpu-based parallel computing on smith-waterman
+  algorithm to sequence database searches.
+\newblock In {\em International Conference on Advanced Computer Science
+  Information Systems}, 2013.
+
+\bibitem{Choi2015Design}
+J.~Choi, J.~J. Dongarra, S.~Ostrouchov, A.~P. Petitet, D.~W. Walker, and R.~C.
+  Whaley.
+\newblock Design and implementation of the scalapack lu, qr, and cholesky
+  factorization routines.
+\newblock {\em Concurrency Computation Practice Experience}, 12(15):1481--1493,
+  2015.
+
+\bibitem{Duff1989The}
+I.~S. Duff and G.~A. Meurant.
+\newblock The effect of ordering on preconditioned conjugate gradients.
+\newblock {\em Bit Numerical Mathematics}, 29(4):635--657, 1989.
+
+\bibitem{Greathouse2014Efficient}
+J.~L. Greathouse and M.~Daga.
+\newblock Efficient sparse matrix-vector multiplication on gpus using the csr
+  storage format.
+\newblock In {\em International Conference for High Performance Computing,
+  Networking, Storage Analysis}, 2014.
+
+\bibitem{Guo2012Adaptive}
+D.~Guo and W.~Gropp.
+\newblock Adaptive thread distributions for spmv on a gpu.
+\newblock In {\em Extreme Scaling Workshop}, 2012.
+
+\bibitem{Heller2015Adaptive}
+M.~Heller and T.~Oberhuber.
+\newblock Adaptive row-grouped csr format for storing of sparse matrices on
+  gpu.
+\newblock {\em Computer Science}, 2015.
+
+\bibitem{Im2004Sparsity}
+E.~J. Im, K.~Yelick, and R.~Vuduc.
+\newblock Sparsity: Optimization framework for sparse matrix kernels.
+\newblock {\em International Journal of High Performance Computing
+  Applications}, 18(1):135--158, 2004.
+
+\bibitem{Koza2014Sparse}
+Z.~Koza, M.~Matyka, Łukasz Mirosław, and J.~Poła.
+\newblock {\em Sparse Matrix-Vector Product}.
+\newblock 2014.
+
+\bibitem{Kreutzer2012Sparse}
+M.~Kreutzer, G.~Hager, G.~Wellein, H.~Fehske, A.~Basermann, and A.~R. Bishop.
+\newblock Sparse matrix-vector multiplication on gpgpu clusters: A new storage
+  format and a scalable implementation.
+\newblock In {\em Parallel Distributed Processing Symposium Workshops Phd
+  Forum}, 2012.
+
+\bibitem{GreathouseCSR}
+J.~L.~Greathouse and M.~Daga.
+\newblock Efficient sparse matrix-vector multiplication on gpus using the csr
+  storage format.
+\newblock {\em International Conference for High Performance
+  Computing,Networking,Storage and Analysis, SC}, 2015:769--780, 01 2015.
+
+\bibitem{Langr2015Efficient}
+D.~Langr and J.~Trdlicka.
+\newblock Efficient converting of large sparse matrices to quadtree format.
+\newblock In {\em International Symposium on Symbolic Numeric Algorithms for
+  Scientific Computing}, 2015.
+
+\bibitem{Szkoda2014Multi}
+S.~Szkoda, Z.~Koza, and M.~Tykierko.
+\newblock Multi-gpgpu cellular automata simulations using openacc.
+\newblock 2014.
+
+\bibitem{Zhang2013Implementing}
+J.~Zhang, E.~Liu, J.~Wan, Y.~Ren, M.~Yue, and J.~Wang.
+\newblock Implementing sparse matrix-vector multiplication with qcsr on gpu.
+\newblock {\em Applied Mathematics Information Sciences}, 7(2):473--482, 2013.
+
+\end{thebibliography}

@@ -1,0 +1,298 @@
+% !Mode:: "TeX:UTF-8"
+%% 请使用 XeLaTeX 编译本文.
+% \documentclass{WHUBachelor}% 选项 forprint: 交付打印时添加, 避免彩色链接字迹打印偏淡. 即使用下一行:
+ \documentclass[forprint]{WHUBachelor}
+\usepackage{cite} 
+\usepackage{amsmath, amsfonts, amssymb} % math equations, symbols
+\usepackage[english]{babel}
+\usepackage{color}      % color content
+\usepackage{graphicx}   % import figures
+\usepackage{url}        % hyperlinks
+\usepackage{bm}         % bold type for equations
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{epstopdf}
+\usepackage{epsfig}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{esvect}
+\usepackage{listings}
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage{subfig}
+\usepackage{float}
+\begin{document}
+%%%%%%% 下面的内容, 据实填空.
+
+
+\StudentNumber{2016011560} % 填写自己的学号
+
+\title{\\有限元法基础\\大型线性稀疏系统的求解与储存方法}
+
+\author{易泽吉}                            % 作者名字
+
+\Cmajor{工程力学}                  % 专业中文名
+
+\Cschoolname{航天航空学院}          % 学院名
+
+\date{二〇一八年三月}                    % 日期, 要注意和英文日期一致!!
+
+
+%-----------------------------------------------------------------------------
+\pdfbookmark[0]{封面}{title}         % 封面页加到 pdf 书签
+\maketitle
+\frontmatter
+\pagenumbering{Roman}              % 正文之前的页码用大写罗马字母编号.
+%-----------------------------------------------------------------------------
+
+%==========================把目录加入到书签==============================%%%%%%
+\pdfbookmark[0]{目录}{toc}
+
+\mainmatter %% 以下是正文、
+\tableofcontents
+\chapter{摘要}
+向量乘法是许多科学和工业应用中大规模计算的核心。现代高性能计算机系统，例如多核，GPU，使用协处理器和特殊寄存器的单指令多结构计算，可加速针对众多任务的向量乘法计算。稀疏矩阵是非零元占多数的矩阵，因为具有大量重复的零元素，将稀疏矩阵整体完整的存储在内存中是一种巨大的空间开销，同时降低了访问，读写的速度，同时一定程度上降低了运算的速度。为了有效地减少稀疏矩阵的存储空间，研究者们已经提出了许多针对稀疏线性系统的数据结构。这些数据结构通过仅存储矩阵的非零值来减少存储空间，从而大幅减少了存储的代价，同时提升了计算的速度。这对于现在的计算机系统非常重要，因为现有的内存容量时常无法满足大规模的完整矩阵存储。从1970年开始，演化出许多格式以减少稀疏矩阵的存储空间，Bell和Garland在2008年的论文中指出这一点\cite{Bell:SpMV:NVIDIA:2008}。其中，大多数格式是针对特定情况定制的。 CSR，COO，ELLPACK和Diagonal是其他格式发展的四种基本格式。所有这些格式在不同的计算平台中表现不同。 Greathouse和Daga在2014年证明CSR格式\cite{GreathouseCSR}是最适合具有深度缓存内存层次结构的系统，但它在具有合并内存的GPU中表现失败并且无法提供并行性。与CSR相比，ELLPACK格式通过提供合并存储器和提供Bustamam等人于2012年提出的指定的指令级并行性而在GPU环境中表现优异\cite{Bustamam2013Implementation}。ELLPACK格式是通过在行中添加零来形成统一行长度而形成的。 这增加了存储开销，并且可以通过诸如由Kreutzer等人在2013年给出的切片ELLPACK格式的高级格式来消除。 在这种格式中，给定的稀疏矩阵被分成块，并且将单独的块以ELLPACK格式存储。由于CSR格式在GPU环境下表现不佳，因此Greathouse和Daga\cite{GreathouseCSR}以及\cite{Szkoda2014Multi}在文献中提出了CSR格式的变化，例如自适应CSR和压缩多行存储（CMRS）格式。 
+\chapter{稀疏矩阵存储方法}
+\section{基本存储方式}
+\subsection{Diagonal Format}
+这种格式适用于非零值集中在矩阵对角线上的矩阵\cite{Bell:SpMV:NVIDIA:2008}。下方矩阵展示了所考虑的样本稀疏矩阵的对角线格式表示。这种格式既节省空间又节省时间，但不适用于所有类型的矩阵。它用两个数组实现，一个二维数据数组保存非零值，其中对角元素按列放置，另一个是偏置数组，存储子对角线与主对角线的偏移量。对角线格式通过减少数据阵列和X，Y向量的存储器访问次数来提升向量操作中的性能，因为它们存储在相邻的存储器位置中。然而，这种格式对存储开销并没有大幅的削减，因为它仍然存储了矩阵对角线中的零值。
+\begin{equation} 
+A_{\operatorname{mxn}}=\left[ \begin{array}{ccccc}{0} & {4} & {0} & {7} & {0} \\ {2} & {0} & {3} & {0} & {6} \\ {0} & {5} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {2} \\ {1} & {0} & {0} & {6} & {0}\end{array}\right]
+ \end{equation}
+\begin {equation} 
+\operatorname{Dat} a=\left[ \begin{array}{cccc}{*} & {2} & {4} & {7} \\ {*} & {5} & {3} & {6} \\ {*} & {0} & {0} & {*} \\ {1} & {6} & {2} & {*}\end{array}\right] \quad \text { Offset }=\left[ \begin{array}{ccccc}{-4} & {-1} & {1} & {3}\end{array}\right]
+ \end {equation}
+\subsection{ELLPACK Format}
+这种格式非常适合半结构化和非结构化网格，并且适用于矢量体系结构\cite{Bell:SpMV:NVIDIA:2008}。 它类似于对角线格式，唯一的区别是列索引是明确指定的。但对于对角线上的元素，列索引隐含在偏移数组中。 它由两个二维数组组成，一种一个以行方式存储数据值，另一个存储列索引。 如果矩阵大小是m×n，其中Nmnzr表示每行的最大非零值数，则列索引数组的大小为m×Nmnzr。 ELLPACK适用于矩阵的最大数量与平均值没有多大差别的矩阵。 ELLPACK格式占用的存储空间在下式中给出。
+\begin {equation} 
+A_{\operatorname{man}}=\left[ \begin{array}{ccccc}{0} & {4} & {0} & {7} & {0} \\ {2} & {0} & {3} & {0} & {6} \\ {0} & {5} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {2} \\ {1} & {0} & {0} & {6} & {0}\end{array}\right]
+ \end {equation}
+\begin{equation} 
+D a t a=\left[ \begin{array}{ccc}{4} & {7} & {*} \\ {2} & {3} & {6} \\ {5} & {*} & {*} \\ {2} & {*} & {*} \\ {1} & {6} & {*}\end{array}\right] \quad \text { Colum indices }=\left[ \begin{array}{ccc}{1} & {3} & {*} \\ {0} & {2} & {4} \\ {1} & {*} & {*} \\ {4} & {*} & {*} \\ {0} & {3} & {*}\end{array}\right]
+ \end{equation}
+\begin {equation} 
+E L L P A C K_{\text {storage}}=2\left(N_{\text {mnzr}} \times m\right)
+ \end {equation}
+\subsection{COO Coordinate Format}
+COO是用于以非零值的坐标存储稀疏矩阵的最通用格式之一\cite{Choi2015Design}。它可以在任何平台上实现，而不必担心丢失任何数据。 此格式存储行索引，列索引以及非零值。 COO很简单，对于任何稀疏模式，所需的存储取决于非零值的数量。 它由三个1维数组实现，一个用于存储非零值，另外两个用于保存相应非零值的行和列索引，如下式所示。为了提高可读性，COO对行数组或列数组进行排序。同时为了确保连续存储同一行中的元素，对行数组进行排序。记NZV为非零元素的数量,COO存储空间在下式中给出
+\begin {equation} 
+A_{\operatorname{man}}=\left[ \begin{array}{ccccc}{0} & {4} & {0} & {7} & {0} \\ {2} & {0} & {3} & {0} & {6} \\ {0} & {5} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {2} \\ {1} & {0} & {0} & {6} & {0}\end{array}\right]
+ \end {equation}
+\begin{equation} 
+D a t a=\left[ \begin{array}{lllllllll}{4} & {7} & {2} & {3} & {6} & {5} & {2} & {1} & {6}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Row-indices = \left[ \begin{array}{lllllllll}{0} & {0} & {1} & {1} & {1} & {2} & {3} & {4} & {4}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Column-indices = \left[ \begin{array}{lllllllll}{1} & {3} & {0} & {2} & {4} & {1} & {4} & {0} & {3}\end{array}\right]
+ \end{equation}
+\begin {equation} 
+C O O_{\text {storage}}=3 \times N Z V
+ \end {equation}
+\subsection{Compressed Row Format}
+CSR是最流行和通用的格式，可为高性能架构中的结构化和非结构化稀疏矩阵提供出色的压缩比\cite{Choi2015Design}。 具有CSR格式的向量运算在CPU上实现时显示出良好的性能改进，并且所有算法（如BLAS，LAPACK和CUSparse）均支持此格式。 它使用三个1维数组，一个用于保存非零值，第二个用于保存每行非零值的数量，第三个用于保存非零值的列索引。此格式的大小主要取决于矩阵中的非零值的数量。 CSR较好的反映了矩阵的稀疏特性，并且受每行非零值的分布的影响。
+\begin {equation} 
+A_{\operatorname{man}}=\left[ \begin{array}{ccccc}{0} & {4} & {0} & {7} & {0} \\ {2} & {0} & {3} & {0} & {6} \\ {0} & {5} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {2} \\ {1} & {0} & {0} & {6} & {0}\end{array}\right]
+ \end {equation}
+
+\begin{equation} 
+Data=\left[ \begin{array}{ccccccccc}{4} & {7} & {2} & {3} & {6} & {5} & {2} & {1} & {6}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Column-indices=\left[ \begin{array}{lllllllll}{1} & {3} & {0} & {2} & {4} & {1} & {4} & {0} & {3}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+P t r=\left[ \begin{array}{llllll}{0} & {2} & {5} & {6} & {7} & {9}\end{array}\right]
+ \end{equation}
+CSR占据的存储空间为
+\begin{equation} 
+CSR_{\text {storage}}=2 \times N Z V+m+1
+ \end{equation}
+\subsection{Compressed Column Format}
+CSC格式类似于CSR格式，其中列中的非零值连续存储在存储器中\cite{Duff1989The}。 矩阵的CSC格式等同于CSR格式的转置。 这种格式是由于一些编程语言（例如FORTRAN）而存在的，这种编程语言以列为单位而不是按行在存储器中存储矩阵。 这也是众所周知的Harwell-Boeing稀疏矩阵格式。由于CSC格式为CSR存储格式的转置，所以其存储方式和容量相似。
+\section{基于分块的存储方式}
+\subsection{Blocked CSR Format}
+在某些求解应用中，实时性较强，稀疏矩阵中零的出现表明它们的结构具有规律性，例如在大小为r的块中出现零。 对于表现出这种子结构的矩阵，这种格式比CSR更好\cite{Im2004Sparsity}。这里，矩阵被分成大小为r的块。 对于样本矩阵，此格式如图2.6所示。 它由三个数组组成，例如用于以行方式存储非零块的数据值的数据数组，用于存储块列索引的列索引数组以及用于存储每行中块的开始的行指针。 在以下示例中，考虑块大小为2。
+\begin{equation} 
+A_{\operatorname{mxn}}=\left[ \begin{array}{cccccc}{0} & {4} & {0} & {7} & {0} & {0} \\ {2} & {0} & {3} & {0} & {0} & {0} \\ {0} & {5} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {2} & {0} \\ {1} & {0} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Bcolumn-indices=\left[ \begin{array}{lllll}{0} & {1} & {0} & {2} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Row-p t r=\left[ \begin{array}{llll}{0} & {2} & {4} & {5}\end{array}\right]
+ \end{equation}
+如果在所考虑的块大小中没有足够数量的非零值，则此格式的主要缺点是增加了零元素的数量。块大小是确定此格式效率的重要参数，块大小的增加会降低此格式的效率。记矩阵非零元数量为$N_{nzb}$,分块矩阵大小为r，总的存储量为
+\begin{equation} 
+B C S R_{\text {storage}}=\left(N_{n a b} \times 2 r\right)+N_{n c b}+m / r+1
+ \end{equation}
+\subsection{Row Grouped CSR Format}
+这是CSR格式的扩展，其中矩阵被逐行分解成部分\cite{Heller2015Adaptive}。 每个部分由一组行组成。 这中存储方法需要四个一维阵列。 数据数组用于存储每行中第一次出现的非零值，然后是第二次，依此类推......在一个组内，然后在第二组中以相同的方式继续。 如果每行中的非零值的数量小于最大值，则发生零填充。 与CSR格式相比，这会产生开销。 列数组包含数据值的列索引。 行长度数组显示每行中非零值的数量，组指针保持组开头的偏移量。 与其他格式相比，这种格式更好地利用了缓存。
+\begin{equation} 
+A_{\operatorname{mxn}}=\left[ \begin{array}{cccccc}{0} & {4} & {0} & {7} & {0} & {0} \\ {2} & {0} & {3} & {0} & {0} & {0} \\ {0} & {5} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {2} & {0} \\ {1} & {0} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+
+\begin{equation} 
+Data=\left[ \begin{array}{ccccccccccccccc}{4} & {2} & {5} & {7} & {3} & {0} & {0} & {6} & {0} & {2} & {1} & {4} & {0} & {6} & {0}\end{array}\right]
+ \end{equation}
+
+\begin{equation} 
+Column-indices=\left[ \begin{array}{lllllllllllllll}{1} & {0} & {1} & {3} & {2} & {*} & {*} & {4} & {*} & {4} & {0} & {2} & {*} & {3} & {*}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Row-length=\left[ \begin{array}{llllll}{2} & {3} & {1} & {1} & {2} & {1}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Group-pointer=\left[ \begin{array}{ll}{0} & {9}\end{array}\right]
+ \end{equation}
+这种方法所需的存储空间为
+\begin{equation} 
+R C S R_{\text {storage}}=2 X+m+N_{g}
+ \end{equation}
+记$N_{mnzpr}g(i)$为每组中最大的非零元数量，则
+\begin{equation} 
+X=\sum_{i=1}^{N_{g}}\left(N_{m n z r} g(i)\right) \times G_{s i z e}
+ \end{equation}
+\subsection{Quad Tree CSR Format}
+它是CSR和Quad树格式的组合，其中给定矩阵递归地划分为四个象限，直到节点大小等于密度大小\cite{Zhang2013Implementing}。这些节点可以是三种类型，例如整个节点具有零值的空节点，其中存在零和非零值的组合的混合节点以及仅完全由非零值组成的完整节点。依次使用CSR格式存储混合节点和完整节点，并忽略空节点。这种格式具有递归编程风格，因此易于从CSR等流行格式转换，容易修改数据并拥有更好的缓存利用率。由于这种格式必须存储节点信息和非零值，它经尝不是空间有效的，但使用此格式的向量操作实现比CSR格式更快。其中的节点是混合节点，它们使用具有三维一维阵列的常规CSR格式存储。这种格式的性能主要取决于密度大小和数据加载到缓存中，这增加了数据的局部性并增加了性能增益。这种存储格式所占据的空间为
+\begin{equation} 
+Q C S R_{\text {storage}}=N_{q} \times C S R_{\text {storage}}
+ \end{equation}
+\subsection{Minimal Quad Tree Format}
+这是一种称为Minimal Quad tree的新存储格式，可有效地用于I / O操作\cite{Langr2015Efficient}。 它是四叉树格式的扩展，克服了四叉树格式的缺点，例如存储指针时的空间开销。 此格式侧重于压缩稀疏矩阵的结构，其中非零值是隐式的。 诸如存储未加权图的事件矩阵之类的应用程序以这种格式显示空间效率。 类似于四叉树格式，给定矩阵被递归地划分为块，并且如果元素全部为零则用比特值0表示块，并且如果块中存在非零值则用值1表示。 该格式使用比特流来表示矩阵的结构，而不是关于非零值的信息。 对于上面的例子，矩阵被分成密度为2的块，它表示为比特流。
+\begin{equation} 
+bitstream=\left[ \begin{array}{cccccccccccccccc}{1} & {0} & {0} & {0} & {1} & {1} & {0} & {0} & {1} & {1} & {1} & {1} & {1} & {0} & {0} & {1}\end{array}\right]
+ \end{equation}
+存储效率为
+\begin{equation} 
+\operatorname{Max}(MQT)_{\text {storagec}}=4 \times N\left(1 / 3+\log _{4}\left(n^{2} / N\right)\right)
+ \end{equation}
+\section{向量化的存储方式}
+\subsection{Compressed Multi Row Format}
+CMRS是专门为GPU设计的新格式\cite{Koza2014Sparse}。 它是CSR格式的扩展，CSR格式可以有效地转换为此格式，而无需任何内存开销。 与其他格式相比，这种格式的优点在于，它不需要任何零填充和行或列重新排序。 这种格式在GPU中显示出良好的加速，并且可以很好地适应未来的GPU以及其他面向吞吐量的架构。 这种格式由四个1维数组和一个整数元素组成，用于跟踪高度参数，如下式。数据和列索引数组与CSR格式相同。 数组字符串指针用于保存每个条带中的非零值的数量，并且条带数组中的行保存每个条带的行号。
+\begin{equation} 
+A_{\operatorname{mxn}}=\left[ \begin{array}{ccccc}{4} & {5} & {0} & {1} & {0} \\ {0} & {7} & {8} & {0} & {0} \\ {0} & {9} & {2} & {3} & {0} \\ {0} & {0} & {0} & {6} & {0} \\ {0} & {0} & {0} & {10} & {11}\end{array}\right]
+ \end{equation}
+
+\begin{equation} 
+=\left[ \begin{array}{ccccccccccc}{4} & {5} & {1} & {7} & {8} & {9} & {2} & {3} & {6} & {10} & {11}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Column-indices=\left[ \begin{array}{lllllllllll}{0} & {1} & {3} & {1} & {2} & {1} & {2} & {3} & {3} & {3} & {4}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Row-strip = \left[ \begin{array}{lllllllllll}{0} & {0} & {0} & {1} & {1} & {0} & {0} & {0} & {1} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+strip-ptr=\left[ \begin{array}{cccc}{0} & {5} & {9} & {2}\end{array}\right]
+ \end{equation}
+记条带数$N_s=$行数/条带高度，则CMRS方法的存储空间为
+\begin{equation} 
+C M R S_{\text { storage }}=(3 \times N Z V)+N_{s}+1
+ \end{equation}
+\subsection{Adaptive CSR Format}
+正常的CSR格式在GPU环境中表现不佳。 这是由于负载不平衡，并行性降低和内存访问模式不规则造成的。 为了克服这个问题，已经发展了GPU特定格式。 这里的缺点主要表现在从CSR到这些格式的转换开销，这会产生存储和运行时开销。 为了克服这个缺点，由Greathouse和Daga提出了一种称为CSR自适应的新算法\cite{Greathouse2014Efficient}，如下所示。根据行中非零值的数量，矩阵被分类为长行和短行。该算法在面对长短行时在CSR流算法和CSR矢量算法之间动态切换。
+\begin{equation} 
+Adaptive_{\text {storage}}=2 \times N Z V+m+1
+ \end{equation}
+\subsection{Streamed Storage Format}
+决定向量乘法内核性能的关键参数是内存带宽。 IBM Power Processor中的预取流组件会增加内存带宽。有研究者提出了一种利用这种硬件组件并提高SpMV性能的新流式格式\cite{Guo2012Adaptive}。这些格式在向量乘法内核中显示了相较于X86处理器中的CSR和BCSR格式的性能提升。在流式传输下有两种格式，如流式CSR和流式块CSR。
+\subsubsection{Streamed CSR Format}
+此格式是适用于矢量化的CSR格式的扩展。 这里定义了流组的数量，并且通过行号mod流的数量找到分配给组流的行。 例如，如果假设流的数量是4，那么第0行，第4行被分配给流0，相应地分配其他行元素。 将零填充到流中，使得所有流的大小相同。 列索引数组包含相应的列ID。 对于添加的零，列索引保持该行中非零值的相同索引。ptr数组保存每个块行的第一个元素的列索引中的偏移量。与BCSR格式相比，此格式增加了更少的非零值，从而提高了计算速度。
+\begin{equation} 
+A_{\operatorname{mxn}}=\left[ \begin{array}{cccccccc}{4} & {5} & {0} & {1} & {0} & {0} & {0} & {0} \\ {0} & {7} & {8} & {0} & {0} & {0} & {0} & {0} \\ {0} & {9} & {2} & {3} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {6} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {10} & {11} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+列索引数组：
+\begin{equation} 
+Column-R=\left[ \begin{array}{lllll}{0} & {1} & {3} & {3} & {4}\end{array}\right]
+ \end{equation}
+
+\begin{equation} 
+Column-G = \left[ \begin{array}{lllll}{1} & {2} & {2} & {*} & {*}\end{array}\right]
+ \end{equation}
+
+\begin{equation} 
+Column-B = \left[ \begin{array}{lllll}{1} & {2} & {3} & {*} & {*}\end{array}\right]
+ \end{equation}
+
+\begin{equation} 
+Column-P = \left[ \begin{array}{lllll}{3} & {3} & {3} & {*} & {*}\end{array}\right]
+ \end{equation}
+数据数组：
+\begin{equation} 
+R=\left[ \begin{array}{lllll}{4} & {5} & {1} & {10} & {11}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+G =\left[ \begin{array}{lllll}{7} & {8} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+B = \left[ \begin{array}{lllll}{9} & {2} & {3} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+P = \left[ \begin{array}{lllll}{6} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+p t r=\left[ \begin{array}{lll}{0} & {3} & {5}\end{array}\right]
+ \end{equation}
+流CSR存储格式所占用的空间为
+\begin{equation} 
+StreamedCSR-storage=2\left(N_{S} \times \max (N Z S)\right)+S_{r}+1
+ \end{equation}
+\subsubsection{Streamed BCSR Format}
+在非零值集中在特定块中的某些应用中，块CSR格式是有效的。这种矩阵也可以采用流格式。下方所示给定矩阵被分成4×4块。 在这种格式中，首先存储所有块的第一行，然后同时存储第二行。 列索引跟踪每个块的列索引，ptr数组保存每个块行中第一个块的列索引数组中的偏移量。 块大小为4的流式BCSR格式对于具有大量非零值的矩阵以及当稀疏矩阵不能适合高速缓存时，显示出比BCSR格式更好的加速。 流式BCSR格式通过当前处理器中提供的单指令多数据模式的指令展现出较大的性能改进。
+\begin{equation} 
+A_{\operatorname{mxn}}=\left[ \begin{array}{cccccccc}{4} & {5} & {0} & {1} & {0} & {0} & {0} & {0} \\ {0} & {7} & {8} & {0} & {0} & {0} & {0} & {0} \\ {0} & {9} & {2} & {3} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {6} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {10} & {11} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+R=\left[ \begin{array}{llllllllllll}{4} & {5} & {0} & {1} & {0} & {0} & {0} & {10} & {11} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+G=\left[ \begin{array}{llllllllllll}{0} & {7} & {8} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+B=\left[ \begin{array}{llllllllllll}{0} & {9} & {2} & {3} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+P=\left[ \begin{array}{cccccccccccc}{0} & {0} & {0} & {6} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+\operatorname{Ind}=\left[ \begin{array}{lll}{0} & {0} & {1}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+P t r=\left[ \begin{array}{lll}{0} & {1} & {3}\end{array}\right]
+ \end{equation}
+记$N_{nzb}$为矩阵中非零块的数量，$b_{size}$为块的大小
+\begin{equation} 
+StreamedBCSR-storage=Ns \times\left(N_{nzb} \times b_{s i z e}\right)+2\left(N_{nzb}\right)
+ \end{equation}
+\subsection{Sliced ELLPACK-C-SIGMA Format}
+正常的ELLPACK格式通过填充零并通过提供合并的存储器访问和指令级并行性来与流式处理器良好地协同工作。基于矩阵特征，该格式优于CSR格式。为了克服由于零填充引起的ELLPACK的存储开销，切片的ELLPACK格式出现\cite{Kreutzer2012Sparse}，如下所示。在此，给定矩阵被分成大小块，并且每个切片使用ELLPACK格式存储。它也被称为SELLPACK-C。这里C表示块大小。块大小为1导致CSR格式，块大小等于矩阵尺寸，导致ELLPACK格式。如果块中的所有行具有相等数量的非零值，则该格式克服了ELLPACK格式中零填充的缺点。但是在其他情况下，通过添加比ELLPACK格式更少的零来以这种格式节省空间开销。通过按非零值的降序对行进行排序并将它们分组为块，可以克服这个缺点。通过这种方法，具有相等长度的非零值的行将聚集在一起。然而，全局排序将减少向量乘法操作的空间和时间局部性，这将进一步降低内核的性能。\par
+\begin{equation} 
+A_{\operatorname{mxn}}=\left[ \begin{array}{ccccc}{0} & {4} & {0} & {7} & {0} \\ {2} & {0} & {3} & {0} & {6} \\ {0} & {5} & {0} & {0} & {0} \\ {0} & {0} & {0} & {0} & {2} \\ {1} & {0} & {0} & {6} & {0} \\ {2} & {4} & {0} & {0} & {5}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Slice-ptr=\left[ \begin{array}{llll}{0} & {6} & {9} & {15}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Value=\left[ \begin{array}{cccccccccccccc}{4} & {2} & {7} & {3} & {0} & {6} & {5} & {2} & {1} & {2} & {6} & {4} & {0} & {5}\end{array}\right]
+ \end{equation}
+\begin{equation} 
+Column=\left[ \begin{array}{cccccccccccccc}{1} & {0} & {3} & {2} & {*} & {4} & {1} & {4} & {0} & {0} & {3} & {1} & {*} & {4}\end{array}\right]
+ \end{equation}
+存储所需容量为
+\begin{equation} 
+SlicedELLPACK-storage=N_{s}+1+4 \times\left(\sum_{i=1}^{N_{s}} N_{n z v}(i)\right)
+ \end{equation}
+其中Ns是切片的数量，Nnzv表示每个切片的行中的非零元素的最大数量。在上面的矩阵中，块大小是2，因此$\sigma$大小被认为是块大小的倍数，例如4,8,12等。这里我们将$\sigma$的值视为4个连续行，并且元素按降序排序并存储。它最适合具有单指令多数据功能的当前一代处理器，如Sandy Bridge，Xeon Phi和Nvidia Tesla K20。 为了在这些体系结构中具有良好的向量乘法性能改进，每行的非零值的平均数应该大于指令所对应的数据的宽度。此格式在各种计算机设备上展示出更好的性能。可以使用编译器或使用C intrinsic来对此格式进行矢量化。
+\bibliographystyle{plain}
+\bibliography{bridge_report}
+\cleardoublepage
+\end{document}
+
+%%%============================================================================================================%%%
+
+%%%=== 参考文献 ========%%%
+
+
+
+
