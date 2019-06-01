@@ -30,7 +30,7 @@
 \newtoks\Edate           %英文日期
 \newtoks\Etitle          %英文题目
 \newtoks\Eauthor         %作者英文名
-
+\newtoks\advisor
 \newtoks\Eschoolname      %学院英文名
 \newtoks\Cschoolname      %学院中文名
 
@@ -58,7 +58,7 @@
   \begin{center}\leavevmode
     {\heiti \zihao{5}%
     \begin{tabular}{p{9cm}lp{3cm}l}
-  & \raisebox{-0.5ex}[0pt]{\makebox[1.5cm][s]{学\hfill 号}} & {}\hfill\raisebox{-0.5ex}[0pt]{\the\StudentNumber}\hfill{} & \\ \cline{3-3}
+  & \raisebox{-0.5ex}[0pt]{\makebox[1.5cm][s]{班\hfill 级}} & {}\hfill\raisebox{-0.5ex}[0pt]{\the\StudentNumber}\hfill{} & \\ \cline{3-3}
   
     \end{tabular}
     }
@@ -68,6 +68,7 @@
      \vfill\vfill\vfill
     {\songti\zihao{-3}
     \begin{tabular}{cp{5cm}c}
+ \raisebox{-3ex}[0pt]{\makebox[3.5cm][s]{指\hfill 导\hfill 教\hfill 师：}} & {  {}\raisebox{-3ex}[0pt]{\the\advisor}\hfill{}} & \\[3ex]
       \raisebox{-3ex}[0pt]{\makebox[3.5cm][s]{院\hfill (系)\hfill 名\hfill 称：}} & {  {}\raisebox{-3ex}[0pt]{\the\Cschoolname}\hfill{}} & \\[3ex]
       \raisebox{-3ex}[0pt]{\makebox[3.5cm][s]{专\hfill 业\hfill 名\hfill 称：}} & { {}\raisebox{-3ex}[0pt]{\the\Cmajor}\hfill{}} & \\[3ex]
       \raisebox{-3ex}[0pt]{\makebox[3.5cm][s]{学\hfill 生\hfill 姓\hfill 名：}} & { {}\raisebox{-3ex}[0pt]{\@author}\hfill{}} & \\[3ex]
