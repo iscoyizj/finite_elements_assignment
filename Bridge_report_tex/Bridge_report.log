@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/W32TeX) (preloaded format=xelatex 2018.10.7)  2 JUN 2019 21:36
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017/W32TeX) (preloaded format=xelatex 2018.10.7)  2 JUN 2019 21:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1885,9 +1885,6 @@ LaTeX Info: Redefining \nameref on input line 23.
 \openout3 = `Bridge_report.out'.
 
 
-
-Package hyperref Warning: Rerun to get /PageLabels entry.
-
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
 * driver: xetex
@@ -2020,46 +2017,33 @@ Overfull \hbox (123.7299pt too wide) in paragraph at lines 44--44
 
 [1
 
-]
+] (./Bridge_report.toc [1
 
-Package hyperref Warning: old toc file detected, not used; run LaTeX again.
 
+])
 \tf@toc=\write4
 \openout4 = `Bridge_report.toc'.
 
-[1
-
-
-]
+ [2]
 \zihao {-2}1
-[2
-
-]
-\zihao {-2}2
 [3
 
 ]
-\zihao {-2}3
+\zihao {-2}2
 [4
 
 ]
-\zihao {-2}4
-
-LaTeX Warning: Reference `4-1' on page 5 undefined on input line 68.
-
-File: figures/1.png Graphic file (type QTm)
-<use  "figures/1.png" >
-
-LaTeX Warning: Reference `4-2' on page 5 undefined on input line 79.
-
-File: figures/2.png Graphic file (type QTm)
-<use  "figures/2.png" > [5
+\zihao {-2}3
+[5
 
 ]
+\zihao {-2}4
+File: figures/1.png Graphic file (type QTm)
+<use  "figures/1.png" >
+File: figures/2.png Graphic file (type QTm)
+ <use  "figures/2.png" > [6
 
-LaTeX Warning: Reference `4-3' on page 6 undefined on input line 96.
-
-
+]
 Overfull \hbox (41.61674pt too wide) in paragraph at lines 100--101
 []\TU/SimSun(0)/m/n/12.045 几 何 集 的 读 取 路 径\TU/TimesNewRoman(0)/m/n/12.045 :mdb.
 models[].parts[].sets[].odb.rootAssembly.instance[].elementSets[]\TU/SimSun(0)/
@@ -2081,37 +2065,29 @@ dels[].parts[].sets[].elements[].Connectivity.odb. rootAssem-
 
 File: figures/3.png Graphic file (type QTm)
 <use  "figures/3.png" >
-
-LaTeX Warning: Reference `4-4' on page 6 undefined on input line 121.
-
 File: figures/4.png Graphic file (type QTm)
-<use  "figures/4.png" > [6]
-
-LaTeX Warning: Reference `4-5' on page 7 undefined on input line 132.
-
+ <use  "figures/4.png" > [7]
 File: figures/4.png Graphic file (type QTm)
-<use  "figures/4.png" >
-
-LaTeX Warning: Reference `4-6' on page 7 undefined on input line 143.
-
+ <use  "figures/4.png" >
 File: figures/5.png Graphic file (type QTm)
-<use  "figures/5.png" > [7] [8]
-\zihao {-2}5
-[9
 
-] [10] [11]
+<use  "figures/5.png" > [8] [9]
+\zihao {-2}5
+[10
+
+] [11] [12]
 File: figures/GA.png Graphic file (type QTm)
- <use  "figures/GA.png" > [12]
+ <use  "figures/GA.png" > [13]
 \zihao {-2}6
-[13
+[14
 
 ]
 \zihao {-2}7
-(./Bridge_report.bbl [14
+(./Bridge_report.bbl [15
 
-] [15
+] [16
 
-]) [16]
+]) [17]
 \tf@thm=\write5
 \openout5 = `Bridge_report.thm'.
 
@@ -2134,21 +2110,18 @@ LaTeX Font Warning: Size substitutions with differences
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 
-LaTeX Warning: There were undefined references.
-
-
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 212.
  )
 (\end occurred when \ifx on line 161 was incomplete) 
 Here is how much of TeX's memory you used:
- 31911 strings out of 493005
- 597585 string characters out of 6137956
- 652974 words of memory out of 5000000
- 35467 multiletter control sequences out of 15000+600000
- 23050 words of font info for 131 fonts, out of 8000000 for 9000
+ 31924 strings out of 493005
+ 597811 string characters out of 6137956
+ 653060 words of memory out of 5000000
+ 35477 multiletter control sequences out of 15000+600000
+ 23058 words of font info for 132 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 63i,11n,70p,10468b,475s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 63i,12n,70p,10468b,475s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on Bridge_report.pdf (17 pages).
+Output written on Bridge_report.pdf (18 pages).
