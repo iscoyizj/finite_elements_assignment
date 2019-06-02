@@ -63,8 +63,94 @@
 \section{有限元单元尺寸的选择}
 \section{施加约束条件}
 \chapter{桥梁的cost计算}
+
 \section{Abaqus-Python脚本读取过程}
-\section{Cost计算}
+在桥梁的大体结构设计确定之后，在进行几何参数改良时，如果在CAE界面改参数将变得非常繁琐，而将模型进行python录制后直接读入相关参数进行计算将非常方便；与此同时，由于我们最终需要集中优化的参数为桥梁的最大位移，桥梁的总造价和承载应力情况，而CAE界面只能查看应力的大体分布情况，无法对所有单元的应力分布情况做一个具体的分析，因此我们还需要利用python脚本对整个Abaqus数据结构进行有选择性的数据读取，其中主要包括节点位移，单元应力，以及单元对应的高斯点坐标，单元几何属性等；与此同时我们可以利用matlab等软件作为python的外部接口，即为python脚本提供输入数据（inp文件），并对输出数据进行相应的分析。整个脚本的程序逻辑结构如图\ref{4-1}所示：
+
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{1.png} 
+\caption{python后处理设计逻辑} 
+\label{4-1} 
+\end{figure}
+
+\subsection{ODB对象数据结构：}
+
+如图\ref{4-2}所示：ODB对象主要对包含计算模型对象数据（Model Data）和计算结果数据(Result Data)，计算模型对象数据包含装配体(rootAssenbly)
+、零件(parts) 、界面分类(sectionCategories)、材料(materials) 等子对象，计算结果数据steps包含分析步(step)
+、帧(frame) 、历史变量输出(historyoutputs) 和场变量输出(field outputs) 等。场变量的读取路径:odb.Setps{[}{]}.frames{[}{]}.fieldOutputs{[}{]};
+
+场变量包括:应力分量-'S';应-'E'; 位移-'U';
+
+历史变量的读取路径:odb.Setps{[}{]}.historyRegions{[}{]}.historyOutputs{[}{]};
+
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{2.png} 
+\caption{Abaque odb数据结构示意图} 
+\label{4-2} 
+\end{figure}
+
+\subsection{MDB对象数据结构}
+
+如图\ref{4-3}所示：MDB对象主要对包含计算模型对象数据(Model Data) 和工作对象数据(Job Data) ，其中model对象，包含零件(parts)
+、材料(materials) 等子对象。零件(parts) 子对象包含单元(elements) 、集合(sets) 和节点(nodes)
+子对象，其下又包含编号(label) 、坐标(coordinate) 、单元所属节点组(connectivity)等属性。
+
+几何集的读取路径:mdb.models{[}{]}.parts{[}{]}.sets{[}{]}.odb.rootAssembly.instance{[}{]}.elementSets{[}{]}；
+
+几何集所属单元，节点信息读取路径:
+
+单元编号:mdb.models{[}{]}.parts{[}{]}.sets{[}{]}.elements{[}{]}.elementLabel.odb.rootAssembly.Instances{[}{]}.elementSets{[}{]}.elements{[}{]}.
+elementLabel；
+
+单元所属节点组:mdb.models{[}{]}.parts{[}{]}.sets{[}{]}.elements{[}{]}.Connectivity.odb.
+rootAssembly.instances{[}{]}.elementSets{[}{]}． elements{[}{]}. connectivity；
+
+节点坐标:mdb.models{[}{]}.parts{[}{]}.sets{[}{]}.nodes{[}{]}.coordinates；
+
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{3.png} 
+\caption{Abaque mdb数据结构示意图} 
+\label{4-3} 
+\end{figure}
+
+\subsection{最大位移读取}
+
+我们在odb对象中把位移场’U’的数据读取出来，然后对节点进行循环得到最大的位移数值，如图\ref{4-4}所示：
+
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{4.png} 
+\caption{最大位移读取程序示意图} 
+\label{4-4} 
+\end{figure}
+
+\subsection{单元应力和最大许用应力}
+
+首先先在odb对象中把应力场’S’中的数据读取出来，然后再将其写入txt文件中，同时输入相应的单元类型和单元号，以便之后对应相应的单元属性，如图\ref{4-5}所示：
+
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{4.png} 
+\caption{应力读取程序示意图} 
+\label{4-5} 
+\end{figure}
+
+\subsection{单元属性读取}
+
+最后我们在mdb对象中得到所有单元的材料属性和坐标等参数，写入到另一个txt文件中，如图\ref{4-6}所示：
+
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{5.png} 
+\caption{单元属性读取程序示意图} 
+\label{4-6} 
+\end{figure}
+
+之后再将相关的单元应力和单元信息参数一同导入到matlab中进行相关的循环检索，利用超过许用应力的单元对应到其单元类型，利用其单元数据计算出其体积；最后检索所有的单元信息得到所有单元的体积总和，一方面计算相应的参数
+
 \chapter{桥梁的优化过程}
 对于桥梁优化的整体指标为竞赛说明文件中所述的cost function为
 \begin {equation} 
@@ -107,8 +193,14 @@
 由于选择概率是由适应值决定的，即适应值大的染色体入选概率也较大，使选择起到"择优汰劣"的作用。交叉使染色体交换信息，结合选择规则，使优秀信息得以保存，不良信息被遗弃。变异是基因中得某一位发生突变，以达到产生确实有实质性差异的新品种。遗传算法虽是一种随机算法，但它是有导向的，它所使用的"按概率随机选择"方法是在有方向的搜索方法中的一种工具。正是这种独特的搜索方法，使遗传算法自然地避开了其它最优化算法常遇到的局部最小陷阱。\par
 遗传算法与传统的优化方法（枚举，启发式等）相比较，以生物进化为原型，具有很好的收敛性，在计算精度要求时，计算时间少，鲁棒性高等都是它的优点。
 \section{优化实例}
-对于这一优化算法我们选取了简单的示例进行验证，简单考虑一个悬索斜拉桥，具体的参数包括桥墩的跨度，每个支架所对应的悬索根数，桥墩的尺寸，悬索的面积。简单基于悬臂梁的推导，$d\propto x^4,M\propto x^2,M\propto \sigma_{max}^2,n \propto L^{-1}$。我们可以发现桥墩的跨度与桥面最大位移成四次方关系，假设单元的最大应力值呈线性分布，因此与危险单元占比个数呈二次方关系，与造价成反比关系。对于悬索根数，$d \propto L^4,L \propto n^{-1}$,可以推出$d \propto n^{-4}$,与桥墩跨度类似，与危险单元个数呈负二次方关系，与造价成正比。桥墩的尺寸与悬索的截面积均与造价成正比。
-
+对于这一优化算法我们选取了简单的示例进行验证，简单考虑一个悬索斜拉桥，具体的参数包括桥墩的跨度，每个支架所对应的悬索根数，桥墩的尺寸，悬索的面积。简单基于悬臂梁的推导，$d\propto x^4,M\propto x^2,M\propto \sigma_{max}^2,n \propto L^{-1}$。我们可以发现桥墩的跨度与桥面最大位移成四次方关系，假设单元的最大应力值呈线性分布，因此与危险单元占比个数呈二次方关系，与造价成反比关系。对于悬索根数，$d \propto L^4,L \propto n^{-1}$,可以推出$d \propto n^{-4}$,与桥墩跨度类似，与危险单元个数呈负二次方关系，与造价成正比。桥墩的尺寸与悬索的截面积均与造价成正比，考虑其对危险单元个数与桥面最大位移影响不大。
+\begin{figure}[H]
+\centering
+    \includegraphics[width=.9\textwidth]{GA.png}\hfill
+  \caption{Symmetry and asymmetry lines and Boudary condition}
+\label{fig:1}
+\end{figure}
+优化结果如图所示，选取的桥梁跨度为160m，选取的悬索根数（每段）52。
 \chapter{优化服务器}
 \section{Abaqus的GPU优化构架}
 \section{服务器的CPU-GPU取舍}
