@@ -1,23 +1,33 @@
 \select@language {english}
-\contentsline {chapter}{\numberline {\zihao {-2}1\hspace {.3em}}摘要}{2}{chapter.1}
-\contentsline {chapter}{\numberline {\zihao {-2}2\hspace {.3em}}桥梁的基本选择与设计思路}{3}{chapter.2}
-\contentsline {section}{\numberline {2.1}悬索斜拉桥}{3}{section.2.1}
-\contentsline {section}{\numberline {2.2}拱形桥}{3}{section.2.2}
-\contentsline {section}{\numberline {2.3}xx桥}{3}{section.2.3}
-\contentsline {section}{\numberline {2.4}xx桥}{3}{section.2.4}
-\contentsline {chapter}{\numberline {\zihao {-2}3\hspace {.3em}}桥梁的Abaqus实现}{4}{chapter.3}
-\contentsline {section}{\numberline {3.1}零件的设计}{4}{section.3.1}
-\contentsline {section}{\numberline {3.2}有限元单元类型的选择}{4}{section.3.2}
-\contentsline {section}{\numberline {3.3}有限元单元尺寸的选择}{4}{section.3.3}
-\contentsline {section}{\numberline {3.4}施加约束条件}{4}{section.3.4}
-\contentsline {chapter}{\numberline {\zihao {-2}4\hspace {.3em}}桥梁的cost计算}{5}{chapter.4}
-\contentsline {section}{\numberline {4.1}Abaqus-Python脚本读取过程}{5}{section.4.1}
-\contentsline {section}{\numberline {4.2}Cost计算}{5}{section.4.2}
-\contentsline {chapter}{\numberline {\zihao {-2}5\hspace {.3em}}桥梁的优化过程}{6}{chapter.5}
-\contentsline {section}{\numberline {5.1}算法的选择}{6}{section.5.1}
-\contentsline {section}{\numberline {5.2}程序设计思路}{6}{section.5.2}
-\contentsline {section}{\numberline {5.3}优化实例}{6}{section.5.3}
-\contentsline {chapter}{\numberline {\zihao {-2}6\hspace {.3em}}优化服务器}{7}{chapter.6}
-\contentsline {section}{\numberline {6.1}Abaqus的GPU优化构架}{7}{section.6.1}
-\contentsline {section}{\numberline {6.2}服务器的CPU-GPU取舍}{7}{section.6.2}
-\contentsline {chapter}{\numberline {\zihao {-2}7\hspace {.3em}}结论}{8}{chapter.7}
+\contentsline {chapter}{\numberline {\zihao {-2}1\hspace {.3em}}摘要}{3}{chapter.1}
+\contentsline {chapter}{\numberline {\zihao {-2}2\hspace {.3em}}桥梁的基本选择与设计思路}{4}{chapter.2}
+\contentsline {section}{\numberline {2.1}悬索斜拉桥}{4}{section.2.1}
+\contentsline {section}{\numberline {2.2}拱形桥}{4}{section.2.2}
+\contentsline {section}{\numberline {2.3}xx桥}{4}{section.2.3}
+\contentsline {section}{\numberline {2.4}xx桥}{4}{section.2.4}
+\contentsline {chapter}{\numberline {\zihao {-2}3\hspace {.3em}}桥梁的Abaqus实现}{5}{chapter.3}
+\contentsline {section}{\numberline {3.1}零件的设计}{5}{section.3.1}
+\contentsline {section}{\numberline {3.2}有限元单元类型的选择}{5}{section.3.2}
+\contentsline {section}{\numberline {3.3}有限元单元尺寸的选择}{5}{section.3.3}
+\contentsline {section}{\numberline {3.4}施加约束条件}{5}{section.3.4}
+\contentsline {chapter}{\numberline {\zihao {-2}4\hspace {.3em}}桥梁的cost计算}{6}{chapter.4}
+\contentsline {section}{\numberline {4.1}Abaqus-Python脚本读取过程}{6}{section.4.1}
+\contentsline {section}{\numberline {4.2}Cost计算}{6}{section.4.2}
+\contentsline {chapter}{\numberline {\zihao {-2}5\hspace {.3em}}桥梁的优化过程}{7}{chapter.5}
+\contentsline {section}{\numberline {5.1}算法的选择}{7}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}离散与连续}{7}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}离散算法的选择}{8}{subsection.5.1.2}
+\contentsline {section}{\numberline {5.2}遗传算法的简介}{8}{section.5.2}
+\contentsline {section}{\numberline {5.3}程序设计思路}{8}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}编码}{8}{subsection.5.3.1}
+\contentsline {subsection}{\numberline {5.3.2}初始化}{9}{subsection.5.3.2}
+\contentsline {subsection}{\numberline {5.3.3}繁衍}{9}{subsection.5.3.3}
+\contentsline {subsection}{\numberline {5.3.4}交叉}{9}{subsection.5.3.4}
+\contentsline {subsection}{\numberline {5.3.5}变异}{9}{subsection.5.3.5}
+\contentsline {subsection}{\numberline {5.3.6}选择}{9}{subsection.5.3.6}
+\contentsline {subsection}{\numberline {5.3.7}算法总结}{9}{subsection.5.3.7}
+\contentsline {section}{\numberline {5.4}优化实例}{10}{section.5.4}
+\contentsline {chapter}{\numberline {\zihao {-2}6\hspace {.3em}}优化服务器}{11}{chapter.6}
+\contentsline {section}{\numberline {6.1}Abaqus的GPU优化构架}{11}{section.6.1}
+\contentsline {section}{\numberline {6.2}服务器的CPU-GPU取舍}{11}{section.6.2}
+\contentsline {chapter}{\numberline {\zihao {-2}7\hspace {.3em}}结论}{12}{chapter.7}
