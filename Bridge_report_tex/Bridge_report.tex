@@ -121,30 +121,38 @@
 \section{桁架梁桥}
 
 本组设计的梁桥采取多跨上承式桁架梁桥结构，中间设9个桥墩，两侧设两个支撑桥墩。相比于拉索桥，梁桥的设计和实际工程施工难度更小，造价更低。代价是桥的刚度更低，承重能力较差。梁桥更适用于跨距小，承重要求较小的工况。桥整体如图3.1.1。
+\begin{figure}[H]
+\centering
+\includegraphics[width = .8\textwidth]{3_1_1.png}
+\caption{图3.1.1 梁桥整体形态}
+\end{figure}
 
-\includegraphics[scale=0.3]{3_1_1.png}
-
-图3.1.1 梁桥整体形态
 
 \subsection{零件设计}
 
 本梁桥采用多跨结构，具有多个全同结构。在abaqus中建模时首先对一个部分进行建模，之后在新的模型中导入多个单体模型再加上边界的桥墩形成整桥。单体结构如图3.1.1.1。
+\begin{figure}[H]
+\centering
+\includegraphics[width = .8\textwidth]{3_1_1_1.png}
+\caption{图3.1.1.1 单元体模型}
+\end{figure}
 
-\includegraphics[scale=0.3]{3_1_1_1.png}
-
-图3.1.1.1 单元体模型
 
 每个单体由一个160m长的桥板、一根桥墩和4根半上承梁组成。半上承梁的整体结构如图3.1.1.2。
+\begin{figure}[H]
+\centering
+\includegraphics[width = .8\textwidth]{3_1_1_2.png}
+\caption{图3.1.1.2 半上承梁结构图}
+\end{figure}
 
-\includegraphics[scale=0.3]{3_1_1_2.png}
-
-图3.1.1.2 半上承梁结构图
 
 每个半上承梁由31个单元体组成，两根半上承梁相对安装形成整根上承梁。上承梁截面采用箱形结构，尺寸如图3.1.1.3。
+\begin{figure}[H]
+\centering
+\includegraphics[width = .8\textwidth]{3_1_1_3.png}
+\caption{图3.1.1.3 上承梁截面}
+\end{figure}
 
-\includegraphics{3_1_1_3.png}
-
-图3.1.1.3 上承梁截面
 
 箱形结构的比刚度较大，相比于工字梁抵抗剪切的能力更强。材料方面，桥面和桥墩选择钢筋混凝土材料，实际施工时需要先编织钢筋再浇筑混凝土。由于stap++不支持复合材料，故这里采用混凝土材料代替（混凝土的抗拉能力要远远低于复合材料钢筋混凝土）。箱形梁使用钢材料（给定的钢材料强度比一般的结构钢大很多）。由于给定材料与实际工程差异比较大，零件的设计也与实际工况有很大的差别。
 
@@ -164,14 +172,18 @@ $a=1.5$, $t=0.2$, $h=2$（单位：m)。
 \subsection{结果}
 
 结果见图3.1.5.1及图3.1.5.2，最大位移为1.78m，桥墩的应力超过了许用应力，下一步需要更粗的桥墩来适应应力。这也符合梁桥承载能力有限的特点。
+\begin{figure}[H]
+\centering
+\includegraphics[width = .8\textwidth]{3_1_5_1.png}
+\caption{图3.1.5.1 梁桥Mises应力云图}
+\end{figure}
 
-\includegraphics[scale=0.3]{3_1_5_1.png}
+\begin{figure}[H]
+\centering
+\includegraphics[width = .8\textwidth]{3_1_5_2.png}
+\caption{图3.1.5.2 梁桥z方向位移云图}
+\end{figure}
 
-图3.1.5.1 梁桥Mises应力云图
-
-\includegraphics[scale=0.3]{3_1_5_2.png}
-
-图3.1.5.2 梁桥z方向位移云图
 
 \chapter{桥梁的cost计算}
 
