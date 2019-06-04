@@ -289,13 +289,36 @@ void CH8R::CalculateStress (double* Be, double* stress, double* Displacement)
 	CM[0]= 2*CM[2] + CM[1];
 	double strain[6];
 
+	for (int i=0;i<8;i++)
+	{
+		if (LocationMatrix_[3*i])
+		{
+			strain[0] = strain[0] + Be[3*i]*Displacement[LocationMatrix_[3*i]-1];
+			strain[4] = strain[4] + Be[3*i+2]*Displacement[LocationMatrix_[3*i]-1];
+			strain[5] = strain[5] + Be[3*i+1]*Displacement[LocationMatrix_[3*i]-1];
+		}
+		if (LocationMatrix_[3*i+1])
+		{
+			strain[1] = strain[1] + Be[3*i+1]*Displacement[LocationMatrix_[3*i+1]-1];
+			strain[3] = strain[3] + Be[3*i+2]*Displacement[LocationMatrix_[3*i+1]-1];
+			strain[5] = strain[5] + Be[3*i]*Displacement[LocationMatrix_[3*i+1]-1];
+		}
+		if (LocationMatrix_[3*i+2])
+		{
+			strain[2] = strain[2] + Be[3*i+2]*Displacement[LocationMatrix_[3*i+2]-1];
+			strain[3] = strain[3] + Be[3*i+1]*Displacement[LocationMatrix_[3*i+2]-1];
+			strain[4] = strain[4] + Be[3*i]*Displacement[LocationMatrix_[3*i+2]-1];
+		}
+	}
+	
+	/*
 	strain[0] = Be[0]*Displacement[LocationMatrix_[0]-1]*(double)(!LocationMatrix_[0]==0) +Be[3]*Displacement[LocationMatrix_[3]-1]*(double)(!LocationMatrix_[3]==0) +Be[6]*Displacement[LocationMatrix_[6]-1]*(double)(!LocationMatrix_[6]==0) +Be[9]*Displacement[LocationMatrix_[9]-1]*(double)(!LocationMatrix_[9]==0) +Be[12]*Displacement[LocationMatrix_[12]-1]*(double)(!LocationMatrix_[12]==0) +Be[15]*Displacement[LocationMatrix_[15]-1]*(double)(!LocationMatrix_[15]==0) +Be[18]*Displacement[LocationMatrix_[18]-1]*(double)(!LocationMatrix_[18]==0) +Be[21]*Displacement[LocationMatrix_[21]-1]*(double)(!LocationMatrix_[21]==0);
 	strain[1] = Be[1]*Displacement[LocationMatrix_[1]-1]*(double)(!LocationMatrix_[1]==0) +Be[4]*Displacement[LocationMatrix_[4]-1]*(double)(!LocationMatrix_[4]==0) +Be[7]*Displacement[LocationMatrix_[7]-1]*(double)(!LocationMatrix_[7]==0) +Be[10]*Displacement[LocationMatrix_[10]-1]*(double)(!LocationMatrix_[10]==0) +Be[13]*Displacement[LocationMatrix_[13]-1]*(double)(!LocationMatrix_[13]==0) +Be[16]*Displacement[LocationMatrix_[16]-1]*(double)(!LocationMatrix_[16]==0) +Be[19]*Displacement[LocationMatrix_[19]-1]*(double)(!LocationMatrix_[19]==0) +Be[22]*Displacement[LocationMatrix_[22]-1]*(double)(!LocationMatrix_[22]==0);
 	strain[2] = Be[2]*Displacement[LocationMatrix_[2]-1]*(double)(!LocationMatrix_[2]==0) +Be[5]*Displacement[LocationMatrix_[5]-1]*(double)(!LocationMatrix_[5]==0) +Be[8]*Displacement[LocationMatrix_[8]-1]*(double)(!LocationMatrix_[8]==0) +Be[11]*Displacement[LocationMatrix_[11]-1]*(double)(!LocationMatrix_[11]==0) +Be[14]*Displacement[LocationMatrix_[14]-1]*(double)(!LocationMatrix_[14]==0) +Be[17]*Displacement[LocationMatrix_[17]-1]*(double)(!LocationMatrix_[17]==0) +Be[20]*Displacement[LocationMatrix_[20]-1]*(double)(!LocationMatrix_[20]==0) +Be[23]*Displacement[LocationMatrix_[23]-1]*(double)(!LocationMatrix_[23]==0);
 	strain[3] = Be[2]*Displacement[LocationMatrix_[1]-1]*(double)(!LocationMatrix_[1]==0) +Be[1]*Displacement[LocationMatrix_[2]-1]*(double)(!LocationMatrix_[2]==0) +Be[5]*Displacement[LocationMatrix_[4]-1]*(double)(!LocationMatrix_[4]==0) +Be[4]*Displacement[LocationMatrix_[5]-1]*(double)(!LocationMatrix_[5]==0) +Be[8]*Displacement[LocationMatrix_[7]-1]*(double)(!LocationMatrix_[7]==0) +Be[7]*Displacement[LocationMatrix_[8]-1]*(double)(!LocationMatrix_[8]==0) +Be[11]*Displacement[LocationMatrix_[10]-1]*(double)(!LocationMatrix_[10]==0) +Be[10]*Displacement[LocationMatrix_[11]-1]*(double)(!LocationMatrix_[11]==0) +Be[14]*Displacement[LocationMatrix_[13]-1]*(double)(!LocationMatrix_[13]==0) +Be[13]*Displacement[LocationMatrix_[14]-1]*(double)(!LocationMatrix_[14]==0) +Be[17]*Displacement[LocationMatrix_[16]-1]*(double)(!LocationMatrix_[16]==0) +Be[16]*Displacement[LocationMatrix_[17]-1]*(double)(!LocationMatrix_[17]==0) +Be[20]*Displacement[LocationMatrix_[19]-1]*(double)(!LocationMatrix_[19]==0) +Be[19]*Displacement[LocationMatrix_[20]-1]*(double)(!LocationMatrix_[20]==0) +Be[23]*Displacement[LocationMatrix_[22]-1]*(double)(!LocationMatrix_[22]==0) +Be[22]*Displacement[LocationMatrix_[23]-1]*(double)(!LocationMatrix_[23]==0);
 	strain[4] = Be[2]*Displacement[LocationMatrix_[0]-1]*(double)(!LocationMatrix_[0]==0) +Be[0]*Displacement[LocationMatrix_[2]-1]*(double)(!LocationMatrix_[2]==0) +Be[5]*Displacement[LocationMatrix_[3]-1]*(double)(!LocationMatrix_[3]==0) +Be[3]*Displacement[LocationMatrix_[5]-1]*(double)(!LocationMatrix_[5]==0) +Be[8]*Displacement[LocationMatrix_[6]-1]*(double)(!LocationMatrix_[6]==0) +Be[6]*Displacement[LocationMatrix_[8]-1]*(double)(!LocationMatrix_[8]==0) +Be[11]*Displacement[LocationMatrix_[9]-1]*(double)(!LocationMatrix_[9]==0) +Be[9]*Displacement[LocationMatrix_[11]-1]*(double)(!LocationMatrix_[11]==0) +Be[14]*Displacement[LocationMatrix_[12]-1]*(double)(!LocationMatrix_[12]==0) +Be[12]*Displacement[LocationMatrix_[14]-1]*(double)(!LocationMatrix_[14]==0) +Be[17]*Displacement[LocationMatrix_[15]-1]*(double)(!LocationMatrix_[15]==0) +Be[15]*Displacement[LocationMatrix_[17]-1]*(double)(!LocationMatrix_[17]==0) +Be[20]*Displacement[LocationMatrix_[18]-1]*(double)(!LocationMatrix_[18]==0) +Be[18]*Displacement[LocationMatrix_[20]-1]*(double)(!LocationMatrix_[20]==0) +Be[23]*Displacement[LocationMatrix_[21]-1]*(double)(!LocationMatrix_[21]==0) +Be[21]*Displacement[LocationMatrix_[23]-1]*(double)(!LocationMatrix_[23]==0);
 	strain[5] = Be[1]*Displacement[LocationMatrix_[0]-1]*(double)(!LocationMatrix_[0]==0) +Be[0]*Displacement[LocationMatrix_[1]-1]*(double)(!LocationMatrix_[1]==0) +Be[4]*Displacement[LocationMatrix_[3]-1]*(double)(!LocationMatrix_[3]==0) +Be[3]*Displacement[LocationMatrix_[4]-1]*(double)(!LocationMatrix_[4]==0) +Be[7]*Displacement[LocationMatrix_[6]-1]*(double)(!LocationMatrix_[6]==0) +Be[6]*Displacement[LocationMatrix_[7]-1]*(double)(!LocationMatrix_[7]==0) +Be[10]*Displacement[LocationMatrix_[9]-1]*(double)(!LocationMatrix_[9]==0) +Be[9]*Displacement[LocationMatrix_[10]-1]*(double)(!LocationMatrix_[10]==0) +Be[13]*Displacement[LocationMatrix_[12]-1]*(double)(!LocationMatrix_[12]==0) +Be[12]*Displacement[LocationMatrix_[13]-1]*(double)(!LocationMatrix_[13]==0) +Be[16]*Displacement[LocationMatrix_[15]-1]*(double)(!LocationMatrix_[15]==0) +Be[15]*Displacement[LocationMatrix_[16]-1]*(double)(!LocationMatrix_[16]==0) +Be[19]*Displacement[LocationMatrix_[18]-1]*(double)(!LocationMatrix_[18]==0) +Be[18]*Displacement[LocationMatrix_[19]-1]*(double)(!LocationMatrix_[19]==0) +Be[22]*Displacement[LocationMatrix_[21]-1]*(double)(!LocationMatrix_[21]==0) +Be[21]*Displacement[LocationMatrix_[22]-1]*(double)(!LocationMatrix_[22]==0);
-
+*/
 	stress[0] = CM[0]*strain[0] +CM[1]*strain[1] +CM[1]*strain[2];
 	stress[1] = CM[1]*strain[0] +CM[0]*strain[1] +CM[1]*strain[2];
 	stress[2] = CM[1]*strain[0] +CM[1]*strain[1] +CM[0]*strain[2];

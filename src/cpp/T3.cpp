@@ -121,12 +121,12 @@ void CT3::ElementStiffness(double* Matrix)
 	Be[3] = nodes_[0]->XYZ[0] - nodes_[2]->XYZ[0];
 	Be[4] = nodes_[0]->XYZ[1] - nodes_[1]->XYZ[1];
 	Be[5] = nodes_[1]->XYZ[0] - nodes_[0]->XYZ[0];
-	
+
 	double Area;
 	Area = nodes_[0]->XYZ[0]*nodes_[1]->XYZ[1] + nodes_[1]->XYZ[0]*nodes_[2]->XYZ[1] + nodes_[2]->XYZ[0]*nodes_[0]->XYZ[1] - nodes_[0]->XYZ[0]*nodes_[2]->XYZ[1]- nodes_[1]->XYZ[0]*nodes_[0]->XYZ[1] - nodes_[2]->XYZ[0]*nodes_[1]->XYZ[1];
 	Area = Area/2;
 	
-	Area = Area*material_->thick;
+	Area = material_->thick/Area/4;
 	
 	Matrix[ 0] =Area*( Be[0]*CM[0]* Be[0]  + Be[1]*CM[2]* Be[1] );
 	Matrix[ 1] =Area*( Be[0]*CM[2]* Be[0]  + Be[1]*CM[0]* Be[1] );
@@ -149,6 +149,7 @@ void CT3::ElementStiffness(double* Matrix)
 	Matrix[18] =Area*( Be[5]*CM[1]* Be[2]  + Be[4]*CM[2]* Be[3] );
 	Matrix[19] =Area*( Be[4]*CM[2]* Be[0]  + Be[5]*CM[0]* Be[1] );
 	Matrix[20] =Area*( Be[5]*CM[1]* Be[0]  + Be[4]*CM[2]* Be[1] );
+
 	
 }
 
