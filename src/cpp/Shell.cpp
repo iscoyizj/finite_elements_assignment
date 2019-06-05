@@ -105,7 +105,7 @@ void CShell::ElementStiffness(double* Matrix){
 	n1[loop]=-l3[loop]/lmn1;
 	l2[loop]=-m3[loop]*l3[loop]/lmn1;
 	m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-	n2[loop]=-m3[loop]*n2[loop]/lmn1;
+	n2[loop]=-m3[loop]*n3[loop]/lmn1;
 	}
 	//Calculate magnititude of non-zero elements of constitutive matrix
 	//D=[D1,D2,0,0,0;D2,D1,0,0,0;0,0,D3,0,0;0,0,0,D3,0;0,0,0,0,D3], dimension=5*5
@@ -735,7 +735,7 @@ void CShell::ElementStress(double* stress, double* Displacement){
 		n1[loop]=-l3[loop]/lmn1;
 		l2[loop]=-m3[loop]*l3[loop]/lmn1;
 		m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-		n2[loop]=-m3[loop]*n2[loop]/lmn1;
+		n2[loop]=-m3[loop]*n3[loop]/lmn1;
 	}
 
 	//Calculate magnititude of non-zero elements of constitutive matrix
@@ -1001,7 +1001,7 @@ void CShell::GravityCalculation(double* ptr_force){
 	n1[loop]=-l3[loop]/lmn1;
 	l2[loop]=-m3[loop]*l3[loop]/lmn1;
 	m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-	n2[loop]=-m3[loop]*n2[loop]/lmn1;
+	n2[loop]=-m3[loop]*n3[loop]/lmn1;
 	}
 
 	double gausspoint[2]={-0.57735027, 0.57735027};	//Gauss point when ngp=2
@@ -1086,7 +1086,7 @@ void CShell::ElementCoord(double* coord){
 		n1[loop]=-l3[loop]/lmn1;
 		l2[loop]=-m3[loop]*l3[loop]/lmn1;
 		m2[loop]=(n3[loop]*n3[loop]+l3[loop]*l3[loop])/lmn1;
-		n2[loop]=-m3[loop]*n2[loop]/lmn1;
+		n2[loop]=-m3[loop]*n3[loop]/lmn1;
 	}
 	double gausspoint[2]={-0.57735027, 0.57735027};	//Gauss point when ngp=2
 	unsigned int num=0;
