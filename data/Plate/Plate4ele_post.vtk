@@ -1,0 +1,103 @@
+# vtk DataFile Version 3.0
+Cables to test STAP90
+ASCII
+DATASET UNSTRUCTURED_GRID
+
+POINTS         9   double
+0                   0                   0
+                   1                   0           -0.138634
+                   2                   0                   0
+                   0                   1           -0.138634
+                   1                   1           -0.443862
+                   2                   1           -0.138634
+                   0                   2                   0
+                   1                   2           -0.138634
+                   2                   2                   0
+
+               CELLS           4          20
+4        0        1        4        3
+4        1        2        5        4
+4        3        4        7        6
+4        4        5        8        7
+
+CELL_TYPES           4
+7
+7
+7
+7
+
+POINT_DATA           9
+SCALARS load1_x   double  1
+LOOKUP_TABLE load1_x
+0
+0
+0
+0
+0
+0
+0
+0
+0
+SCALARS load1_y   double  1
+LOOKUP_TABLE load1_y
+0
+0
+0
+0
+0
+0
+0
+0
+0
+SCALARS load1_z   double  1
+LOOKUP_TABLE load1_z
+0
+-0.000924225
+0
+-0.000924225
+-0.00295908
+-0.000924225
+0
+-0.000924225
+0
+SCALARS load1_theta_1   double  1
+LOOKUP_TABLE load1_theta_1
+0
+-0.00320537
+0
+4.74338e-20
+-6.53848e-20
+-8.13152e-20
+0
+0.00320537
+0
+SCALARS load1_theta_2   double  1
+LOOKUP_TABLE load1_theta_2
+0
+-5.42101e-20
+0
+0.00320537
+2.1684e-19
+-0.00320537
+0
+1.28691e-21
+0
+SCALARS load1_theta_3   double  1
+LOOKUP_TABLE load1_theta_3
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+CELL_DATA           4
+SCALARS load1_Mises   double  1
+LOOKUP_TABLE load1__Mises
+856523
+856523
+856523
+856523
