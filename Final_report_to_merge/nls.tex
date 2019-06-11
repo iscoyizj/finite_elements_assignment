@@ -1,0 +1,68 @@
+% !Mode:: "TeX:UTF-8"
+%% 请使用 XeLaTeX 编译本文.
+% \documentclass{WHUBachelor}% 选项 forprint: 交付打印时添加, 避免彩色链接字迹打印偏淡. 即使用下一行:
+ \documentclass[forprint]{WHUBachelor}
+
+\usepackage{amsmath, amsfonts, amssymb} % math equations, symbols
+\usepackage[english]{babel}
+\usepackage{color}      % color content
+\usepackage{graphicx}   % import figures
+\usepackage{url}        % hyperlinks
+\usepackage{bm}         % bold type for equations
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{epstopdf}
+\usepackage{epsfig}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{esvect}
+\usepackage{listings}
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage{cite}
+
+\begin{document}
+%%%%%%% 下面的内容, 据实填空.
+
+
+\StudentNumber{2016011560} % 填写自己的学号
+
+\title{\\数值分析第二次上机练习\\非线性方程组求根}
+
+\author{易泽吉}                            % 作者名字
+
+\Cmajor{工程力学}                  % 专业中文名
+
+\Cschoolname{航天航空学院}          % 学院名
+
+\date{二〇一八年三月}                    % 日期, 要注意和英文日期一致!!
+
+
+%-----------------------------------------------------------------------------
+\pdfbookmark[0]{封面}{title}         % 封面页加到 pdf 书签
+\maketitle
+\frontmatter
+\pagenumbering{Roman}              % 正文之前的页码用大写罗马字母编号.
+%-----------------------------------------------------------------------------
+
+%==========================把目录加入到书签==============================%%%%%%
+\pdfbookmark[0]{目录}{toc}
+\tableofcontents
+\mainmatter %% 以下是正文
+%%%%%%%%%%%%%%%%%%%%%%%%%%%--------main matter-------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ 
+
+%%%============================================================================================================%%%
+
+%%%=== 参考文献 ========%%%
+
+
+\bibliographystyle{plain}
+\bibliography{nls}
+
+
+\cleardoublepage
+\end{document}
+
+
+
