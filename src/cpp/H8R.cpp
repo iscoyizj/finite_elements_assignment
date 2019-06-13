@@ -152,7 +152,7 @@ void CH8R::CalculateBe (double* Be, double psi, double eta, double zet)
 		-GN[5]*nodes_[4]->XYZ[1] -GN[7]*nodes_[5]->XYZ[1] +GN[7]*nodes_[6]->XYZ[1] +GN[5]*nodes_[7]->XYZ[1];
 	Ja[5] = -GN[8]*nodes_[0]->XYZ[1] -GN[9]*nodes_[1]->XYZ[1] -GN[11]*nodes_[2]->XYZ[1] -GN[10]*nodes_[3]->XYZ[1]
 		+GN[8]*nodes_[4]->XYZ[1] +GN[9]*nodes_[5]->XYZ[1] +GN[11]*nodes_[6]->XYZ[1] +GN[10]*nodes_[7]->XYZ[1];
-	Ja[6] = -GN[2]*nodes_[0]->XYZ[2] +GN[2]*nodes_[1]->XYZ[2] +GN[2]*nodes_[2]->XYZ[2] -GN[2]*nodes_[3]->XYZ[2]
+	Ja[6] = -GN[0]*nodes_[0]->XYZ[2] +GN[0]*nodes_[1]->XYZ[2] +GN[2]*nodes_[2]->XYZ[2] -GN[2]*nodes_[3]->XYZ[2]
 		-GN[1]*nodes_[4]->XYZ[2] +GN[1]*nodes_[5]->XYZ[2] +GN[3]*nodes_[6]->XYZ[2] -GN[3]*nodes_[7]->XYZ[2];
 	Ja[7] = -GN[4]*nodes_[0]->XYZ[2] -GN[6]*nodes_[1]->XYZ[2] +GN[6]*nodes_[2]->XYZ[2] +GN[4]*nodes_[3]->XYZ[2]
 		-GN[5]*nodes_[4]->XYZ[2] -GN[7]*nodes_[5]->XYZ[2] +GN[7]*nodes_[6]->XYZ[2] +GN[5]*nodes_[7]->XYZ[2];

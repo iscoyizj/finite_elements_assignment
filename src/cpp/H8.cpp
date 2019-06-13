@@ -120,7 +120,7 @@ void CH8::CalculateBe (double* Be, double psi, double eta, double zet)
 	
 //GN matrix
     double GN[12];
-	
+
 	GN[0] = (1-eta)*(1-zet)/8;
 	GN[1] = (1-eta)*(1+zet)/8;
 	GN[2] = (1+eta)*(1-zet)/8;
@@ -133,8 +133,7 @@ void CH8::CalculateBe (double* Be, double psi, double eta, double zet)
 	GN[9] = (1-eta)*(1+psi)/8;
 	GN[10] = (1+eta)*(1-psi)/8;
 	GN[11] = (1+eta)*(1+psi)/8;
-	
-	
+
 //Jaccobi
 // [0	3	6]
 // [1	4	7]
@@ -142,27 +141,35 @@ void CH8::CalculateBe (double* Be, double psi, double eta, double zet)
 	double Ja[9];
 	Ja[0] = -GN[0]*nodes_[0]->XYZ[0] +GN[0]*nodes_[1]->XYZ[0] +GN[2]*nodes_[2]->XYZ[0] -GN[2]*nodes_[3]->XYZ[0]
 		-GN[1]*nodes_[4]->XYZ[0] +GN[1]*nodes_[5]->XYZ[0] +GN[3]*nodes_[6]->XYZ[0] -GN[3]*nodes_[7]->XYZ[0];
+		
 	Ja[1] = -GN[4]*nodes_[0]->XYZ[0] -GN[6]*nodes_[1]->XYZ[0] +GN[6]*nodes_[2]->XYZ[0] +GN[4]*nodes_[3]->XYZ[0]
 		-GN[5]*nodes_[4]->XYZ[0] -GN[7]*nodes_[5]->XYZ[0] +GN[7]*nodes_[6]->XYZ[0] +GN[5]*nodes_[7]->XYZ[0];
+		
 	Ja[2] = -GN[8]*nodes_[0]->XYZ[0] -GN[9]*nodes_[1]->XYZ[0] -GN[11]*nodes_[2]->XYZ[0] -GN[10]*nodes_[3]->XYZ[0]
 		+GN[8]*nodes_[4]->XYZ[0] +GN[9]*nodes_[5]->XYZ[0] +GN[11]*nodes_[6]->XYZ[0] +GN[10]*nodes_[7]->XYZ[0];
+		
 	Ja[3] = -GN[0]*nodes_[0]->XYZ[1] +GN[0]*nodes_[1]->XYZ[1] +GN[2]*nodes_[2]->XYZ[1] -GN[2]*nodes_[3]->XYZ[1]
 		-GN[1]*nodes_[4]->XYZ[1] +GN[1]*nodes_[5]->XYZ[1] +GN[3]*nodes_[6]->XYZ[1] -GN[3]*nodes_[7]->XYZ[1];
+		
 	Ja[4] = -GN[4]*nodes_[0]->XYZ[1] -GN[6]*nodes_[1]->XYZ[1] +GN[6]*nodes_[2]->XYZ[1] +GN[4]*nodes_[3]->XYZ[1]
 		-GN[5]*nodes_[4]->XYZ[1] -GN[7]*nodes_[5]->XYZ[1] +GN[7]*nodes_[6]->XYZ[1] +GN[5]*nodes_[7]->XYZ[1];
+		
 	Ja[5] = -GN[8]*nodes_[0]->XYZ[1] -GN[9]*nodes_[1]->XYZ[1] -GN[11]*nodes_[2]->XYZ[1] -GN[10]*nodes_[3]->XYZ[1]
 		+GN[8]*nodes_[4]->XYZ[1] +GN[9]*nodes_[5]->XYZ[1] +GN[11]*nodes_[6]->XYZ[1] +GN[10]*nodes_[7]->XYZ[1];
-	Ja[6] = -GN[2]*nodes_[0]->XYZ[2] +GN[2]*nodes_[1]->XYZ[2] +GN[2]*nodes_[2]->XYZ[2] -GN[2]*nodes_[3]->XYZ[2]
+		
+	Ja[6] = -GN[0]*nodes_[0]->XYZ[2] +GN[0]*nodes_[1]->XYZ[2] +GN[2]*nodes_[2]->XYZ[2] -GN[2]*nodes_[3]->XYZ[2]
 		-GN[1]*nodes_[4]->XYZ[2] +GN[1]*nodes_[5]->XYZ[2] +GN[3]*nodes_[6]->XYZ[2] -GN[3]*nodes_[7]->XYZ[2];
+
 	Ja[7] = -GN[4]*nodes_[0]->XYZ[2] -GN[6]*nodes_[1]->XYZ[2] +GN[6]*nodes_[2]->XYZ[2] +GN[4]*nodes_[3]->XYZ[2]
 		-GN[5]*nodes_[4]->XYZ[2] -GN[7]*nodes_[5]->XYZ[2] +GN[7]*nodes_[6]->XYZ[2] +GN[5]*nodes_[7]->XYZ[2];
+		
 	Ja[8] = -GN[8]*nodes_[0]->XYZ[2] -GN[9]*nodes_[1]->XYZ[2] -GN[11]*nodes_[2]->XYZ[2] -GN[10]*nodes_[3]->XYZ[2]
 		+GN[8]*nodes_[4]->XYZ[2] +GN[9]*nodes_[5]->XYZ[2] +GN[11]*nodes_[6]->XYZ[2] +GN[10]*nodes_[7]->XYZ[2];
 	
-	// printf("jac: \n");
-	// for (int i=0;i<9;i++)
-		// printf("%lf\n",Ja[i]);
-	// printf("\n");
+//	 printf("jac: \n");
+//	 for (int i=0;i<9;i++)
+//		 printf("%lf\n",Ja[i]);
+//	 printf("\n");
 	
 	double JaCof[9];
 	JaCof[0] = Ja[4]*Ja[8]-Ja[5]*Ja[7];
@@ -178,7 +185,7 @@ void CH8::CalculateBe (double* Be, double psi, double eta, double zet)
 	double JaDet;
 	JaDet = Ja[0]*JaCof[0] + Ja[1]*JaCof[1] + Ja[2]*JaCof[2];
 	
-	// printf("jacdet: %lf\n\n",JaDet);
+//	 printf("jacdet: %lf\n\n",JaDet);
 //inversion
 	double JaInv[9];
 	JaInv[0] = JaCof[0]/JaDet;
@@ -190,6 +197,11 @@ void CH8::CalculateBe (double* Be, double psi, double eta, double zet)
 	JaInv[6] = JaCof[2]/JaDet;
 	JaInv[7] = JaCof[5]/JaDet;
 	JaInv[8] = JaCof[8]/JaDet;
+
+//	printf("JaInv\n");
+//	for (int i=0;i<9;i++)
+//		printf("%lf\n",JaInv[i]);
+//	printf("\n");
 	
 
 //Be [1x 1y 1z ... 8z JaDet] 25 menbers
@@ -222,12 +234,16 @@ void CH8::CalculateBe (double* Be, double psi, double eta, double zet)
 	Be[23] = -JaInv[2]*GN[3] +JaInv[5]*GN[5] +JaInv[8]*GN[10];
 	
 	Be[24] = JaDet;
-
-	
-	// printf("Be\n");
-	// for (int i=0;i<24;i++)
-		// printf("%lf\n",Be[i]);
-	// printf("\n");
+//	printf("B\n");
+//	for (int i=0;i<25;i++)
+//		printf("%lf\n",Be[i]);
+//	printf("\n");
+/*	
+	 printf("Be\n");
+	 for (int i=0;i<24;i++)
+		 printf("%lf\n",Be[i]);
+	 printf("\n");
+	 */
 }
 
 	
@@ -235,7 +251,7 @@ void CH8::ElementStiffness(double* Matrix)
 {
 	clear(Matrix, SizeOfStiffnessMatrix());
 	double Be[25];
-	double Ga=0.57735;
+	double Ga=0.5773502692;
 
 	CalculateBe(Be,-Ga,-Ga,-Ga);
 	CalculateMatrix(Be, Matrix);
@@ -261,13 +277,19 @@ void CH8::ElementStiffness(double* Matrix)
 	CalculateBe(Be,-Ga,Ga,Ga);
 	CalculateMatrix(Be, Matrix);
 
+//	printf("K\n");
+//	for (unsigned int i=0;i<300;i++)
+//		printf("%lf\n",Matrix[i]);
+//	printf("\n\n");
+
+	
 }
 
 //	Calculate element stress 
 void CH8::ElementStress(double* stress, double* Displacement)
 {
 	double Be[25];
-	double Ga=0.57735;
+	double Ga=0.5773502692;
 	CalculateBe(Be,-Ga,-Ga,-Ga);
 	CalculateStress(Be, stress, Displacement);
 	
@@ -296,7 +318,7 @@ void CH8::ElementStress(double* stress, double* Displacement)
 
 void CH8::ElementCoord (double* coord)
 {
-	double Ga=0.57735;
+	double Ga=0.5773502692;
 	
 	CalculateCoord (coord, -Ga, -Ga, -Ga);
 	CalculateCoord (coord+3, Ga, -Ga, -Ga);
@@ -445,7 +467,7 @@ void CH8::CalculateVolume (double* EG, double psi, double eta, double zet)
 void CH8::GravityCalculation (double* EG)
 {
 	clear(EG, NEN_);
-	double Ga=0.57735;
+	double Ga=0.5773502692;
 	
 	CalculateVolume(EG, -Ga, -Ga, -Ga);
 	CalculateVolume(EG, Ga, -Ga, -Ga);
