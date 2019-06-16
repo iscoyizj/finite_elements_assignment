@@ -196,6 +196,20 @@ $\left[\begin{array}{cccc}
 \end{figure}
 
 可以看出，收敛率为2，符合一般线性单元的特征。
+\section{前处理}
+前处理采用python实现，数据存储时采用了python自带的顺序链表和字典，没有用任何库文件，版本为3.7。文件需要读取的主要信息包括part内部的单元，结点，材料信息，part 通过先平移后旋转后得到的instance信息，边界条件与不同instance之间的连接信息。已经实现的前处理程序大约1500行，能够顺利实现4个算例以及我们自己画的桥的inp文件读取，耗时均在10s以内，当遇到了新的单元，单元内部新的关键字名称，连接的两个点坐标差距在浮点数误差以上时均有报错语句，而且有能够实现不同位置结点连接时寻找最合适的连接点的算法。此外，还用matlab做了可视化，从图片中可以清楚的看出桥的约束以及各单元位置，在进一步的验证正确性环节，在整体stap++程序无法运行时可以对第一个文件手动找出所有连接点连接情况和对应坐标，对已经成功运行后可以把后处理中夸张系数调大100倍后判断是否有未连接上的点对，计算最终点数目判断是否有多连接的点对（如第一个文件应当最后点的数目为4091）。用这种方法我们成功发现了我们自己设计的桥在abaqus设计时连接错了的点对，并在前处理程序中成功调整（事实上即使你把连接点中的一个往上移数个单元abaqus也能给出结果，但显然会带来一定误差。下面是matlab可视化图片
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{boundary_1.jpg} 
+\caption{第一座桥的边界条件图} 
+\label{f3.1} 
+\end{figure}
+\begin{figure}[H]
+\centering  
+\includegraphics[width = .8\textwidth]{boundary_2.jpg} 
+\caption{我们自己设计的桥的边界条件图} 
+\label{f3.2} 
+\end{figure}
 
 \section{后处理}
 后处理采用vtk格式实现。某次实验输出的vtk格式结果样图如下。vtk信息中包含各节点、单元的几何信息，六个方向的位移和Mises应力。stap++每次执行输出两个vtk文件，分别对应变形前和变形后的几何信息，七个物理量的信息完全一致。
@@ -1242,6 +1256,10 @@ Total size of data transferred:&  & \\
 
 \cleardoublepage
 \end{document}
+
+
+
+
 
 
 
