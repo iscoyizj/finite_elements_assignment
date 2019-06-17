@@ -1092,6 +1092,130 @@ w=-x^3+3x^{2}+x, \theta= -3x^2+6x
     \includegraphics[width=.7\textwidth]{Timobeam_conv_rate.jpg}
   \caption{Convergence Rate}
 \end{figure}
+
+
+
+%我加在这里了
+\section{Shell单元}
+\subsection{Shell单元的有限元格式}
+本组使用了两种方式建立Shell单元。较为简单的是平板壳单元，它是4Q单元与Plate单元的叠加。其适用范围仅限于矩形平面壳。另一种建立方法则是一般壳体单元，给定节点之后即可对壳的几何形状进行差值，因而适用于一般的曲面壳单元。
+
+所建立的壳单元是4节点的，每个节点的自由度为6，因此壳单元的刚度阵为24阶的。建立平板壳单元即将4Q以及Plate对应位置的刚度阵的元素填充上去。由于是平板壳单元，壳单元的法相均为Z方向，因此$\theta_z=0$，刚度阵中各节点有关z方向转角的项均为零。如此建立的平板壳单元x、y方向的平移自由度与z方向的平移自由度、x、y方向的转动自由度完全解耦。从而，由于使用的4Q单元以及Plate单元均通过了Patch Test，无需再对平板壳单元作检验。
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.65\linewidth]{Shell.png}  
+	\caption{曲面壳单元} 
+	\label{fig:mcmthesis-logo}
+\end{figure}
+
+而一般壳体单元的建立则要从插值开始，映射到母单元，建立应力应变关系从而完成刚度阵的构建。具体如下，第一步建立插值函数。首先根据四个节点坐标可以插值得到壳单元的曲面，使用母单元的坐标表示。对四个节点进行微分以及叉乘计算，可以确定法向量的方向。并由法向量计算出壳单元中每个点与母单元的映射关系。
+\begin{center}
+$x=\sum_i^4 N_ix_i\quad y=\sum_i^4 N_iy_i\quad z=\sum_i^4 N_iz_i$\\
+$\overrightarrow n=(\begin{matrix}\frac{\partial x}{\partial \xi}&\frac{\partial y}{\partial \xi}&\frac{\partial z}{\partial \xi}\end{matrix})\times (\begin{matrix}\frac{\partial x}{\partial \eta}&\frac{\partial y}{\partial \eta}&\frac{\partial z}{\partial \eta}\end{matrix})|_{\xi=\xi_i,\eta=\eta_i}$\\
+$\left[\begin{matrix}x\\y\\z\end{matrix}\right]=\sum N_i\{\left[\begin{matrix}x_i\\y_i\\z_i\end{matrix}\right]+\zeta\frac{t}{2}\left[\begin{matrix}l_{3i}\\m_{3i}\\n_{3i}\end{matrix}\right]\}$
+\end{center}
+其中，$t$是厚度，$l_{3i}$、$m_{3i}$以及$n_{3i}$为各节点法向量分量。局部坐标系的建立可以令局部坐标系中x轴为z轴与全局坐标系的叉乘，之后再用z轴与x轴叉乘得到y轴。第二步计算雅可比矩阵，即直接将$x$、$y$以及$z$针对$\xi$、$\eta$以及$\zeta$求导。在此列出$x$的求导结果，根据对称性，$y$、$z$的结果是类似的。
+\begin{center}
+$x_{,\xi}=\sum N_{i,\xi}(x_i+\frac{1}{2}\zeta tl_{3i})$\\
+$x_{,\eta}=\sum N_{i,\eta}(x_i+\frac{1}{2}\zeta tl_{3i})$\\
+$x_{,\zeta}=\sum N_i(\frac{1}{2}tl_{3i})$
+\end{center}
+第三步建立局部坐标系中应变-位移关系。首先，可以通过插值得到单元任意一点处的位移与节点位移的关系，在此节点的转动自由度是局部坐标系上的$\theta_x$以及$\theta_y$。从而可以得到
+\begin{center}
+$\left[\begin{matrix}
+u_{,\xi}\\u_{,\eta}\\u_{,\zeta}\\v_{,\xi}\\...\\w_{,\zeta}
+\end{matrix}\right]=\sum\left[\begin{matrix}
+N_{i,\xi}&0&0&-\frac{1}{2}\zeta tN_{i,\xi}l_{2i}&\frac{1}{2}\zeta tN_{i,\xi}l_{1i}\\N_{i,\eta}&0&0&-\frac{1}{2}\zeta tN_{i,\eta}l_{2i}&\frac{1}{2}\zeta tN_{i,\eta}l_{1i}\\0&0&0&-\frac{1}{2}tN_il_{2i}&\frac{1}{2}tN_il_{1i}\\0&N_{i,\xi}&0&-\frac{1}{2}\zeta tN_{i,\xi}m_{2i}&\frac{1}{2}\zeta tN_{i,\xi}m_{1i}\\...&...&...&...&...\\0&0&0&-\frac{1}{2}tN_in_{2i}&\frac{1}{2}tN_in_{1i}
+\end{matrix}\right]\left[\begin{matrix}
+u_i\\v_i\\w_i\\\alpha_i\\\beta_i
+\end{matrix}\right]$
+\end{center}
+此外
+\begin{center}
+$\left[\begin{matrix}
+u_{,x}\\u_{,y}\\u_{,z}\\v_{,x}\\...\\w_{,z}
+\end{matrix}\right]=\left[\begin{matrix}
+J^{-1}&0&0\\0&J^{-1}&0\\0&0&J^{-1}
+\end{matrix}\right]\left[\begin{matrix}
+u_{,\xi}\\u_{,\eta}\\u_{,\zeta}\\v_{,\xi}\\...\\w_{,\zeta}
+\end{matrix}\right]$
+\end{center}
+应变与位移各项偏导的关系：
+\begin{center}
+$\left[\begin{matrix}
+\varepsilon_x\\\varepsilon_y\\\varepsilon_z\\\gamma_{xy}\\\gamma_{yz}\\\gamma_{zx}
+\end{matrix}\right]=\left[\begin{matrix}
+1&0&0&0&0&0&0&0&0\\
+0&0&0&0&1&0&0&0&0\\
+0&0&0&0&0&0&0&0&1\\
+0&1&0&1&0&0&0&0&0\\
+0&0&0&0&0&1&0&1&0\\
+0&0&1&0&0&0&1&0&0
+\end{matrix}\right]\left[\begin{matrix}
+u_{,x}\\u_{,y}\\u_{,z}\\v_{,x}\\...\\w_{,z}
+\end{matrix}\right]$
+\end{center}
+对上列矩阵相乘，可以得到表示应变-位移关系的B矩阵（6*5N）（N为节点数，在此为4）。第四步应当进行坐标变换。之前的应变-位移关系中，位移中的转角是局部坐标系的，而所需建立的刚度阵是总体坐标系，因此需要使用之前得到的余弦矩阵转换坐标。最后建立刚度阵，利用应力-应变关系
+\begin{center}
+$\left[\begin{matrix}
+\sigma_x\\\sigma_y\\\sigma_z\\\tau_{xy}\\\tau_{yz}\\\tau_{zx}
+\end{matrix}\right]=\left[\begin{matrix}
+E'&\upsilon E'&0&0&0&0\\
+\upsilon E'&E'&0&0&0&0\\
+0&0&0&0&0&0\\
+0&0&0&G&0&0\\
+0&0&0&0&G^*&0\\
+0&0&0&0&0&G^*
+\end{matrix}\right]$
+\end{center}
+其中$E'=E/(1-\upsilon^2),\quad G=0.5E/(1+\upsilon),\quad G^*=5G/6$，因子5/6考虑了横向剪切变形在厚度方向的变化情况。刚度矩阵使用高斯积分数值计算结果：
+\begin{center}
+$K_{6N\times 6N}=\int_{-1}^1\int_{-1}^1\int_{-1}^1 B^T_{6N\times 6}E_{6\times 6}B_{6\times 6N}det[J]d\xi d\eta d\zeta$
+\end{center}
+需要注意的是，当壳单元是曲面时，薄膜和弯曲作用会发生耦合。因此，可能会遇到薄膜锁定以及剪切锁定。解决办法有减缩积分。但是减缩积分可能会带来零能模态，因此需要使用带稳定方法的减缩积分。
+\subsection{曲面壳单元的单轴拉伸方向Patch Test}
+针对曲面壳单元的Patch Test暂时只做了单轴拉伸。分块如下图所示。
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.65\linewidth]{patchtestxshell.pdf}  
+	\caption{分块示意图} 
+	\label{fig:mcmthesis-logo}
+\end{figure}
+
+在x方向单轴拉伸，使x方向应力大小为1Pa，应当满足线性场$x-disp=\frac{x}{3\times 10^7}$，$y-disp=\frac{y}{10^8}$（$E=3\times10^7$，$\nu=0.3$）。从单轴拉伸的结果来看，很好地满足了构造的线性场。
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.65\linewidth]{shelltest.png}  
+	\caption{单轴拉伸结果} 
+	\label{fig:mcmthesis-logo}
+\end{figure}
+
+
+\section{连接单元}
+针对两个点的约束，如果两个点位置在浮点数误差内一致，则直接在前处理中把两个点合并为一个点。然而，在前处理中处理约束时将两个点合并成一个点也有一定的复杂度。如果两个点的位置略有不同，则可以使用连接单元使两个点位移一致。考虑的方法是使用类似于罚函数的方法。建立的方法如下。
+\begin{center}
+$k\left[\begin{matrix}
+I_6&-I_6\\
+-I_6&I_6
+\end{matrix}\right]\left[\begin{matrix}
+d_{e1}\\d_{e2}
+\end{matrix}\right]=\left[\begin{matrix}
+f_{e1}\\f_{e2}
+\end{matrix}\right]$
+\end{center}
+如此建立可以保证$f_{e1}+f_{e2}=0$，满足作用力与反作用力相等。$k(d_{e1}-d_{e2})=f_{e1}$。当k取一个数量级高于其余刚度阵的数量级的数时（可看作硬梁），则$d_{e1}-d_{e2}$趋于零，即可以视作两个节点被固接起来。综上，连接单元的刚度阵为
+\begin{center}
+$K=k\left[\begin{matrix}
+I_6&-I_6\\
+-I_6&I_6
+\end{matrix}\right]$
+\end{center}
+使用了这样的连接单元后，在前处理时，就只需将两个约束的点之间加一个连接单元即可，k的大小随不同情况改变，需较别的刚度阵中元素高若干数量级。但也不能取得过大，否则会导致线性方程组条件数过大，其解由于截断误差不准确的问题。
+
+%到此为止
+
 \section{稀疏矩阵求解器}
 我们选取了MKL库中的稀疏矩阵求解器PARDISO，PARDISO的基本原理是根据稀疏特性优化的LDLT分解算法，基于共享内存，同时具有多线程的并行性，是一种Left-looking Right-looking 结合的算法。
 \subsection{稀疏矩阵的存储方式}
