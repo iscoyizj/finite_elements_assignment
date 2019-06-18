@@ -8,37 +8,42 @@
 \BOOKMARK [2][-]{subsection.0.2.1}{8H单元的建立}{section.0.2}% 8
 \BOOKMARK [2][-]{subsection.0.2.2}{8H单元的Patch Test}{section.0.2}% 9
 \BOOKMARK [2][-]{subsection.0.2.3}{8H单元的收敛率}{section.0.2}% 10
-\BOOKMARK [1][-]{section.0.3}{后处理}{toc.0}% 11
-\BOOKMARK [1][-]{section.0.4}{板单元（Plate Element）}{toc.0}% 12
-\BOOKMARK [2][-]{subsection.0.4.1}{板单元的基本公式}{section.0.4}% 13
-\BOOKMARK [2][-]{subsection.0.4.2}{板单元的应力应变以及刚度阵构造}{section.0.4}% 14
-\BOOKMARK [2][-]{subsection.0.4.3}{应力计算以及后处理}{section.0.4}% 15
-\BOOKMARK [2][-]{subsection.0.4.4}{输入文件格式和自由度约束}{section.0.4}% 16
-\BOOKMARK [2][-]{subsection.0.4.5}{分片测试}{section.0.4}% 17
-\BOOKMARK [2][-]{subsection.0.4.6}{收敛率计算}{section.0.4}% 18
-\BOOKMARK [1][-]{section.0.5}{9节点平面亚参元（Subparameter Element）}{toc.0}% 19
-\BOOKMARK [2][-]{subsection.0.5.1}{9节点平面亚参元基本公式}{section.0.5}% 20
-\BOOKMARK [2][-]{subsection.0.5.2}{9节点平面亚参元的应力应变以及刚度阵构造}{section.0.5}% 21
-\BOOKMARK [2][-]{subsection.0.5.3}{输入文件格式和自由度约束}{section.0.5}% 22
-\BOOKMARK [2][-]{subsection.0.5.4}{分片测试}{section.0.5}% 23
-\BOOKMARK [2][-]{subsection.0.5.5}{收敛率计算}{section.0.5}% 24
-\BOOKMARK [1][-]{section.0.6}{无限单元（Infinite element）}{toc.0}% 25
-\BOOKMARK [2][-]{subsection.0.6.1}{无限单元的基本公式}{section.0.6}% 26
-\BOOKMARK [2][-]{subsection.0.6.2}{无限单元的应力应变以及刚度阵构造}{section.0.6}% 27
-\BOOKMARK [2][-]{subsection.0.6.3}{无限单元的收敛性分析}{section.0.6}% 28
-\BOOKMARK [1][-]{section.0.7}{Euler-Bernoulli Beam单元}{toc.0}% 29
-\BOOKMARK [2][-]{subsection.0.7.1}{单元构造}{section.0.7}% 30
-\BOOKMARK [2][-]{subsection.0.7.2}{梁单元的输入规定}{section.0.7}% 31
-\BOOKMARK [2][-]{subsection.0.7.3}{Patch\040Test}{section.0.7}% 32
-\BOOKMARK [2][-]{subsection.0.7.4}{收敛性分析}{section.0.7}% 33
-\BOOKMARK [1][-]{section.0.8}{Timoshenko\040Beam}{toc.0}% 34
-\BOOKMARK [2][-]{subsection.0.8.1}{Timoshenko Beam的基本假设}{section.0.8}% 35
-\BOOKMARK [2][-]{subsection.0.8.2}{Timoshenko Beam 的控制方程}{section.0.8}% 36
-\BOOKMARK [2][-]{subsection.0.8.3}{有限元离散与插值函数}{section.0.8}% 37
-\BOOKMARK [2][-]{subsection.0.8.4}{程序实现}{section.0.8}% 38
-\BOOKMARK [2][-]{subsection.0.8.5}{Patch\040Test}{section.0.8}% 39
-\BOOKMARK [2][-]{subsection.0.8.6}{收敛率验证}{section.0.8}% 40
-\BOOKMARK [1][-]{section.0.9}{稀疏矩阵求解器}{toc.0}% 41
-\BOOKMARK [2][-]{subsection.0.9.1}{稀疏矩阵的存储方式}{section.0.9}% 42
-\BOOKMARK [2][-]{subsection.0.9.2}{稀疏矩阵的具体实现}{section.0.9}% 43
-\BOOKMARK [2][-]{subsection.0.9.3}{PARDISO的参数调节}{section.0.9}% 44
+\BOOKMARK [1][-]{section.0.3}{前处理}{toc.0}% 11
+\BOOKMARK [1][-]{section.0.4}{后处理}{toc.0}% 12
+\BOOKMARK [1][-]{section.0.5}{板单元（Plate Element）}{toc.0}% 13
+\BOOKMARK [2][-]{subsection.0.5.1}{板单元的基本公式}{section.0.5}% 14
+\BOOKMARK [2][-]{subsection.0.5.2}{板单元的应力应变以及刚度阵构造}{section.0.5}% 15
+\BOOKMARK [2][-]{subsection.0.5.3}{应力计算以及后处理}{section.0.5}% 16
+\BOOKMARK [2][-]{subsection.0.5.4}{输入文件格式和自由度约束}{section.0.5}% 17
+\BOOKMARK [2][-]{subsection.0.5.5}{分片测试}{section.0.5}% 18
+\BOOKMARK [2][-]{subsection.0.5.6}{收敛率计算}{section.0.5}% 19
+\BOOKMARK [1][-]{section.0.6}{9节点平面亚参元（Subparameter Element）}{toc.0}% 20
+\BOOKMARK [2][-]{subsection.0.6.1}{9节点平面亚参元基本公式}{section.0.6}% 21
+\BOOKMARK [2][-]{subsection.0.6.2}{9节点平面亚参元的应力应变以及刚度阵构造}{section.0.6}% 22
+\BOOKMARK [2][-]{subsection.0.6.3}{输入文件格式和自由度约束}{section.0.6}% 23
+\BOOKMARK [2][-]{subsection.0.6.4}{分片测试}{section.0.6}% 24
+\BOOKMARK [2][-]{subsection.0.6.5}{收敛率计算}{section.0.6}% 25
+\BOOKMARK [1][-]{section.0.7}{无限单元（Infinite element）}{toc.0}% 26
+\BOOKMARK [2][-]{subsection.0.7.1}{无限单元的基本公式}{section.0.7}% 27
+\BOOKMARK [2][-]{subsection.0.7.2}{无限单元的应力应变以及刚度阵构造}{section.0.7}% 28
+\BOOKMARK [2][-]{subsection.0.7.3}{无限单元的收敛性分析}{section.0.7}% 29
+\BOOKMARK [1][-]{section.0.8}{Euler-Bernoulli Beam单元}{toc.0}% 30
+\BOOKMARK [2][-]{subsection.0.8.1}{单元构造}{section.0.8}% 31
+\BOOKMARK [2][-]{subsection.0.8.2}{梁单元的输入规定}{section.0.8}% 32
+\BOOKMARK [2][-]{subsection.0.8.3}{Patch\040Test}{section.0.8}% 33
+\BOOKMARK [2][-]{subsection.0.8.4}{收敛性分析}{section.0.8}% 34
+\BOOKMARK [1][-]{section.0.9}{Timoshenko\040Beam}{toc.0}% 35
+\BOOKMARK [2][-]{subsection.0.9.1}{Timoshenko Beam的基本假设}{section.0.9}% 36
+\BOOKMARK [2][-]{subsection.0.9.2}{Timoshenko Beam 的控制方程}{section.0.9}% 37
+\BOOKMARK [2][-]{subsection.0.9.3}{有限元离散与插值函数}{section.0.9}% 38
+\BOOKMARK [2][-]{subsection.0.9.4}{程序实现}{section.0.9}% 39
+\BOOKMARK [2][-]{subsection.0.9.5}{Patch\040Test}{section.0.9}% 40
+\BOOKMARK [2][-]{subsection.0.9.6}{收敛率验证}{section.0.9}% 41
+\BOOKMARK [1][-]{section.0.10}{Shell单元}{toc.0}% 42
+\BOOKMARK [2][-]{subsection.0.10.1}{Shell单元的有限元格式}{section.0.10}% 43
+\BOOKMARK [2][-]{subsection.0.10.2}{曲面壳单元的单轴拉伸方向Patch Test}{section.0.10}% 44
+\BOOKMARK [1][-]{section.0.11}{连接单元}{toc.0}% 45
+\BOOKMARK [1][-]{section.0.12}{稀疏矩阵求解器}{toc.0}% 46
+\BOOKMARK [2][-]{subsection.0.12.1}{稀疏矩阵的存储方式}{section.0.12}% 47
+\BOOKMARK [2][-]{subsection.0.12.2}{稀疏矩阵的具体实现}{section.0.12}% 48
+\BOOKMARK [2][-]{subsection.0.12.3}{PARDISO的参数调节}{section.0.12}% 49
