@@ -23,6 +23,7 @@
 #include "Shell.h"
 #include "Infinite.h"
 #include "Subpara.h"
+#include "Link.h"
 #include "Material.h"
 #include "Node.h"
 
@@ -41,7 +42,8 @@ enum ElementTypes
 	Plate,  // Plate element
 	Infinite,//Infinite element     
     Subpara,  // Subparametric element
-	H8R
+	H8R,
+    Link
 };
 
 //! Element group class
