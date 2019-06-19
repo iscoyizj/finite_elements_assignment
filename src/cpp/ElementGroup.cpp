@@ -96,6 +96,10 @@ void CElementGroup::CalculateMemberSize()
       ElementSize_ = sizeof(CShell);
       MaterialSize_ = sizeof(CShellMaterial);
       break;
+      case ElementTypes::Link:
+      ElementSize_ = sizeof(CLink);
+      MaterialSize_ = sizeof(CLink);
+      break;
 		case ElementTypes::Plate:
 			ElementSize_ = sizeof(CPlate);
 			MaterialSize_ = sizeof(CPlateMaterial);
@@ -141,6 +145,9 @@ void CElementGroup::AllocateElements(std::size_t size)
     case ElementTypes::Shell:
       ElementList_ = new CShell[size];
       break;
+      case ElementTypes::Link:
+      ElementList_ = new CLink[size];
+      break;
 		case ElementTypes::Plate:
 			ElementList_ = new CPlate[size];
 			break;
@@ -183,6 +190,9 @@ void CElementGroup::AllocateMaterials(std::size_t size)
     case ElementTypes::Shell:
       MaterialList_ = new CShellMaterial[size];
       break;
+      case ElementTypes::Link:
+      MaterialList_ = new CLinkMaterial[size];
+      break;
 		case ElementTypes::Infinite:
 			MaterialList_ = new CInfiMaterial[size];
 			break;
@@ -223,6 +233,9 @@ bool CElementGroup::Read(ifstream& Input, unsigned int* n, unsigned int* sum)
 			break;
 		case ElementTypes::Shell:
 			nen=4;
+			break;
+		case ElementTypes::Link:
+			nen=2;
 			break;
 	}
 	*sum = *sum + NUME_;
