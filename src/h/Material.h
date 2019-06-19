@@ -144,6 +144,17 @@ public:
 	virtual void Write(COutputter& output, unsigned int mset);
 };
 
+class CLinkMaterial: public CMaterial{
+public:
+	double k;
+public:
+
+	//!	Read material data from stream Input
+	virtual bool Read(ifstream& Input, unsigned int mset);
+
+	//!	Write material data to Stream
+	virtual void Write(COutputter& output, unsigned int mset);
+};
 
 class CInfiMaterial : public CMaterial
 {
